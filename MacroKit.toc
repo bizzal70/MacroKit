@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: MacroKit
+## Notes: Adds ready-made macros for your class and spec (Paladin for now). Type /macrokit.
+## Author: bizzal70
+## Version: 0.1.0
+## SavedVariablesPerCharacter: MacroKitCharDB
+## IconTexture: Interface\Icons\INV_Misc_Note_01
+## AddonCompartmentFunc: MacroKit_OnAddonCompartmentClick
+
+Data.lua
+Core.lua
