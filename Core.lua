@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 -- Adds the macros in Data.lua to the character's own macro list, the first
--- time each specialization is played, and on /macrokit.
+-- time each specialization is played, and from the window (Window.lua).
 --
 -- It only ever adds a macro under a name the character does not already
 -- use, so macros you made or changed yourself are never overwritten.
@@ -9,6 +9,12 @@ local addonName, ns = ...
 
 local ICON = 134400      -- the question mark: with #showtooltip, the macro shows the spell it will cast
 local MAX_NAME, MAX_BODY = 16, 255
+
+-- Shared by all characters: where the minimap button sits.
+local accountDefaults = {
+    minimapButton = true,
+    minimapAngle = 5.4,
+}
 
 local defaults = {
     auto = true,   -- add macros by itself on a spec's first login
@@ -48,6 +54,21 @@ function ns.ClassAndSpec()
     return class, spec
 end
 
+-- The class's name as the game shows it, and the spec's name, for the
+-- window's title. Either may be nil.
+function ns.ClassAndSpecNames()
+    local className = UnitClass("player")
+    local specName
+    if type(GetSpecialization) == "function" and type(GetSpecializationInfo) == "function" then
+        local ok, index = pcall(GetSpecialization)
+        if ok and type(index) == "number" and index > 0 then
+            local ok2, _, name = pcall(GetSpecializationInfo, index)
+            if ok2 and type(name) == "string" then specName = name end
+        end
+    end
+    return className, specName
+end
+
 -- The macros for this character: the class's shared ones, then the spec's.
 -- If the spec is unknown, every spec's macros are offered and the spell
 -- check keeps out the ones this character cannot use.
@@ -77,6 +98,7 @@ local function Exists(name)
     local ok, index = pcall(GetMacroIndexByName, name)
     return ok and type(index) == "number" and index > 0
 end
+ns.Exists = Exists
 
 local function FreeSlots()
     local max = MAX_CHARACTER_MACROS or 18
@@ -90,6 +112,38 @@ local function MissingSpell(macro)
     for _, spell in ipairs(macro.spells or {}) do
         if not ns.Knows(spell) then return spell end
     end
+end
+
+-- Where a macro stands for this character: "have" (in the macro list),
+-- "needs" (a spell it uses is not learned yet; also returns that spell) or
+-- "ready" (can be added).
+function ns.Status(macro)
+    if Exists(macro.name) then return "have" end
+    local missing = MissingSpell(macro)
+    if missing then return "needs", missing end
+    return "ready"
+end
+
+-- Adds a single macro, from the window. Returns whether it was added.
+function ns.AddOne(macro)
+    if InCombatLockdown() then
+        ns.Print("Macros cannot be added in combat.")
+        return false
+    end
+    if ns.Status(macro) ~= "ready" then return false end
+    if FreeSlots() <= 0 then
+        ns.Print("Your character macros are full, so " .. macro.name .. " was not added.")
+        return false
+    end
+    local ok, index = pcall(CreateMacro, macro.name, ICON, macro.body, true)
+    if ok and index then
+        ns.char.made[macro.name] = true
+        ns.Print("Added " .. macro.name .. ". Drag it from this window or /macro to your bars.")
+        ns.RefreshWindow()
+        return true
+    end
+    ns.Print("The game would not create " .. macro.name .. ".")
+    return false
 end
 
 -- Adds the macros this character is missing. With quiet, says nothing
@@ -128,7 +182,8 @@ function ns.Install(quiet)
     end
 
     if #added > 0 then
-        ns.Print("Added " .. #added .. " macros: " .. table.concat(added, ", ") .. ". Type /macro to drag them to your bars.")
+        ns.RefreshWindow()
+        ns.Print("Added " .. #added .. " macros: " .. table.concat(added, ", ") .. ". Drag them from /macrokit or /macro to your bars.")
     elseif not quiet then
         ns.Print("No new macros to add.")
     end
@@ -162,6 +217,7 @@ function ns.Remove()
         ns.char.made[name] = nil
     end
     table.sort(removed)
+    ns.RefreshWindow()
     if #removed > 0 then
         ns.Print("Removed " .. #removed .. " macros: " .. table.concat(removed, ", ") .. ".")
     else
@@ -201,8 +257,14 @@ end
 SLASH_MACROKIT1 = "/macrokit"
 SlashCmdList.MACROKIT = function(msg)
     local command, rest = (msg or ""):lower():match("^%s*(%S*)%s*(.-)%s*$")
-    if command == "" or command == "install" or command == "add" then
+    if command == "" or command == "window" then
+        ns.ToggleWindow()
+    elseif command == "install" or command == "add" then
         ns.Install(false)
+    elseif command == "button" then
+        ns.db.minimapButton = not ns.db.minimapButton
+        ns.UpdateMinimapButton()
+        ns.Print("Minimap button " .. (ns.db.minimapButton and "shown." or "hidden."))
     elseif command == "list" then
         ns.List()
     elseif command == "remove" then
@@ -212,18 +274,21 @@ SlashCmdList.MACROKIT = function(msg)
         elseif rest == "off" then ns.char.auto = false
         else ns.char.auto = not ns.char.auto end
         ns.Print(ns.char.auto and "Will add macros by itself the first time you play each spec."
-            or "Will only add macros when you type /macrokit.")
+            or "Will only add macros when you ask.")
+        ns.RefreshWindow()
     else
-        ns.Print("/macrokit - add the macros you are missing")
-        ns.Print("/macrokit list - show the macros and whether you have them")
+        ns.Print("/macrokit - open the MacroKit window")
+        ns.Print("/macrokit add - add the macros you are missing")
+        ns.Print("/macrokit list - show the macros and whether you have them, in chat")
         ns.Print("/macrokit remove - delete the macros MacroKit added")
         ns.Print("/macrokit auto on|off - add macros by itself for each new spec")
+        ns.Print("/macrokit button - show or hide the minimap button")
     end
 end
 
 -- Entry in the minimap's addon list.
 function MacroKit_OnAddonCompartmentClick()
-    SlashCmdList.MACROKIT("list")
+    ns.ToggleWindow()
 end
 
 -- Exposed for the tests.
@@ -241,19 +306,31 @@ frame:SetScript("OnEvent", function(self, event, arg)
             end
         end
         ns.char = MacroKitCharDB
+        MacroKitDB = MacroKitDB or {}
+        for key, value in pairs(accountDefaults) do
+            if MacroKitDB[key] == nil then MacroKitDB[key] = value end
+        end
+        ns.db = MacroKitDB
+        ns.UpdateMinimapButton()
         self:UnregisterEvent("ADDON_LOADED")
         -- Registering an event this client does not have throws, hence pcall.
-        for _, name in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_SPECIALIZATION_CHANGED", "PLAYER_REGEN_ENABLED" }) do
+        for _, name in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_SPECIALIZATION_CHANGED", "PLAYER_REGEN_ENABLED",
+                "PLAYER_REGEN_DISABLED", "UPDATE_MACROS", "SPELLS_CHANGED" }) do
             pcall(self.RegisterEvent, self, name)
         end
     elseif event == "PLAYER_REGEN_ENABLED" then
+        ns.RefreshWindow()
         if ns.pending then
             ns.pending = nil
             ns.Install(false)
         end
+    elseif event == "PLAYER_REGEN_DISABLED" or event == "UPDATE_MACROS" or event == "SPELLS_CHANGED" then
+        -- The window's buttons and states follow these.
+        ns.RefreshWindow()
     elseif event == "PLAYER_SPECIALIZATION_CHANGED" and arg and arg ~= "player" then
         return
     else
+        ns.RefreshWindow()
         -- Spells can still be loading on arrival, so it waits a moment.
         C_Timer.After(3, ns.AutoInstall)
     end

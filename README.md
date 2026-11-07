@@ -4,10 +4,22 @@ Adds a set of ready-made macros for your class and specialization to your macro 
 
 ## What it does
 
-The first time you play each spec, MacroKit adds that spec's macros to your character's own macro list (`/macro`, the character tab). Drag them onto your bars from there.
+The first time you play each spec, MacroKit adds that spec's macros to your character's own macro list (`/macro`, the character tab).
+
+## The MacroKit window
+
+Click the MacroKit button on the minimap, or type `/macrokit`. The window shows your class and spec, in your class colour, and one line for each of its macros:
+
+- **In your macros:** drag the line straight onto your action bars, or click it to pick the macro up.
+- **Ready:** click **Add** to put it in your macros.
+- **Needs** a spell: you have not learned that spell yet. The macro becomes ready when you do.
+
+Hover over a line to see the macro itself. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding a spec's macros by itself. The buttons are greyed out in combat, when the game does not allow changing macros.
+
+Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 
 - It never overwrites a macro: if you already have one with the same name, yours stays.
-- It only adds a macro once your character knows its spells. Learn the spell, type `/macrokit`, and the macro is added.
+- It only adds a macro once your character knows its spells. Learn the spell, then click **Add** in the window (or type `/macrokit add`).
 - It stops when your character's macro slots are full, and tells you which macros did not fit.
 - In combat it waits until the fight is over, because the game does not allow creating macros in combat.
 
@@ -36,8 +48,10 @@ Retribution: **Cleanse Toxins**, **Ret Burst** (Avenging Wrath and both trinkets
 
 | What | How |
 |---|---|
-| Add the macros you are missing | `/macrokit` |
-| See the macros and whether you have them | `/macrokit list`, or MacroKit's entry in the minimap's addon list |
+| Open the MacroKit window | `/macrokit`, the minimap button, or MacroKit's entry in the minimap's addon list |
+| Add the macros you are missing | `/macrokit add` |
+| See the macros and whether you have them, in chat | `/macrokit list` |
+| Show or hide the minimap button | `/macrokit button` |
 | Delete the macros MacroKit added | `/macrokit remove` (macros you made yourself stay) |
 | Stop adding macros by itself for each new spec | `/macrokit auto off` |
 

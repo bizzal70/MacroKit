@@ -59,9 +59,9 @@ check(#MACROS == total, "logging in again adds nothing twice")
 
 -- Learning the spell, then asking.
 Learn("Intercession")
-SlashCmdList.MACROKIT("")
+SlashCmdList.MACROKIT("add")
 check(Has("Battle Rez"), "/macrokit adds a macro once its spell is learned")
-SlashCmdList.MACROKIT("")
+SlashCmdList.MACROKIT("add")
 check(#MACROS == total + 1, "and running it again adds no duplicates")
 
 -- The macro list shows each macro's state.
@@ -83,7 +83,7 @@ check(Has("Holy Shock") and Has("Beacon") and Has("Cleanse") and Has("Holy Burst
 SPEC = 66
 Learn("Hand of Reckoning", "Shield of the Righteous", "Avenger's Shield")
 IN_COMBAT = true
-SlashCmdList.MACROKIT("")
+SlashCmdList.MACROKIT("add")
 check(not Has("Taunt"), "nothing is made in combat")
 IN_COMBAT = false
 Fire("PLAYER_REGEN_ENABLED")
@@ -93,7 +93,7 @@ check(Has("Taunt"), "and the macros are added once combat ends")
 check(select(2, GetNumMacros()) == 18, "this character's macros are now full")
 SPEC = nil       -- a client that cannot say the spec: every spec's macros are wanted
 before = #PRINTED
-SlashCmdList.MACROKIT("")
+SlashCmdList.MACROKIT("add")
 check(select(2, GetNumMacros()) == 18, "it never goes past the limit")
 check(Said(before):find("No room for", 1, true), "and says which did not fit: " .. Said(before))
 
@@ -115,7 +115,7 @@ check(ns.char.auto, "/macrokit auto on switches it back")
 -- Classes without macros yet.
 CLASS = "MAGE"
 before = #PRINTED
-SlashCmdList.MACROKIT("")
+SlashCmdList.MACROKIT("add")
 check(Said(before):find("no macros for your class", 1, true), "another class is told there is nothing yet")
 MacroKit_OnAddonCompartmentClick()
 SlashCmdList.MACROKIT("help")

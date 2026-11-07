@@ -13,11 +13,41 @@ local function Stub()
             self.__events[ev] = true
         end end
         if k == "UnregisterEvent" then return function(self, ev) self.__events[ev] = nil end end
+        -- Enough widget behaviour for the window tests to read back.
+        if k == "Show" then return function(self) self.__shown = true end end
+        if k == "Hide" then return function(self) self.__shown = false end end
+        if k == "IsShown" then return function(self) return self.__shown ~= false and self.__shown ~= nil end end
+        if k == "SetShown" then return function(self, v) assert(type(v) == "boolean", "SetShown needs a boolean"); self.__shown = v end end
+        if k == "SetText" then return function(self, t) self.__text = t end end
+        if k == "GetText" then return function(self) return self.__text end end
+        if k == "SetTextColor" then return function(self, ...) self.__color = { ... } end end
+        if k == "SetTexture" then return function(self, t) self.__texture = t end end
+        if k == "SetDesaturated" then return function(self, v) self.__desaturated = v end end
+        if k == "CreateTexture" or k == "CreateFontString" or k == "CreateLine" then
+            return function(self) local child = Stub(); child.__parent = self; regions[#regions + 1] = child; return child end
+        end
         return function() end
     end })
 end
 
-function CreateFrame(_, name) local f = Stub(); frames[#frames + 1] = f; if name then _G[name] = f end; return f end
+regions = {}         -- every texture and font string made, for the tests to search
+function CreateFrame(_, name, parent) local f = Stub(); f.__parent = parent; frames[#frames + 1] = f; if name then _G[name] = f end; return f end
+function Frames() return frames end
+UIParent = CreateFrame("Frame", "UIParent")
+Minimap = CreateFrame("Frame", "Minimap")
+Minimap.GetWidth = function() return 140 end
+Minimap.GetCenter = function() return 100, 100 end
+Minimap.GetEffectiveScale = function() return 1 end
+GetCursorPosition = function() return 100, 200 end
+UISpecialFrames = {}
+tinsert = table.insert
+TOOLTIP = {}
+GameTooltip = CreateFrame("Frame", "GameTooltip")
+GameTooltip.SetOwner = function() TOOLTIP = {} end
+GameTooltip.AddLine = function(_, line) TOOLTIP[#TOOLTIP + 1] = line end
+RAID_CLASS_COLORS = { PALADIN = { r = 0.96, g = 0.55, b = 0.73 }, WARRIOR = { r = 0.78, g = 0.61, b = 0.43 } }
+PICKED = nil
+PickupMacro = function(name) PICKED = name end
 SlashCmdList = {}
 print = function(m) printed[#printed + 1] = m end
 IN_COMBAT = false
@@ -33,9 +63,11 @@ end
 
 -- The character.
 CLASS, SPEC = "PALADIN", 70
-UnitClass = function() return "Paladin", CLASS, 2 end
+CLASS_NAMES = { PALADIN = "Paladin", WARRIOR = "Warrior", MAGE = "Mage" }
+UnitClass = function() return CLASS_NAMES[CLASS] or CLASS, CLASS, 2 end
 GetSpecialization = function() return SPEC and 1 or nil end
-GetSpecializationInfo = function() return SPEC, "Spec" end
+SPEC_NAMES = { [65] = "Holy", [66] = "Protection", [70] = "Retribution" }
+GetSpecializationInfo = function() return SPEC, SPEC_NAMES[SPEC] or "Spec" end
 
 -- Spells: SPELL_IDS are spells the client has heard of; KNOWN are the ones
 -- this character has learned.
@@ -43,6 +75,9 @@ SPELL_IDS, KNOWN = {}, {}
 C_Spell = { GetSpellInfo = function(name)
     local id = SPELL_IDS[name]
     if id then return { name = name, spellID = id } end
+end, GetSpellTexture = function(name)
+    local id = SPELL_IDS[name]
+    return id and ("icon-" .. name) or nil
 end }
 IsPlayerSpell = function(id) return KNOWN[id] or false end
 local nextID = 1000
