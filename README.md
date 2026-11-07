@@ -1,13 +1,14 @@
 # MacroKit
 
-Adds ready-made macros for your class and talent spec to your macro list, and keeps them up to date as you learn new spells. An addon for World of Warcraft: Forever (client 1.60.x). It has Paladin macros so far.
+Adds ready-made macros for your class and talent spec to your macro list, and keeps them up to date as you level, train and respec. An addon for World of Warcraft: Forever (client 1.60.x), with macros for all nine classes.
 
 ## What it does
 
 MacroKit adds macros to your character's own macro list (`/macro`, the character tab) as soon as your character knows the spells they use.
 
 - **It keeps up as you level.** When you level up, train at a trainer or learn a talent, it looks again straight away: macros you can now use are added (or, with automatic adding off, announced once in chat), the window updates, and a red badge on the minimap button counts what is new since you last opened the window. New macros are marked New in the window.
-- **It knows your spec from your talents.** Forever has talent trees rather than a specialization choice, so MacroKit spots your tree from its talent spells: Holy Shock, Divine Favor, Oath of Light or Light's Vigil for Holy; Templar's Bulwark, Swift Judgement or Holy Shield for Protection; Seal of Command or Repentance for Retribution. Until you have one, pick your spec in the window's menu; MacroKit remembers it for that character.
+- **It knows your spec from your talents.** Forever has talent trees rather than a specialization choice, so MacroKit reads how many points you have in each tree (the same way the game's own talent window does) and takes the tree with the most. Before your first talent point, pick your spec in the window's menu; MacroKit remembers it for that character.
+- **It follows a respec, a reset and a dual-spec switch.** It switches to the new spec's macros and says so in chat. The macros it added for your old spec are not deleted by themselves: the window offers a **Clear them** button (or type `/macrokit clear`).
 - It never overwrites a macro: if you already have one with the same name, yours stays.
 - It stops when your character's macro slots are full, and tells you which macros did not fit.
 - In combat it waits until the fight is over, because the game does not allow creating macros in combat.
@@ -23,33 +24,72 @@ Click the MacroKit button on the minimap, or type `/macrokit`.
 
 Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 
-## Paladin macros
+## Macros for every class
 
-Made for Forever's Paladin, whose spells are mostly the classic ones plus new ones such as Holy Strike, Seal of Fury, Templar's Bulwark and Oath of Light. In Forever, Judgement no longer uses up your seal.
+Each class has macros for every spec, plus a few for each talent tree. Hover a macro in the window to read exactly how it works. Most use the same pattern: a heal or buff goes on the friend under your mouse, else your friendly target, else you; an attack goes on the enemy under your mouse, else your target.
 
-Every spec:
+**Warrior**
 
-| Macro | What it does |
-|---|---|
-| Holy Strike | Starts attacking and uses Holy Strike |
-| Seal | Seal of Righteousness; hold Shift for Seal of the Crusader |
-| Heal | Holy Light on a mouseover friend, your friendly target, else you |
-| Quick Heal | Flash of Light, the same way |
-| Might | Blessing of Might, the same way |
-| Stun | Hammer of Justice on your mouseover target, else your target |
-| Protect Ally | Blessing of Protection on a mouseover friend, your friendly target, else you |
-| Freedom | Blessing of Freedom, the same way |
-| Lay on Hands | The same way |
-| Bubble | Divine Shield once you have it (level 34), Divine Protection until then |
-| Dispel | Cleanse once you have it (level 42), Purify until then |
-| Rez | Redemption on a dead mouseover friend, else your target |
-| Exorcism | On your mouseover target, else your target (undead and demons) |
+- Every spec: Charge, Victory Rush, Strike, Rend, Hamstring, Interrupt, Overpower, Execute, Taunt, Shout.
+- Arms: Mortal Strike, Sweeping, Spearing.
+- Fury: Bloodthirst, Death Wish, Whirlwind.
+- Protection: Shield Slam, Revenge, Shield Block, Last Stand.
 
-Holy: **Holy Shock** (heals a friend or hits a foe under the mouse), **Big Heal** (Divine Favor, then a sure critical Holy Light), **Oath** (Oath of Light), **Vigil** (Light's Vigil).
+**Paladin**
 
-Protection: **Tank Up** (Seal of Fury; Shift for Righteous Fury), **Taunt** (Judgement; it taunts while Seal of Fury is up), **Swift Judge** (Swift Judgement), **Bulwark** (Templar's Bulwark).
+- Every spec: Holy Strike, Seal, Heal, Quick Heal, Might, Stun, Protect Ally, Freedom, Lay on Hands, Bubble, Dispel, Rez, Exorcism.
+- Holy: Holy Shock, Big Heal, Oath, Vigil.
+- Protection: Tank Up, Taunt, Swift Judge, Bulwark.
+- Retribution: Command, Repent, Execute.
 
-Retribution: **Command** (Seal of Command; Shift for Seal of the Crusader), **Repent** (Repentance), **Execute** (Hammer of Wrath, on targets under 20% health).
+**Hunter**
+
+- Every spec: Mark, Sting, Arcane Shot, Aimed Shot, Multi-Shot, Concussive, Pet, Trap, Melee, Aspect, Lacerate.
+- Beast Mastery: Bestial Wrath, Intimidation, Hawk.
+- Marksmanship: Scatter Shot, Sniper Shot.
+- Survival: Deterrence, Counterattack, Strider Kick.
+
+**Rogue**
+
+- Every spec: Opener, Stun, Interrupt, Stealth, Sap, Finisher, Shank, Blind.
+- Assassination: Mutilate, Cold Eviscerate.
+- Combat: Burst, Riposte.
+- Subtlety: Hemorrhage, Ghostly Strike, Premeditation, Death Mark.
+
+**Priest**
+
+- Every spec: Shield, Renew, Flash Heal, Big Heal, Fortitude, Dispel, Cure, SW: Pain, SW: Death, Fear Ward, Shackle, Rez.
+- Discipline: Penance, Power Infusion, Focus Heal.
+- Holy: Mending, Group Heal.
+- Shadow: Shadowform, Silence, Vamp Embrace, Mind Flay.
+
+**Shaman**
+
+- Every spec: Heal, Quick Heal, Chain Heal, Interrupt, Flame Shock, Frost Shock, Purge, Cure, Totems, Recall, Shield, Ghost Wolf, Rez.
+- Elemental: Mastery Bolt, Chain Lightning.
+- Enhancement: Stormstrike, Farseer.
+- Restoration: Riptide, Swift Heal.
+
+**Mage**
+
+- Every spec: Sheep, Counterspell, Decurse, Intellect, Conjure, Fire Blast, Slow Fall, Frostfire.
+- Arcane: Arcane Blast, Burst, Quick Blast.
+- Fire: Pyroblast, Combustion, Blast Wave.
+- Frost: Ice Lance, Ice Block, Ice Barrier.
+
+**Warlock**
+
+- Every spec: Corruption, Agony, Curse, Immolate, Fear, Banish, Drain, Death Coil.
+- Affliction: Siphon Life, Exhaustion, Big Agony, Wrack.
+- Demonology: Quick Demon, Sacrifice, Soul Link.
+- Destruction: Conflagrate, Shadowburn, Havoc, Incinerate.
+
+**Druid**
+
+- Every spec: Heal, Rejuv, Regrowth, Mark, Thorns, Decurse, Cure Poison, Innervate, Battle Rez, Rez, Roots, Hibernate, Faerie Fire, Moonfire.
+- Balance: Moonkin, Insect Swarm.
+- Feral Combat: Feral Charge, Lacerate, Primal Bite.
+- Restoration: Swiftmend, Wild Growth, Swift Heal.
 
 ## Commands
 
@@ -60,13 +100,15 @@ Retribution: **Command** (Seal of Command; Shift for Seal of the Crusader), **Re
 | See the macros and whether you have them, in chat | `/macrokit list` |
 | Show or hide the minimap button | `/macrokit button` |
 | List your spec and spellbook, to report a spell name | `/macrokit spells` |
+| See what the game reports about your talents | `/macrokit talents` |
+| Delete the macros MacroKit added for a spec you are no longer | `/macrokit clear` |
 | Delete the macros MacroKit added | `/macrokit remove` (macros you made yourself stay) |
 | Stop adding new macros by themselves (they are announced instead) | `/macrokit auto off` |
 
 ## Good to know
 
 - Macros are saved on Blizzard's servers, so once added they follow your character to any computer, even without the addon.
-- The spell names are Forever's, checked against a paladin's spellbook and Forever spell lists. If a macro says it needs a spell you know you have, type `/macrokit spells` and please report what it lists.
+- The spell names are Forever's, from spell lists built from the live game and checked against each other. Only the paladin's early spells have been checked in game so far. If a macro says it needs a spell you know you have, type `/macrokit spells` and please report what it lists.
 
 ## More from this author
 

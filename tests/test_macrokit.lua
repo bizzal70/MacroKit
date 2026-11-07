@@ -152,8 +152,20 @@ KNOWN = {}
 check(select(2, ns.ClassAndSpec()) == nil, "with neither, there is no spec")
 SPEC = nil
 
--- Classes without macros yet.
-CLASS = "MAGE"
+-- Every one of Forever's nine classes has macros, three trees and talent
+-- spells to tell the trees apart.
+for _, class in ipairs({ "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }) do
+    local set = ns.SETS[class]
+    assert(set and #set.shared >= 8, class .. " has too few shared macros")
+    assert(#set.order == 3, class .. " needs three talent trees")
+    for _, id in ipairs(set.order) do
+        assert(set.names[id] and #set.specs[id] >= 2 and #set.treeSpells[id] >= 1, class .. " tree " .. id .. " is incomplete")
+    end
+end
+check(true, "all nine classes have shared macros and three talent trees with their own macros")
+
+-- A class without macros (Forever has none beyond the nine).
+CLASS = "MONK"
 before = #PRINTED
 SlashCmdList.MACROKIT("add")
 check(Said(before):find("no macros for your class", 1, true), "another class is told there is nothing yet")

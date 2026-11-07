@@ -54,10 +54,72 @@ function ns.Learned(name)
     return ok2 and known == true
 end
 
--- The character's class and spec ID. The spec comes from the game where it
--- reports one MacroKit has macros for; otherwise (Forever, which has talent
--- trees, not specializations) from a talent spell only one tree gives.
--- Nil while neither says.
+-- Talent points in each tree, from the trait system, the way Forever's own
+-- talent frame draws its tree headers (Blizzard_PlayerSpells/Camelot,
+-- ClassTalentsFrameMixin:RefreshTreeHeaders, build 70862): the class tree's
+-- groups are the three talent trees, and each group's first currency says
+-- how many points are spent in it.
+local function TraitPoints()
+    if not (C_ClassTalents and C_ClassTalents.GetActiveConfigID and C_Traits and C_Traits.GetConfigInfo
+        and C_Traits.GetGroupDisplayInfoByTreeID and C_Traits.GetGroupCurrencyInfo) then return nil end
+    local ok, points, names = pcall(function()
+        local configID = C_ClassTalents.GetActiveConfigID()
+        if not configID and C_SpecializationInfo and C_SpecializationInfo.GetCombatConfigIDForSpecGroup
+            and C_SpecializationInfo.GetActiveSpecGroup then
+            configID = C_SpecializationInfo.GetCombatConfigIDForSpecGroup(C_SpecializationInfo.GetActiveSpecGroup())
+        end
+        if not configID then return nil end
+        local config = C_Traits.GetConfigInfo(configID)
+        local treeID = config and config.treeIDs and config.treeIDs[1]
+        if not treeID then return nil end
+        local displays = C_Traits.GetGroupDisplayInfoByTreeID(treeID)
+        if type(displays) ~= "table" or #displays == 0 then return nil end
+        local ids = {}
+        for _, display in ipairs(displays) do ids[#ids + 1] = display.groupID end
+        local infos = C_Traits.GetGroupCurrencyInfo(configID, ids) or {}
+        local spent, labels = {}, {}
+        for index, display in ipairs(displays) do
+            spent[index] = 0
+            labels[index] = display.displayName
+            for _, info in ipairs(infos) do
+                if info.traitNodeGroupID == display.groupID and info.currencyInfos and info.currencyInfos[1] then
+                    spent[index] = tonumber(info.currencyInfos[1].spent) or 0
+                end
+            end
+        end
+        return spent, labels
+    end)
+    if ok and points then return points, names end
+end
+
+-- Talent points spent in each tree, in the game's order, with each tree's
+-- name where the game gives one. Nil if this client reports neither way.
+-- The trait system first (Forever); then the classic talent functions,
+-- which Forever no longer has but older clients do, in either layout:
+-- (name, icon, points, ...) or (id, name, description, icon, points, ...).
+function ns.TalentPoints()
+    local points, names = TraitPoints()
+    if points then return points, names end
+    if type(GetNumTalentTabs) ~= "function" or type(GetTalentTabInfo) ~= "function" then return nil end
+    local ok, count = pcall(GetNumTalentTabs)
+    if not ok or type(count) ~= "number" or count < 1 then return nil end
+    local points, names = {}, {}
+    for tab = 1, count do
+        local ok2, a, b, c, d, e = pcall(GetTalentTabInfo, tab)
+        if not ok2 then return nil end
+        local spent, name
+        if type(a) == "number" then spent, name = e, b else spent, name = c, a end
+        points[tab] = type(spent) == "number" and spent or 0
+        names[tab] = type(name) == "string" and name or nil
+    end
+    return points, names
+end
+
+-- The character's class and spec ID, and how the spec was found:
+--   "game"          a specialization the game reports (and MacroKit has macros for)
+--   "talent points" the tree with the most points (Forever: classic talent trees)
+--   "talent spell"  a talent spell only one tree gives, if points cannot be read
+-- The spec is nil while none of these says.
 function ns.ClassAndSpec()
     local _, class = UnitClass("player")
     local set = ns.SETS[class]
@@ -66,17 +128,112 @@ function ns.ClassAndSpec()
         local ok, index = pcall(GetSpecialization)
         if ok and type(index) == "number" and index > 0 then
             local ok2, id = pcall(GetSpecializationInfo, index)
-            if ok2 and type(id) == "number" and specs[id] then return class, id end
+            if ok2 and type(id) == "number" and specs[id] then return class, id, "game" end
+        end
+    end
+    if set and set.order and #set.order > 0 then
+        local points, names = ns.TalentPoints()
+        if points then
+            local best, most = nil, 0
+            for tab, spent in ipairs(points) do
+                if spent > most then best, most = tab, spent end
+            end
+            if best then
+                -- The tree's name decides when it matches one of the class's;
+                -- otherwise its position does.
+                local name = names and names[best]
+                if type(name) == "string" and set.names then
+                    for id, specName in pairs(set.names) do
+                        if specName:lower() == name:lower() or specName:lower():find(name:lower(), 1, true) == 1 then
+                            return class, id, "talent points"
+                        end
+                    end
+                end
+                if set.order[best] then return class, set.order[best], "talent points" end
+            end
         end
     end
     if set and set.treeSpells then
         for _, id in ipairs(set.order or {}) do
             for _, spell in ipairs(set.treeSpells[id] or {}) do
-                if ns.Learned(spell) then return class, id end
+                if ns.Learned(spell) then return class, id, "talent spell" end
             end
         end
     end
     return class, nil
+end
+
+-- Macros MacroKit added for a spec the character is no longer: still in the
+-- macro list, but no longer among the macros wanted now.
+function ns.StaleMacros()
+    local class = ns.ClassAndSpec()
+    local set = ns.SETS[class]
+    if not set or not set.specs or not ns.char then return {} end
+    local wanted = {}
+    for _, macro in ipairs(ns.Wanted() or {}) do wanted[macro.name] = true end
+    local stale = {}
+    for _, id in ipairs(set.order or {}) do
+        for _, macro in ipairs(set.specs[id] or {}) do
+            if ns.char.made[macro.name] and not wanted[macro.name] and ns.Exists(macro.name) then
+                stale[#stale + 1] = macro.name
+            end
+        end
+    end
+    table.sort(stale)
+    return stale
+end
+
+-- Deletes the macros MacroKit added for the old spec.
+function ns.ClearStale()
+    if InCombatLockdown() then
+        ns.Print("Macros cannot be removed in combat.")
+        return
+    end
+    local stale = ns.StaleMacros()
+    for _, name in ipairs(stale) do
+        pcall(DeleteMacro, GetMacroIndexByName(name))
+        ns.char.made[name] = nil
+    end
+    if #stale > 0 then
+        ns.Print("Cleared " .. #stale .. " macro" .. (#stale > 1 and "s" or "") .. " from your old spec: " .. table.concat(stale, ", ") .. ".")
+    else
+        ns.Print("There are no macros from an old spec to clear.")
+    end
+    ns.RefreshWindow()
+end
+
+-- Says what the game reports about talents, to check spec detection.
+function ns.ListTalents()
+    local class, spec, how = ns.ClassAndSpec()
+    local set = ns.SETS[class]
+    local points, names = ns.TalentPoints()
+    if points then
+        local parts = {}
+        for tab, spent in ipairs(points) do
+            parts[#parts + 1] = (names and names[tab] or ("tree " .. tab)) .. " " .. spent
+        end
+        ns.Print("Talent points: " .. table.concat(parts, ", ") .. ".")
+    else
+        ns.Print("This client does not report talent points to addons.")
+    end
+    local group, groups
+    if C_SpecializationInfo and C_SpecializationInfo.GetActiveSpecGroup then
+        local ok, value = pcall(C_SpecializationInfo.GetActiveSpecGroup)
+        if ok then group = value end
+        if type(GetNumSpecGroups) == "function" then
+            local ok2, count = pcall(GetNumSpecGroups)
+            if ok2 then groups = count end
+        end
+    elseif type(GetActiveTalentGroup) == "function" then
+        local ok, value = pcall(GetActiveTalentGroup)
+        if ok then group = value end
+        if type(GetNumTalentGroups) == "function" then
+            local ok2, count = pcall(GetNumTalentGroups)
+            if ok2 then groups = count end
+        end
+    end
+    if group then ns.Print("Active talent set: " .. tostring(group) .. (groups and (" of " .. groups) or "") .. ".") end
+    ns.Print("Spec: " .. (spec and ns.SpecName(class, spec) or "none yet") .. (how and (" (from " .. how .. ")") or "") .. ".")
 end
 
 -- The spec whose macros to use: the one worked out from the game or the
@@ -396,10 +553,21 @@ end
 function ns.CheckSpells(quietStart)
     if not ns.char then return end
     local class, spec = ns.ClassAndSpec()
-    if spec ~= ns.char.lastSpec then
-        -- The talents now show a spec (or a different one): follow it.
+    local old = ns.char.lastSpec
+    if spec ~= old then
+        -- The talents now show a spec, a different one (a respec, or a
+        -- switch to the other talent set), or none (a reset): follow them.
         ns.char.lastSpec = spec
-        if spec then ns.char.view = nil end
+        ns.char.view = nil
+        if not quietStart then
+            if spec and old then
+                ns.Print("Talents changed: you are now " .. ns.SpecName(class, spec) .. " (was " .. ns.SpecName(class, old) .. ").")
+            elseif spec then
+                ns.Print("Your talents show you are " .. ns.SpecName(class, spec) .. ": its macros are now on offer.")
+            else
+                ns.Print("Your talents were reset. Only the macros every spec shares are on offer until you spend points again.")
+            end
+        end
     end
     local ready = ns.ReadyNames()
     if #ready > 0 and not InCombatLockdown() then
@@ -420,6 +588,14 @@ function ns.CheckSpells(quietStart)
                 ns.Print("New macro" .. (#fresh > 1 and "s" or "") .. " ready: " .. table.concat(fresh, ", ")
                     .. ". Type /macrokit or click the minimap button to add " .. (#fresh > 1 and "them." or "it."))
             end
+        end
+    end
+    -- Macros MacroKit added for the old spec are pointed out, once per change.
+    if spec ~= old and not quietStart then
+        local stale = ns.StaleMacros()
+        if #stale > 0 then
+            ns.Print(#stale .. " macro" .. (#stale > 1 and "s" or "") .. " from your old spec no longer fit: "
+                .. table.concat(stale, ", ") .. ". Clear them with the button in /macrokit, or /macrokit clear.")
         end
     end
     ns.RefreshWindow()
@@ -451,6 +627,10 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("Minimap button " .. (ns.db.minimapButton and "shown." or "hidden."))
     elseif command == "list" then
         ns.List()
+    elseif command == "talents" then
+        ns.ListTalents()
+    elseif command == "clear" then
+        ns.ClearStale()
     elseif command == "spells" then
         ns.ListSpells()
     elseif command == "remove" then
@@ -471,6 +651,8 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
         ns.Print("/macrokit button - show or hide the minimap button")
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
+        ns.Print("/macrokit talents - what the game reports about your talents")
+        ns.Print("/macrokit clear - delete the macros MacroKit added for a spec you are no longer")
     end
 end
 
@@ -505,7 +687,10 @@ frame:SetScript("OnEvent", function(self, event, arg)
         for _, name in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_SPECIALIZATION_CHANGED", "PLAYER_REGEN_ENABLED",
                 "PLAYER_REGEN_DISABLED", "UPDATE_MACROS", "SPELLS_CHANGED", "PLAYER_LEVEL_UP", "TRAINER_CLOSED",
                 "LEARNED_SPELL_IN_SKILL_LINE", "LEARNED_SPELL_IN_TAB", "CHARACTER_POINTS_CHANGED",
-                "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED" }) do
+                "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED", "ACTIVE_TALENT_GROUP_CHANGED",
+                "CONFIRM_TALENT_WIPE", "TALENT_GROUP_ROLE_CHANGED", "TRAIT_NODE_CHANGED",
+                "TRAIT_TREE_CURRENCY_INFO_UPDATED", "ACTIVE_COMBAT_CONFIG_CHANGED",
+                "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" }) do
             pcall(self.RegisterEvent, self, name)
         end
     elseif event == "PLAYER_ENTERING_WORLD" then

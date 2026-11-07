@@ -191,9 +191,9 @@ check(#Rows() == 13, "where all 13 shared macros are listed")
 Click(readyTab)
 
 -- A class with no macros yet.
-CLASS = "WARRIOR"
+CLASS = "MONK"
 Fire("PLAYER_ENTERING_WORLD")
-check(#Rows() == 0 and AllTexts():find("There are no macros for Warrior yet", 1, true), "a warrior is told there are none for the class yet")
+check(#Rows() == 0 and AllTexts():find("There are no macros for MONK yet", 1, true), "a class without macros is told there are none yet")
 check(not specButton.__shown and not readyTab.__shown, "with no Spec menu or tabs")
 
 -- Closing, the slash command and the minimap addon list entry.

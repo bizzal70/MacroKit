@@ -1,5 +1,12 @@
 # MacroKit
 
+## 0.5.0
+
+- Macros for all nine classes (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with shared macros and a set for every talent tree, written for Forever's spells (for example Bane of Agony, Penance, Riptide, Wild Growth, Victory Rush, Shank, Summon Hawk, Frostfire Bolt).
+- The spec now comes from your talent points, read the way Forever's own talent window reads them. A respec, a talent reset or a switch between dual-spec talent sets is noticed at once: MacroKit switches to the new spec's macros and says so.
+- Macros MacroKit added for your old spec are pointed out, with a Clear them button in the window and `/macrokit clear`. They are never deleted without you asking.
+- `/macrokit talents` shows what the game reports about your talents.
+
 ## 0.4.2
 
 - The minimap button now has a red badge with a count, on its top edge, whenever there are macros new since you last opened the window: ones MacroKit added by itself as you levelled, and ones ready to add. Before, it only counted macros waiting to be added, so with automatic adding on (the default) levelling up showed nothing, and the small number could hide under the button's ring.

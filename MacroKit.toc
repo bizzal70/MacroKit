@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: MacroKit
-## Notes: Ready-made macros for your class and spec (Paladin for now), in a window from the minimap. Type /macrokit.
+## Notes: Ready-made macros for every class and talent spec, kept up to date as you level and respec. Type /macrokit.
 ## Author: bizzal70
-## Version: 0.4.2
+## Version: 0.5.0
 ## SavedVariables: MacroKitDB
 ## SavedVariablesPerCharacter: MacroKitCharDB
 ## IconTexture: Interface\Icons\INV_Misc_Note_01

@@ -24,6 +24,8 @@ local QUESTION_MARK = 134400
 
 local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox
 local howPanel, howTitle, howText
+local staleBar, staleText, staleButton
+local STALE_HEIGHT = 30
 local tabs = {}
 local rows = {}
 local menuRows = {}
@@ -306,7 +308,7 @@ local function Refresh()
     -- What to say when there is nothing to list.
     local message
     if not list then
-        message = ("There are no macros for %s yet. MacroKit has Paladin macros so far."):format(className or "your class")
+        message = ("There are no macros for %s yet."):format(className or "your class")
     elseif count == 0 and tab == "ready" then
         message = "Nothing ready yet: the spells these macros need are not learned. See Not learned yet (" .. #later .. ")."
     elseif count == 0 then
@@ -341,7 +343,19 @@ local function Refresh()
     else
         howPanel:Hide()
     end
-    window:SetHeight(LIST_TOP + listHeight + howHeight + FOOTER_HEIGHT)
+    -- After a respec: the old spec's macros, with a button to clear them.
+    local stale = list and ns.StaleMacros() or {}
+    local staleHeight = 0
+    if #stale > 0 then
+        staleText:SetText(#stale .. " macro" .. (#stale > 1 and "s" or "") .. " from your old spec no longer fit.")
+        staleButton.label:SetText("Clear them")
+        staleButton:SetActive(not inCombat)
+        staleBar:Show()
+        staleHeight = STALE_HEIGHT
+    else
+        staleBar:Hide()
+    end
+    window:SetHeight(LIST_TOP + listHeight + howHeight + staleHeight + FOOTER_HEIGHT)
 
     addAllButton.label:SetText(addable > 0 and ("Add all missing (" .. addable .. ")") or "Add all missing")
     addAllButton:SetActive(addable > 0 and not inCombat)
@@ -470,6 +484,18 @@ local function CreateWindow()
 
     -- Footer: add everything, take back what MacroKit added, and the
     -- automatic adding switch.
+    staleBar = CreateFrame("Frame", addonName .. "StaleBar", window)
+    staleBar:SetHeight(STALE_HEIGHT - 6)
+    staleBar:SetPoint("BOTTOMLEFT", PADDING, FOOTER_HEIGHT)
+    staleBar:SetPoint("BOTTOMRIGHT", -PADDING, FOOTER_HEIGHT)
+    Fill(staleBar, 0.9, 0.5, 0.1, 0.15)
+    Outline(staleBar, 0.5)
+    staleText = Label(staleBar, "GameFontHighlightSmall")
+    staleText:SetPoint("LEFT", 8, 0)
+    staleButton = TextButton(staleBar, 90, "Clear them", function() ns.ClearStale() end)
+    staleButton:SetPoint("RIGHT", -4, 0)
+    staleBar:Hide()
+
     addAllButton = TextButton(window, 170, "Add all missing", function() ns.Install(false) end)
     addAllButton:SetPoint("BOTTOMLEFT", PADDING, 40)
     removeButton = TextButton(window, 200, "Remove MacroKit's macros", function() ns.Remove() end)
