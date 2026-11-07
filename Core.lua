@@ -14,6 +14,7 @@ local MAX_NAME, MAX_BODY = 16, 255
 local accountDefaults = {
     minimapButton = true,
     minimapAngle = 5.4,
+    actionTooltips = true,   -- explain MacroKit's macros in action button tooltips
 }
 
 local defaults = {
@@ -621,6 +622,10 @@ SlashCmdList.MACROKIT = function(msg)
         ns.ToggleWindow()
     elseif command == "install" or command == "add" then
         ns.Install(false)
+    elseif command == "tooltips" then
+        ns.db.actionTooltips = not ns.db.actionTooltips
+        ns.Print(ns.db.actionTooltips and "Action button tooltips explain MacroKit's macros."
+            or "Action button tooltips no longer explain MacroKit's macros.")
     elseif command == "button" then
         ns.db.minimapButton = not ns.db.minimapButton
         ns.UpdateMinimapButton()
@@ -650,6 +655,7 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit remove - delete the macros MacroKit added")
         ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
         ns.Print("/macrokit button - show or hide the minimap button")
+        ns.Print("/macrokit tooltips - explain MacroKit's macros in action button tooltips, on or off")
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
         ns.Print("/macrokit talents - what the game reports about your talents")
         ns.Print("/macrokit clear - delete the macros MacroKit added for a spec you are no longer")

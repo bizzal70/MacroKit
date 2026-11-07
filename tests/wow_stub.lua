@@ -48,6 +48,17 @@ GameTooltip.AddLine = function(_, line) TOOLTIP[#TOOLTIP + 1] = line end
 RAID_CLASS_COLORS = { PALADIN = { r = 0.96, g = 0.55, b = 0.73 }, WARRIOR = { r = 0.78, g = 0.61, b = 0.43 } }
 PICKED = nil
 PickupMacro = function(name) PICKED = name end
+-- Like the game's: the hook runs after the original, with the same arguments.
+function hooksecurefunc(object, method, hook)
+    local original = object[method]
+    object[method] = function(...) local results = { original(...) }; hook(...); return unpack(results) end
+end
+GameTooltip.SetAction = function(self, slot) TOOLTIP = { "spell tooltip for slot " .. slot } end
+-- Action slots: slot -> { kind =, id =, text = }
+ACTIONS = {}
+GetActionInfo = function(slot) local a = ACTIONS[slot]; if a then return a.kind, a.id end end
+GetActionText = function(slot) local a = ACTIONS[slot]; return a and a.text end
+GetMacroInfo = function(id) local m = MACROS[id]; if m then return m.name, m.icon, m.body end end
 SlashCmdList = {}
 print = function(m) printed[#printed + 1] = m end
 IN_COMBAT = false

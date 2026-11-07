@@ -35,6 +35,8 @@ With "Add new macros by themselves" on (the default), step 2 is already done for
 
 The window shows these steps too, in its panel under the list, until you hover over a macro.
 
+Once a macro is on your bar, hovering its button shows the spell's tooltip as usual, with MacroKit's explanation of what the macro does underneath. Turn that off with `/macrokit tooltips`.
+
 ## Macros for every class
 
 Each class has macros for every spec, plus a few for each talent tree. Hover a macro in the window to read exactly how it works. Most use the same pattern: a heal or buff goes on the friend under your mouse, else your friendly target, else you; an attack goes on the enemy under your mouse, else your target.
@@ -110,6 +112,7 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 | Add the macros you are missing | `/macrokit add` |
 | See the macros and whether you have them, in chat | `/macrokit list` |
 | Show or hide the minimap button | `/macrokit button` |
+| Explain MacroKit's macros in action button tooltips, on or off | `/macrokit tooltips` |
 | List your spec and spellbook, to report a spell name | `/macrokit spells` |
 | See what the game reports about your talents | `/macrokit talents` |
 | Delete the macros MacroKit added for a spec you are no longer | `/macrokit clear` |

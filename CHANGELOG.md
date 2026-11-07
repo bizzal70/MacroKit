@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.5.3
+
+- Hovering an action button that holds one of MacroKit's macros now shows what the macro does under the spell's own tooltip. Macros you made yourself are left alone. `/macrokit tooltips` turns this off or on.
+
 ## 0.5.2
 
 - The window explains how to put a macro on your action bar (click Add if needed, then drag its line onto a slot), in the panel under the list until you hover a macro. The README has the same steps.
