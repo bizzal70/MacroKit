@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.5.2
+
+- The window explains how to put a macro on your action bar (click Add if needed, then drag its line onto a slot), in the panel under the list until you hover a macro. The README has the same steps.
+
 ## 0.5.1
 
 - First release on CurseForge. No changes to how the addon works.

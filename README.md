@@ -24,6 +24,17 @@ Click the MacroKit button on the minimap, or type `/macrokit`.
 
 Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 
+## Getting a macro onto your action bar
+
+1. Click the MacroKit button on the minimap (or type `/macrokit`).
+2. On the **Ready to use** tab, find the macro. If it says *Ready to add*, click **Add**: it goes into your macro list and then says *In your macros*.
+3. Drag that line from the MacroKit window onto any action bar slot. You can also click it once to pick it up, then click the slot.
+4. You can also open the game's own macro window with `/macro`: MacroKit's macros are on the **character** tab, and you drag them from there the same way.
+
+With "Add new macros by themselves" on (the default), step 2 is already done for you; just drag.
+
+The window shows these steps too, in its panel under the list, until you hover over a macro.
+
 ## Macros for every class
 
 Each class has macros for every spec, plus a few for each talent tree. Hover a macro in the window to read exactly how it works. Most use the same pattern: a heal or buff goes on the friend under your mouse, else your friendly target, else you; an attack goes on the enemy under your mouse, else your target.

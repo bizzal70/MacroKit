@@ -18,7 +18,10 @@ local TAB_HEIGHT = 26
 local LIST_TOP = TAB_TOP + TAB_HEIGHT + 8
 local FOOTER_HEIGHT = 74
 local HOW_HEIGHT = 84                    -- the How it works panel under the list
-local HOW_HINT = "Hover over a macro to see how it works."
+-- Shown in the How it works panel while no macro is hovered: how to get
+-- a macro onto an action bar, then how to read about one.
+local HOW_HINT = "Ready to add? Click Add. Then drag the macro's line onto an action bar slot "
+    .. "(or click it once to pick it up, then click a slot). Hover over a macro to see how it works."
 local MENU_ROW = 22
 local QUESTION_MARK = 134400
 
@@ -113,7 +116,7 @@ local function ShowHow(macro)
         howTitle:SetText("How " .. macro.name .. " works")
         howText:SetText(macro.how)
     else
-        howTitle:SetText("How it works")
+        howTitle:SetText("Putting a macro on your bar")
         howText:SetText(HOW_HINT)
     end
 end

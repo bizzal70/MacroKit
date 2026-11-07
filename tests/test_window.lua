@@ -96,8 +96,9 @@ check(Badge() == "", "while the window is open the badge stays hidden: " .. tost
 PICKED = nil
 strike.__scripts.OnDragStart(strike)
 check(PICKED == "Holy Strike", "dragging a row picks the macro up, ready for the action bars")
-check(AllTexts():find("How it works", 1, true) and AllTexts():find("Hover over a macro to see how it works.", 1, true),
-    "under the list, a How it works panel invites you to hover a macro")
+check(AllTexts():find("Putting a macro on your bar", 1, true) and AllTexts():find("Click Add. Then drag the macro's line onto an action bar slot", 1, true)
+    and AllTexts():find("Hover over a macro to see how it works.", 1, true),
+    "under the list, the panel explains how to put a macro on your bar, and invites you to hover one")
 strike.__scripts.OnEnter(strike)
 local tip = table.concat(TOOLTIP, " | ")
 check(tip:find("/startattack | /cast Holy Strike", 1, true) and tip:find("Drag onto your action bars", 1, true),
