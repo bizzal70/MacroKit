@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.5.1
+
+- First release on CurseForge. No changes to how the addon works.
+
 ## 0.5.0
 
 - Macros for all nine classes (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with shared macros and a set for every talent tree, written for Forever's spells (for example Bane of Agony, Penance, Riptide, Wild Growth, Victory Rush, Shank, Summon Hawk, Frostfire Bolt).
