@@ -8,20 +8,14 @@ The first time you play each spec, MacroKit adds that spec's macros to your char
 
 ## The MacroKit window
 
-Click the MacroKit button on the minimap, or type `/macrokit`. The window shows your class and spec, in your class colour, and one line for each of its macros:
+Click the MacroKit button on the minimap, or type `/macrokit`.
 
-- **In your macros:** drag the line straight onto your action bars, or click it to pick the macro up.
-- **Ready:** click **Add** to put it in your macros.
-- **Needs** a spell: you have not learned that spell yet. The macro becomes ready when you do.
+- **Top:** your class, in its colour, and a **Spec** menu. It starts on your own spec; pick **Every spec** for the macros all specs share, or any other spec to preview its macros.
+- **Ready to use** tab: macros whose spells you know. Those **in your macros** can be dragged straight onto your action bars (or clicked to pick up); those **ready to add** have an **Add** button.
+- **Not learned yet** tab: macros waiting on a spell, each saying which. Learn the spell and it moves to Ready to use by itself.
+- Hover over a macro to see its text. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding a spec's macros by itself. The buttons are greyed out in combat, when the game does not allow changing macros.
 
-Hover over a line to see the macro itself. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding a spec's macros by itself. The buttons are greyed out in combat, when the game does not allow changing macros.
-
-Before you choose a specialization, the window lists only the macros every spec shares; the spec's own macros appear once you choose one. Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
-
-- It never overwrites a macro: if you already have one with the same name, yours stays.
-- It only adds a macro once your character knows its spells. Learn the spell, then click **Add** in the window (or type `/macrokit add`).
-- It stops when your character's macro slots are full, and tells you which macros did not fit.
-- In combat it waits until the fight is over, because the game does not allow creating macros in combat.
+Before you choose a specialization, the window starts on the shared macros; use the Spec menu to preview each spec's. Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 
 ## Paladin macros
 

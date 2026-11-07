@@ -1,5 +1,6 @@
 -- The MacroKit window and minimap button, for a Retribution paladin who
--- knows most of the spells, then a warrior.
+-- knows most of the spells, then the same paladin before choosing a spec,
+-- then a warrior.
 local ns = LoadAddon(ADDON_DIR, "MacroKit")
 local function check(cond, what) if not cond then error("CHECK FAILED: " .. what, 2) end; io.write("pass  ", what, "\n") end
 local function Has(name) return GetMacroIndexByName(name) > 0 end
@@ -14,14 +15,7 @@ Fire("ADDON_LOADED", "MacroKit")
 check(MacroKitDB and ns.db.minimapButton == true, "account-wide settings start with the minimap button on")
 check(MacroKitMinimapButton and MacroKitMinimapButton.__shown, "the minimap button shows")
 
--- Every font string and texture that belongs to a frame, read back.
-local function TextsOf(frame)
-    local found = {}
-    for _, r in ipairs(regions) do
-        if r.__parent == frame and r.__text then found[#found + 1] = r.__text end
-    end
-    return table.concat(found, " | ")
-end
+-- Reading the window back.
 local function AllTexts()
     local found = {}
     for _, r in ipairs(regions) do
@@ -29,106 +23,144 @@ local function AllTexts()
     end
     return table.concat(found, " | ")
 end
--- The window's macro rows: frames made on the window with a macro set.
 local function Rows()
     local list = {}
     for _, f in ipairs(Frames()) do
-        if rawget(f, "macro") and f.__shown then list[#list + 1] = f end
+        if rawget(f, "macro") and rawget(f, "status") and f.__shown then list[#list + 1] = f end
     end
     return list
 end
 local function RowFor(name)
     for _, row in ipairs(Rows()) do if row.macro.name == name then return row end end
 end
+local function Button(pattern)
+    for _, f in ipairs(Frames()) do
+        if rawget(f, "label") and f.label.__text and f.label.__text:find(pattern) then return f end
+    end
+end
+local function Click(f) f.__scripts.OnClick(f) end
+local function MenuOptions()
+    local list = {}
+    for _, f in ipairs(Frames()) do
+        if rawget(f, "key") ~= nil and f.__shown then list[#list + 1] = f end
+    end
+    return list
+end
 
--- Clicking the minimap button opens the window.
-MacroKitMinimapButton.__scripts.OnClick(MacroKitMinimapButton)
+-- Opening it.
+Click(MacroKitMinimapButton)
 check(MacroKitWindow:IsShown(), "the minimap button opens the window")
-local texts = AllTexts()
-check(texts:find("Paladin  -  Retribution", 1, true), "the window names the class and spec: " .. texts)
-check(#Rows() == 13, "it lists the 8 shared and 5 Retribution macros, and no others: " .. #Rows())
-check(RowFor("Spender") and not RowFor("Holy Shock") and not RowFor("Taunt"), "other specs' macros are not listed")
+check(AllTexts():find("Paladin", 1, true), "the window names the class")
+local specButton = Button("^Spec: ")
+check(specButton and specButton.label.__text == "Spec: Retribution  v", "the Spec menu starts on the character's own spec: " .. tostring(specButton and specButton.label.__text))
 
-local spender, execute, stun = RowFor("Spender"), RowFor("Execute"), RowFor("Stun")
-check(spender.status.__text:find("Ready", 1, true) and spender.add.__shown, "a macro that can be added says Ready and has an Add button")
-check(execute.status.__text:find("Needs Hammer of Wrath", 1, true) and not execute.add.__shown and execute.icon.__desaturated,
-    "a macro waiting on a spell says which, has no button, and its icon is greyed")
+-- The tabs.
+local readyTab, laterTab = Button("^Ready to use"), Button("^Not learned yet")
+check(readyTab.label.__text == "Ready to use (11)" and laterTab.label.__text == "Not learned yet (2)",
+    "the tabs count the macros whose spells are known and those still waiting: "
+    .. readyTab.label.__text .. ", " .. laterTab.label.__text)
+check(readyTab.underline.__shown and not laterTab.underline.__shown, "Ready to use is the tab shown first")
+check(#Rows() == 11 and RowFor("Spender") and RowFor("Stun") and not RowFor("Execute"), "it lists the ready macros only")
+local spender, stun = RowFor("Spender"), RowFor("Stun")
+check(spender.status.__text:find("Ready to add", 1, true) and spender.add.__shown, "a macro that can be added has an Add button")
 check(stun.status.__text:find("In your macros", 1, true) and not stun.add.__shown, "one already in the macro list says so")
 check(spender.icon.__texture == "icon-Templar's Verdict" and spender.desc.__text:find("Shift for Divine Storm", 1, true),
     "each row shows the spell's icon and what the macro does")
 
--- Adding one.
-spender.add.__scripts.OnClick(spender.add)
-check(Has("Spender") and ns.char.made.Spender, "Add puts that one macro in the character's list")
-check(spender.status.__text:find("In your macros", 1, true) and not spender.add.__shown, "and the row updates at once")
+Click(laterTab)
+check(laterTab.underline.__shown and #Rows() == 2 and RowFor("Execute") and RowFor("Battle Rez"), "Not learned yet lists the macros still waiting")
+local execute = RowFor("Execute")
+check(execute.status.__text:find("Needs Hammer of Wrath", 1, true) and not execute.add.__shown and execute.icon.__desaturated,
+    "and says which spell each needs, greyed, with no button")
+Click(readyTab)
 
--- Picking up and dragging onto the bars.
+-- Adding one, picking it up, the tooltip.
+spender = RowFor("Spender")
+Click(spender.add)
+check(Has("Spender") and ns.char.made.Spender, "Add puts that macro in the character's list")
+spender = RowFor("Spender")
+check(spender.status.__text:find("In your macros", 1, true) and not spender.add.__shown, "and the row updates at once")
 PICKED = nil
 spender.__scripts.OnDragStart(spender)
 check(PICKED == "Spender", "dragging a row picks the macro up, ready for the action bars")
-PICKED = nil
-execute.__scripts.OnClick(execute)
-check(PICKED == nil, "a macro not yet in the list cannot be picked up")
-
--- The tooltip shows the macro itself.
 spender.__scripts.OnEnter(spender)
 local tip = table.concat(TOOLTIP, " | ")
-check(tip:find("Spender", 1, true) and tip:find("/cast [mod:shift] Divine Storm; Templar's Verdict", 1, true)
-    and tip:find("Drag onto your action bars", 1, true), "hovering a row shows the macro's text and what to do: " .. tip)
+check(tip:find("/cast [mod:shift] Divine Storm; Templar's Verdict", 1, true) and tip:find("Drag onto your action bars", 1, true),
+    "hovering a row shows the macro's text and what to do")
 
--- Add all missing, then remove.
-local window = MacroKitWindow
-local addAll, remove
-for _, f in ipairs(Frames()) do
-    if f.label and f.label.__text then
-        if f.label.__text:find("^Add all missing") then addAll = f end
-        if f.label.__text == "Remove MacroKit's macros" then remove = f end
-    end
-end
-check(addAll.label.__text == "Add all missing (9)", "the Add all button counts the ready macros: " .. addAll.label.__text)
-addAll.__scripts.OnClick(addAll)
-check(Has("Interrupt") and Has("Ret Burst") and not Has("Execute") and not Has("Battle Rez"), "Add all adds every ready macro and only those")
-check(addAll.label.__text == "Add all missing" and addAll.active == false, "and then has nothing left to add")
-
--- Learning a spell (the game fires SPELLS_CHANGED) brings its macro to Ready.
+-- Learning a spell moves its macro across to Ready to use.
 Learn("Hammer of Wrath")
 Fire("SPELLS_CHANGED")
-check(execute.status.__text:find("Ready", 1, true) and execute.add.__shown, "learning the spell makes its macro ready, without reopening")
+check(readyTab.label.__text == "Ready to use (12)" and RowFor("Execute"), "learning a spell moves its macro to Ready to use")
 
--- In combat the buttons are greyed out and do nothing.
+-- Add all missing, combat, and Remove.
+local addAll, remove = Button("^Add all missing"), Button("^Remove MacroKit")
+check(addAll.label.__text == "Add all missing (10)", "Add all counts the macros it can add: " .. addAll.label.__text)
 IN_COMBAT = true
 Fire("PLAYER_REGEN_DISABLED")
-check(execute.add.active == false and remove.active == false, "in combat the buttons are greyed out")
-execute.add.__scripts.OnClick(execute.add)
+check(addAll.active == false and RowFor("Execute").add.active == false, "in combat the buttons are greyed out")
+Click(RowFor("Execute").add)
 check(not Has("Execute"), "and clicking them does nothing")
 IN_COMBAT = false
 Fire("PLAYER_REGEN_ENABLED")
-check(execute.add.active == true, "they come back after combat")
-
--- Remove takes back only MacroKit's macros.
-remove.__scripts.OnClick(remove)
+Click(addAll)
+check(Has("Interrupt") and Has("Execute") and not Has("Battle Rez"), "Add all adds every ready macro and only those")
+check(addAll.label.__text == "Add all missing" and addAll.active == false, "and then has nothing left to add")
+Click(remove)
 check(Has("Stun") and not Has("Spender") and not Has("Interrupt"), "Remove deletes only what MacroKit added")
-check(spender.add.__shown, "and the rows show them as ready again")
 
 -- The automatic-adding switch.
 local auto
 for _, f in ipairs(Frames()) do if rawget(f, "tick") then auto = f end end
-auto.__scripts.OnClick(auto)
+Click(auto)
 check(ns.char.auto == false and auto.tick.__shown == false, "the tick box turns automatic adding off")
-auto.__scripts.OnClick(auto)
-check(ns.char.auto == true and auto.tick.__shown == true, "and on again")
+Click(auto)
+check(ns.char.auto == true, "and on again")
 
--- A spec change redraws the list.
+-- The Spec menu: look at another spec's macros.
+Click(specButton)
+check(MacroKitSpecMenu.__shown, "the Spec button opens its menu")
+local options = MenuOptions()
+local labels = {}
+for _, o in ipairs(options) do labels[#labels + 1] = o.label.__text end
+check(table.concat(labels, ", ") == "Every spec, Holy, Protection, Retribution (yours)", "it offers every spec, marking the character's own: " .. table.concat(labels, ", "))
+check(options[4].mark.__shown and not options[2].mark.__shown, "the spec being shown is marked")
+Click(options[2])
+check(not MacroKitSpecMenu.__shown and specButton.label.__text == "Spec: Holy  v", "choosing Holy closes the menu and shows Holy")
+Click(laterTab)
+check(RowFor("Holy Shock") and RowFor("Beacon") and not RowFor("Spender"), "Holy's macros are listed instead of Retribution's")
+Click(specButton); Click(MenuOptions()[1])
+check(specButton.label.__text == "Spec: Every spec  v", "Every spec shows only the macros all specs share")
+Click(readyTab)
+check(not RowFor("Spender") and not RowFor("Holy Shock") and RowFor("Interrupt"), "with no spec's own macros")
+
+-- Changing spec in the game resets the view to the new spec.
 Learn("Hand of Reckoning", "Shield of the Righteous", "Avenger's Shield")
 SPEC = 66
 Fire("PLAYER_SPECIALIZATION_CHANGED", "player")
-check(AllTexts():find("Paladin  -  Protection", 1, true) and RowFor("Taunt") and not RowFor("Spender"), "switching spec shows that spec's macros")
+check(specButton.label.__text == "Spec: Protection  v" and RowFor("Taunt"), "a spec change in the game shows the new spec's macros")
+
+-- Before a spec is chosen.
+SPEC = nil
+Fire("PLAYER_ENTERING_WORLD")
+check(specButton.label.__text == "Spec: Every spec  v" and RowFor("Interrupt") and not RowFor("Taunt"),
+    "with no spec chosen, it starts on the shared macros")
+check(AllTexts():find("No specialization chosen yet. Use the Spec menu to preview", 1, true), "and a line points to the Spec menu")
+
+-- A low-level character who knows none of the spells and has no macros.
+KNOWN = {}
+DeleteMacro(GetMacroIndexByName("Stun"))
+Fire("SPELLS_CHANGED")
+check(#Rows() == 0 and AllTexts():find("Nothing ready yet", 1, true) and AllTexts():find("See Not learned yet (8)", 1, true),
+    "with nothing ready, it says so and points to the other tab")
+Click(laterTab)
+check(#Rows() == 8, "where all 8 are listed")
 
 -- A class with no macros yet.
 CLASS = "WARRIOR"
 Fire("PLAYER_ENTERING_WORLD")
-check(#Rows() == 0, "a warrior sees no macro rows")
-check(AllTexts():find("There are no macros for Warrior yet", 1, true), "and is told there are none for the class yet")
+check(#Rows() == 0 and AllTexts():find("There are no macros for Warrior yet", 1, true), "a warrior is told there are none for the class yet")
+check(not specButton.__shown and not readyTab.__shown, "with no Spec menu or tabs")
 
 -- Closing, the slash command and the minimap addon list entry.
 SlashCmdList.MACROKIT("")
@@ -145,20 +177,8 @@ MacroKitMinimapButton.__scripts.OnDragStart(MacroKitMinimapButton)
 MacroKitMinimapButton.__scripts.OnUpdate(MacroKitMinimapButton)
 check(math.abs(ns.db.minimapAngle - math.pi / 2) < 0.001, "dragging the button moves it round the minimap and remembers where")
 
--- A paladin who has not chosen a spec yet: only the shared macros, and a
--- line saying the spec macros come later.
-CLASS, SPEC = "PALADIN", nil
-Fire("PLAYER_ENTERING_WORLD")
-check(#Rows() == 8 and RowFor("Interrupt") and not RowFor("Spender") and not RowFor("Holy Shock"),
-    "with no spec chosen, only the 8 shared macros are listed: " .. #Rows())
-check(AllTexts():find("Holy, Protection and Retribution macros appear here once you choose a specialization", 1, true),
-    "and a line says the spec macros will appear once one is chosen")
-SPEC = 70
-Fire("PLAYER_SPECIALIZATION_CHANGED", "player")
-check(#Rows() == 13 and not AllTexts():find("once you choose a specialization", 1, true), "choosing a spec lists its macros and drops the line")
-
 -- /macrokit spells lists the spellbook.
-local bank = 0
+CLASS, SPEC = "PALADIN", 70
 C_SpellBook = {
     GetNumSpellBookSkillLines = function() return 2 end,
     GetSpellBookSkillLineInfo = function(line)

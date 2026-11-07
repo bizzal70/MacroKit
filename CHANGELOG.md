@@ -1,5 +1,10 @@
 # MacroKit
 
+## 0.3.0
+
+- The window has two tabs: **Ready to use** (macros whose spells you know, in your macros or ready to add) and **Not learned yet** (macros waiting on a spell), each with a count. An empty tab says where to look instead.
+- A **Spec** menu at the top: your own spec, Every spec (the shared macros), or any other spec to preview its macros, for example before choosing one at level 10.
+
 ## 0.2.1
 
 - Before you choose a specialization, the window lists only the macros every spec shares, with a line saying the spec macros will appear once you choose one. It listed every spec's macros, which made a very tall window.

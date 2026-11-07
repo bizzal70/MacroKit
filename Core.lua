@@ -94,36 +94,54 @@ function ns.Wanted()
     return list, class, spec
 end
 
--- What the window lists. With a spec chosen, the same as ns.Wanted().
--- Before one is chosen, only the class's shared macros, and the names of
--- the specs whose macros will appear later (for example "Holy, Protection
--- and Retribution").
-function ns.WindowList()
+-- A spec's name: the client's, else the one in Data.lua.
+function ns.SpecName(class, id)
+    if type(GetSpecializationInfoByID) == "function" then
+        local ok, _, name = pcall(GetSpecializationInfoByID, id)
+        if ok and type(name) == "string" then return name end
+    end
+    local set = ns.SETS[class]
+    return set and set.names and set.names[id] or tostring(id)
+end
+
+-- The choices for the window's spec menu: "Every spec" (the macros all
+-- specs share) and each spec, as { key =, label = } with key "shared" or a
+-- spec ID. Also returns the choice to start on: the character's own spec,
+-- or "shared" before one is chosen. Nil for a class without macros.
+function ns.SpecChoices()
     local class, spec = ns.ClassAndSpec()
     local set = ns.SETS[class]
-    if not set then return nil, class, spec end
-    if spec then
-        local list = ns.Wanted()
-        return list, class, spec
-    end
-    local names = {}
+    if not set then return nil end
+    local choices = { { key = "shared", label = "Every spec" } }
     for _, id in ipairs(set.order) do
-        local name
-        if type(GetSpecializationInfoByID) == "function" then
-            local ok, _, specName = pcall(GetSpecializationInfoByID, id)
-            if ok and type(specName) == "string" then name = specName end
+        local label = ns.SpecName(class, id)
+        if id == spec then label = label .. " (yours)" end
+        choices[#choices + 1] = { key = id, label = label }
+    end
+    return choices, spec or "shared"
+end
+
+-- What the window lists for a view: "shared" for the macros every spec
+-- has, or a spec ID for those plus that spec's own. Nil means the
+-- character's own spec, or "shared" before one is chosen.
+function ns.WindowList(view)
+    local class, spec = ns.ClassAndSpec()
+    local set = ns.SETS[class]
+    if not set then return nil, class end
+    view = view or spec or "shared"
+    if view ~= "shared" and not set.specs[view] then view = spec or "shared" end
+    local list, seen = {}, {}
+    local function Add(macros)
+        for _, macro in ipairs(macros or {}) do
+            if not seen[macro.name] then
+                seen[macro.name] = true
+                list[#list + 1] = macro
+            end
         end
-        names[#names + 1] = name or set.names and set.names[id] or tostring(id)
     end
-    local waiting
-    if #names > 1 then
-        waiting = table.concat(names, ", ", 1, #names - 1) .. " and " .. names[#names]
-    else
-        waiting = names[1]
-    end
-    local list = {}
-    for _, macro in ipairs(set.shared) do list[#list + 1] = macro end
-    return list, class, nil, waiting
+    Add(set.shared)
+    if view ~= "shared" then Add(set.specs[view]) end
+    return list, class, view
 end
 
 -- Prints the character's spec and every spell in its spellbook, to check
