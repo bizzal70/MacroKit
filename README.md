@@ -19,7 +19,7 @@ Click the MacroKit button on the minimap, or type `/macrokit`.
 - **Top:** your class, in its colour, and a **Spec** menu: Every spec (the macros all specs share), Holy, Protection or Retribution. It follows your talents; before you have any, pick your spec there. You can also pick another spec to look at its macros.
 - **Ready to use** tab: macros whose spells you know. Those **in your macros** can be dragged straight onto your action bars (or clicked to pick up); those **ready to add** have an **Add** button.
 - **Not learned yet** tab: macros waiting on a spell, each saying which. Learn the spell and the macro moves to Ready to use by itself, even with the window open.
-- Hover over a macro to see its text. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding new macros by themselves. The buttons are greyed out in combat, when the game does not allow changing macros.
+- Hover over a macro to see how it works, in the **How it works** panel under the list and in its tooltip, along with the macro's text. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding new macros by themselves. The buttons are greyed out in combat, when the game does not allow changing macros.
 
 Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 

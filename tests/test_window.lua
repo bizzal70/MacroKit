@@ -95,10 +95,19 @@ check(Badge() == "2", "and the minimap count goes down: " .. tostring(Badge()))
 PICKED = nil
 strike.__scripts.OnDragStart(strike)
 check(PICKED == "Holy Strike", "dragging a row picks the macro up, ready for the action bars")
+check(AllTexts():find("How it works", 1, true) and AllTexts():find("Hover over a macro to see how it works.", 1, true),
+    "under the list, a How it works panel invites you to hover a macro")
 strike.__scripts.OnEnter(strike)
 local tip = table.concat(TOOLTIP, " | ")
 check(tip:find("/startattack | /cast Holy Strike", 1, true) and tip:find("Drag onto your action bars", 1, true),
     "hovering a row shows the macro's text and what to do: " .. tip)
+check(tip:find("Turns on your auto-attack and uses Holy Strike in the same press", 1, true), "the tooltip explains how it works")
+check(AllTexts():find("How Holy Strike works", 1, true) and AllTexts():find("one button starts a fight and keeps you swinging", 1, true),
+    "and so does the How it works panel")
+local seal = RowFor("Seal")
+seal.__scripts.OnEnter(seal)
+check(AllTexts():find("How Seal works", 1, true) and AllTexts():find("Hold Shift to put up Seal of the Crusader", 1, true),
+    "hovering another macro explains that one")
 
 -- Learning a spell (at a trainer): the window updates by itself, the new
 -- macro is announced, and the count rises.

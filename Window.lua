@@ -17,10 +17,13 @@ local TAB_TOP = HEADER_HEIGHT + 40      -- the tabs sit under the class line
 local TAB_HEIGHT = 26
 local LIST_TOP = TAB_TOP + TAB_HEIGHT + 8
 local FOOTER_HEIGHT = 74
+local HOW_HEIGHT = 84                    -- the How it works panel under the list
+local HOW_HINT = "Hover over a macro to see how it works."
 local MENU_ROW = 22
 local QUESTION_MARK = 134400
 
 local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox
+local howPanel, howTitle, howText
 local tabs = {}
 local rows = {}
 local menuRows = {}
@@ -102,12 +105,28 @@ local function PickUp(macro)
     pcall(PickupMacro, macro.name)
 end
 
+-- The How it works panel shows the macro the mouse is over.
+local function ShowHow(macro)
+    if macro and macro.how then
+        howTitle:SetText("How " .. macro.name .. " works")
+        howText:SetText(macro.how)
+    else
+        howTitle:SetText("How it works")
+        howText:SetText(HOW_HINT)
+    end
+end
+
 local function ShowTooltip(row)
     local macro = row.macro
     if not macro then return end
+    ShowHow(macro)
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
     GameTooltip:AddLine(macro.name)
-    if macro.desc then GameTooltip:AddLine(macro.desc, 1, 1, 1, true) end
+    if macro.how then
+        GameTooltip:AddLine(macro.how, 1, 1, 1, true)
+    elseif macro.desc then
+        GameTooltip:AddLine(macro.desc, 1, 1, 1, true)
+    end
     GameTooltip:AddLine(" ")
     for line in (macro.body .. "\n"):gmatch("(.-)\n") do
         GameTooltip:AddLine(line, 0.6, 0.8, 1)
@@ -309,7 +328,19 @@ local function Refresh()
 
     local listHeight = math.max(count, 1) * ROW_HEIGHT + noteHeight
     if not list then listHeight = 40 end
-    window:SetHeight(LIST_TOP + listHeight + FOOTER_HEIGHT)
+    -- How it works sits between the list and the buttons, while there are
+    -- macros to explain.
+    local howHeight = 0
+    if list and count > 0 then
+        howPanel:ClearAllPoints()
+        howPanel:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + listHeight + 6))
+        howPanel:SetPoint("TOPRIGHT", -PADDING, -(LIST_TOP + listHeight + 6))
+        howPanel:Show()
+        howHeight = HOW_HEIGHT + 6
+    else
+        howPanel:Hide()
+    end
+    window:SetHeight(LIST_TOP + listHeight + howHeight + FOOTER_HEIGHT)
 
     addAllButton.label:SetText(addable > 0 and ("Add all missing (" .. addable .. ")") or "Add all missing")
     addAllButton:SetActive(addable > 0 and not inCombat)
@@ -416,6 +447,20 @@ local function CreateWindow()
     specNote = Label(window, "GameFontDisableSmall")
     specNote:SetWidth(WIDTH - PADDING * 2)
     specNote:SetWordWrap(true)
+
+    -- How it works: a framed panel whose text follows the hovered macro.
+    howPanel = CreateFrame("Frame", addonName .. "HowPanel", window)
+    howPanel:SetHeight(HOW_HEIGHT)
+    Fill(howPanel, 1, 1, 1, 0.04)
+    Outline(howPanel, 0.3)
+    howTitle = Label(howPanel, "GameFontNormal")
+    howTitle:SetPoint("TOPLEFT", 10, -8)
+    howText = Label(howPanel, "GameFontHighlightSmall")
+    howText:SetPoint("TOPLEFT", howTitle, "BOTTOMLEFT", 0, -5)
+    howText:SetWidth(WIDTH - PADDING * 2 - 20)
+    howText:SetWordWrap(true)
+    howText:SetJustifyV("TOP")
+    ShowHow(nil)
 
     -- Footer: add everything, take back what MacroKit added, and the
     -- automatic adding switch.

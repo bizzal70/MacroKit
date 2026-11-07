@@ -17,6 +17,7 @@ for class, set in pairs(ns.SETS) do
             assert(#macro.name <= ns.MAX_NAME, class .. ": name too long: " .. macro.name)
             assert(#macro.body <= ns.MAX_BODY, class .. ": body too long: " .. macro.name)
             assert(macro.desc and #macro.desc > 0, class .. ": no description for " .. macro.name)
+            assert(macro.how and #macro.how > 40, class .. ": no explanation of how " .. macro.name .. " works")
             assert(not macro.body:find("^%s") and not macro.body:find("%s$"), "stray space around " .. macro.name)
             assert(macro.spells and #macro.spells > 0, "no spells listed for " .. macro.name)
             for _, spell in ipairs(macro.spells) do

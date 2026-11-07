@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.4.1
+
+- Every macro explains how it works: who it targets and in what order, what Shift does, and the game rules behind it. Hover a macro to read it in the new How it works panel under the list, or in its tooltip.
+
 ## 0.4.0
 
 - Paladin macros rebuilt for Forever's Paladin: its spells are mostly the classic ones plus new ones (Holy Strike, Seal of Fury, Templar's Bulwark, Swift Judgement, Oath of Light, Light's Vigil), not the modern game's. The old macros used spells Forever does not have, so they never became ready.
