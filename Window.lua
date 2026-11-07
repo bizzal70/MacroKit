@@ -25,10 +25,10 @@ local tabs = {}
 local rows = {}
 local menuRows = {}
 
--- What the window is showing. view: nil follows the character's own spec;
--- otherwise "shared" or a spec ID chosen from the menu. tab: "ready" or
--- "later". ownSpec: the spec last seen, so a spec change resets the view.
-local view, tab, ownSpec = nil, "ready", nil
+-- What the window is showing. The spec comes from ns.ActiveSpec(), or from
+-- ns.char.view when a spec has been picked in the menu (kept per
+-- character). tab: "ready" or "later".
+local tab = "ready"
 
 local function Fill(frame, r, g, b, a)
     local texture = frame:CreateTexture(nil, "BACKGROUND")
@@ -171,7 +171,7 @@ end
 local function OpenMenu()
     local choices, own = ns.SpecChoices()
     if not choices then return end
-    local current = view or own
+    local current = ns.char.view or ns.ActiveSpec() or own
     for index, choice in ipairs(choices) do
         local option = menuRows[index]
         if not option then
@@ -189,9 +189,11 @@ local function OpenMenu()
             option.label = Label(option, "GameFontHighlightSmall")
             option.label:SetPoint("LEFT", 14, 0)
             option:SetScript("OnClick", function(self)
-                view = self.key
+                ns.char.view = self.key
                 CloseMenu()
                 ns.RefreshWindow()
+                -- Picking a spec can make its macros addable.
+                ns.ScheduleCheck()
             end)
             menuRows[index] = option
         end
@@ -221,19 +223,15 @@ end
 
 local function Refresh()
     local _, spec = ns.ClassAndSpec()
-    if spec ~= ownSpec then
-        -- A new spec: show its macros, whatever was picked before.
-        ownSpec = spec
-        view = nil
-    end
-    local list, class, shown = ns.WindowList(view)
+    local list, class, shown = ns.WindowList(ns.char.view or ns.ActiveSpec())
     local className = ns.ClassAndSpecNames()
     local r, g, b = ClassColour(class)
     classLine:SetText(className or "Your class")
     classLine:SetTextColor(r, g, b)
 
     -- The Spec menu's button shows what is being looked at.
-    if list then
+    local hasSpecs = ns.SpecChoices() ~= nil
+    if list and hasSpecs then
         local label = shown == "shared" and "Every spec" or ns.SpecName(class, shown)
         specButton.label:SetText("Spec: " .. label .. "  v")
         specButton:Show()
@@ -299,8 +297,8 @@ local function Refresh()
 
     -- Before a spec is chosen, a word on where its macros will come from.
     local noteHeight = 0
-    if list and spec == nil and shown == "shared" then
-        specNote:SetText("No specialization chosen yet. Use the Spec menu to preview each spec's macros.")
+    if list and hasSpecs and spec == nil and shown == "shared" then
+        specNote:SetText("Your spec shows once you learn a talent spell. Until then, pick yours in the Spec menu.")
         specNote:ClearAllPoints()
         specNote:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + math.max(count, message and 1 or 0) * ROW_HEIGHT + 6))
         specNote:Show()
@@ -440,7 +438,7 @@ local function CreateWindow()
     autoBox.tick:SetColorTexture(ACCENT_R, ACCENT_G, ACCENT_B, 1)
     local autoLabel = Label(autoBox, "GameFontHighlightSmall")
     autoLabel:SetPoint("LEFT", box, "RIGHT", 8, 0)
-    autoLabel:SetText("Add a spec's macros by itself the first time I play it")
+    autoLabel:SetText("Add new macros by themselves as I learn their spells")
     autoBox:SetScript("OnClick", function()
         SlashCmdList.MACROKIT(ns.char.auto and "auto off" or "auto on")
     end)
@@ -459,6 +457,7 @@ end
 
 -- Called whenever macros, spells, spec or combat change.
 function ns.RefreshWindow()
+    if ns.UpdateBadge then ns.UpdateBadge() end
     if window and window:IsShown() then
         Refresh()
     end

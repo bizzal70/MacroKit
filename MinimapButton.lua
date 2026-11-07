@@ -47,10 +47,23 @@ button:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
     GameTooltip:AddLine("MacroKit")
     GameTooltip:AddLine("Click: macros for your class and spec", 1, 1, 1)
+    local ready = ns.char and #ns.ReadyNames() or 0
+    if ready > 0 then
+        GameTooltip:AddLine(ready .. " ready to add", 1, 0.82, 0)
+    end
     GameTooltip:AddLine("Drag: move this button", 0.7, 0.7, 0.7)
     GameTooltip:Show()
 end)
 button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+-- A small gold count on the button while macros are ready to add.
+local badge = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+badge:SetPoint("BOTTOMRIGHT", -4, 4)
+badge:SetTextColor(1, 0.82, 0)
+function ns.UpdateBadge()
+    local count = ns.char and #ns.ReadyNames() or 0
+    badge:SetText(count > 0 and tostring(count) or "")
+end
 
 -- Shows or hides the button as the setting says.
 function ns.UpdateMinimapButton()

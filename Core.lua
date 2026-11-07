@@ -17,7 +17,10 @@ local accountDefaults = {
 }
 
 local defaults = {
-    auto = true,   -- add macros by itself on a spec's first login
+    auto = true,   -- add macros by itself as their spells are learned
+    view = nil,    -- the spec picked in the window's menu, before talents show it
+    lastSpec = nil, -- the spec last worked out, so a change resets the view
+    seen = {},     -- macro name -> true once announced as newly ready
     done = {},     -- spec ID (or "any") -> true once it has been offered
     made = {},     -- macro name -> true for each macro MacroKit added
 }
@@ -40,18 +43,49 @@ function ns.Knows(name)
     return true
 end
 
--- The character's class and specialization ID (nil if the client cannot say).
+-- Whether the character has certainly learned a spell (unlike ns.Knows,
+-- an unanswered question counts as no).
+function ns.Learned(name)
+    if not (C_Spell and C_Spell.GetSpellInfo) or type(IsPlayerSpell) ~= "function" then return false end
+    local ok, info = pcall(C_Spell.GetSpellInfo, name)
+    if not ok or type(info) ~= "table" or not info.spellID then return false end
+    local ok2, known = pcall(IsPlayerSpell, info.spellID)
+    return ok2 and known == true
+end
+
+-- The character's class and spec ID. The spec comes from the game where it
+-- reports one MacroKit has macros for; otherwise (Forever, which has talent
+-- trees, not specializations) from a talent spell only one tree gives.
+-- Nil while neither says.
 function ns.ClassAndSpec()
     local _, class = UnitClass("player")
-    local spec
+    local set = ns.SETS[class]
+    local specs = set and set.specs or {}
     if type(GetSpecialization) == "function" and type(GetSpecializationInfo) == "function" then
         local ok, index = pcall(GetSpecialization)
         if ok and type(index) == "number" and index > 0 then
             local ok2, id = pcall(GetSpecializationInfo, index)
-            if ok2 and type(id) == "number" then spec = id end
+            if ok2 and type(id) == "number" and specs[id] then return class, id end
         end
     end
-    return class, spec
+    if set and set.treeSpells then
+        for _, id in ipairs(set.order or {}) do
+            for _, spell in ipairs(set.treeSpells[id] or {}) do
+                if ns.Learned(spell) then return class, id end
+            end
+        end
+    end
+    return class, nil
+end
+
+-- The spec whose macros to use: the one worked out from the game or the
+-- talents, else the one picked in the window's menu. Nil: shared only.
+function ns.ActiveSpec()
+    local class, spec = ns.ClassAndSpec()
+    if spec then return spec end
+    local set = ns.SETS[class]
+    local view = ns.char and ns.char.view
+    if set and set.specs and type(view) == "number" and set.specs[view] then return view end
 end
 
 -- The class's name as the game shows it, and the spec's name, for the
@@ -73,7 +107,8 @@ end
 -- If the spec is unknown, every spec's macros are offered and the spell
 -- check keeps out the ones this character cannot use.
 function ns.Wanted()
-    local class, spec = ns.ClassAndSpec()
+    local class = ns.ClassAndSpec()
+    local spec = ns.ActiveSpec()
     local set = ns.SETS[class]
     if not set then return nil, class, spec end
     local list, seen = {}, {}
@@ -86,11 +121,8 @@ function ns.Wanted()
         end
     end
     Add(set.shared)
-    if spec and set.specs[spec] then
-        Add(set.specs[spec])
-    elseif not spec then
-        for _, id in ipairs(set.order) do Add(set.specs[id]) end
-    end
+    local specs = set.specs or {}
+    if spec and specs[spec] then Add(specs[spec]) end
     return list, class, spec
 end
 
@@ -111,7 +143,9 @@ end
 function ns.SpecChoices()
     local class, spec = ns.ClassAndSpec()
     local set = ns.SETS[class]
-    if not set then return nil end
+    -- A class whose macros are all shared (every class in Forever, which
+    -- has no specializations) gets no menu.
+    if not set or not set.order or #set.order == 0 then return nil end
     local choices = { { key = "shared", label = "Every spec" } }
     for _, id in ipairs(set.order) do
         local label = ns.SpecName(class, id)
@@ -129,7 +163,8 @@ function ns.WindowList(view)
     local set = ns.SETS[class]
     if not set then return nil, class end
     view = view or spec or "shared"
-    if view ~= "shared" and not set.specs[view] then view = spec or "shared" end
+    local specs = set.specs or {}
+    if view ~= "shared" and not specs[view] then view = "shared" end
     local list, seen = {}, {}
     local function Add(macros)
         for _, macro in ipairs(macros or {}) do
@@ -140,7 +175,7 @@ function ns.WindowList(view)
         end
     end
     Add(set.shared)
-    if view ~= "shared" then Add(set.specs[view]) end
+    if view ~= "shared" then Add(specs[view]) end
     return list, class, view
 end
 
@@ -323,15 +358,60 @@ function ns.List()
     end
 end
 
--- Adds this spec's macros the first time it is played.
-function ns.AutoInstall()
-    if not ns.char or not ns.char.auto then return end
-    local list, _, spec = ns.Wanted()
-    if not list then return end
-    local key = spec or "any"
-    if ns.char.done[key] then return end
-    ns.char.done[key] = true
-    ns.Install(true)
+-- The macros that could be added right now.
+function ns.ReadyNames()
+    local names = {}
+    for _, macro in ipairs(ns.Wanted() or {}) do
+        if ns.Status(macro) == "ready" then names[#names + 1] = macro.name end
+    end
+    return names
+end
+
+-- Looks again at what the character knows: after a level, a trainer visit,
+-- a talent, or logging in. Macros whose spells have just been learned are
+-- added (with automatic adding on) or announced once (with it off). The
+-- window and the minimap button's count follow. On first arrival
+-- (quietStart) nothing is announced, only remembered.
+function ns.CheckSpells(quietStart)
+    if not ns.char then return end
+    local class, spec = ns.ClassAndSpec()
+    if spec ~= ns.char.lastSpec then
+        -- The talents now show a spec (or a different one): follow it.
+        ns.char.lastSpec = spec
+        if spec then ns.char.view = nil end
+    end
+    local ready = ns.ReadyNames()
+    if #ready > 0 and not InCombatLockdown() then
+        if ns.char.auto then
+            ns.Install(true)
+        else
+            local fresh = {}
+            for _, name in ipairs(ready) do
+                if not ns.char.seen[name] then
+                    ns.char.seen[name] = true
+                    fresh[#fresh + 1] = name
+                end
+            end
+            if #fresh > 0 and not quietStart then
+                ns.Print("New macro" .. (#fresh > 1 and "s" or "") .. " ready: " .. table.concat(fresh, ", ")
+                    .. ". Type /macrokit or click the minimap button to add " .. (#fresh > 1 and "them." or "it."))
+            end
+        end
+    end
+    ns.RefreshWindow()
+    ns.UpdateBadge()
+end
+
+-- Several spell events arrive together when a spell is learned, so the
+-- check waits a moment and runs once.
+local checkPending = false
+function ns.ScheduleCheck(quietStart)
+    if checkPending then return end
+    checkPending = true
+    C_Timer.After(1, function()
+        checkPending = false
+        ns.CheckSpells(quietStart)
+    end)
 end
 
 SLASH_MACROKIT1 = "/macrokit"
@@ -355,15 +435,16 @@ SlashCmdList.MACROKIT = function(msg)
         if rest == "on" then ns.char.auto = true
         elseif rest == "off" then ns.char.auto = false
         else ns.char.auto = not ns.char.auto end
-        ns.Print(ns.char.auto and "Will add macros by itself the first time you play each spec."
-            or "Will only add macros when you ask.")
+        ns.Print(ns.char.auto and "Will add new macros by itself as you learn their spells."
+            or "Will tell you about new macros, and add them only when you ask.")
         ns.RefreshWindow()
+        if ns.char.auto then ns.ScheduleCheck() end
     else
         ns.Print("/macrokit - open the MacroKit window")
         ns.Print("/macrokit add - add the macros you are missing")
         ns.Print("/macrokit list - show the macros and whether you have them, in chat")
         ns.Print("/macrokit remove - delete the macros MacroKit added")
-        ns.Print("/macrokit auto on|off - add macros by itself for each new spec")
+        ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
         ns.Print("/macrokit button - show or hide the minimap button")
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
     end
@@ -398,23 +479,30 @@ frame:SetScript("OnEvent", function(self, event, arg)
         self:UnregisterEvent("ADDON_LOADED")
         -- Registering an event this client does not have throws, hence pcall.
         for _, name in ipairs({ "PLAYER_ENTERING_WORLD", "PLAYER_SPECIALIZATION_CHANGED", "PLAYER_REGEN_ENABLED",
-                "PLAYER_REGEN_DISABLED", "UPDATE_MACROS", "SPELLS_CHANGED" }) do
+                "PLAYER_REGEN_DISABLED", "UPDATE_MACROS", "SPELLS_CHANGED", "PLAYER_LEVEL_UP", "TRAINER_CLOSED",
+                "LEARNED_SPELL_IN_SKILL_LINE", "LEARNED_SPELL_IN_TAB", "CHARACTER_POINTS_CHANGED",
+                "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED" }) do
             pcall(self.RegisterEvent, self, name)
         end
-    elseif event == "PLAYER_REGEN_ENABLED" then
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        -- Spells can still be loading on arrival, so it waits a moment.
         ns.RefreshWindow()
+        C_Timer.After(3, function() ns.CheckSpells(true) end)
+    elseif event == "PLAYER_REGEN_ENABLED" then
         if ns.pending then
             ns.pending = nil
             ns.Install(false)
         end
-    elseif event == "PLAYER_REGEN_DISABLED" or event == "UPDATE_MACROS" or event == "SPELLS_CHANGED" then
+        -- Anything learned during the fight is looked at now.
+        ns.ScheduleCheck()
+    elseif event == "PLAYER_REGEN_DISABLED" or event == "UPDATE_MACROS" then
         -- The window's buttons and states follow these.
         ns.RefreshWindow()
+        ns.UpdateBadge()
     elseif event == "PLAYER_SPECIALIZATION_CHANGED" and arg and arg ~= "player" then
         return
     else
-        ns.RefreshWindow()
-        -- Spells can still be loading on arrival, so it waits a moment.
-        C_Timer.After(3, ns.AutoInstall)
+        -- A spell, level, trainer or talent change: look at what is new.
+        ns.ScheduleCheck()
     end
 end)

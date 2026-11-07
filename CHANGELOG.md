@@ -1,5 +1,11 @@
 # MacroKit
 
+## 0.4.0
+
+- Paladin macros rebuilt for Forever's Paladin: its spells are mostly the classic ones plus new ones (Holy Strike, Seal of Fury, Templar's Bulwark, Swift Judgement, Oath of Light, Light's Vigil), not the modern game's. The old macros used spells Forever does not have, so they never became ready.
+- Your spec is worked out from your talents (Forever has talent trees, not a specialization the game reports). Before your first talent spell, pick your spec in the window's menu; it is remembered for that character.
+- MacroKit looks again whenever you level up, train or learn a talent: new macros are added by themselves (or announced once, with automatic adding off), the window updates while open, and the minimap button shows how many macros are ready to add.
+
 ## 0.3.0
 
 - The window has two tabs: **Ready to use** (macros whose spells you know, in your macros or ready to add) and **Not learned yet** (macros waiting on a spell), each with a count. An empty tab says where to look instead.

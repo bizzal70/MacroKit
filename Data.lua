@@ -1,7 +1,6 @@
 local addonName, ns = ...
 
--- The macros MacroKit offers, by class (the game's class file name) and
--- specialization ID.
+-- The macros MacroKit offers, by class (the game's class file name).
 --
 -- Each macro has:
 --   name    up to 16 characters, the most the game allows
@@ -11,132 +10,150 @@ local addonName, ns = ...
 --           differently
 --   body    the macro itself, at most 255 characters
 --
--- Spell names are the Retail ones. The client is Retail-based, but its
--- spell list has not been checked against the game yet.
+-- A class has:
+--   shared      macros for every spec
+--   specs       macros for one spec only, by spec ID
+--   order       the spec IDs in menu order
+--   names       each spec's name
+--   treeSpells  spells only one talent tree gives: knowing any of them
+--               tells MacroKit which spec the character is. World of
+--               Warcraft: Forever has classic-style talent trees (points from
+--               level 10) and does not report a chosen specialization.
+-- Shared plus any one spec stay within the 18 macros a character can hold.
+--
+-- Spell names are Forever's: the low-level ones were read from a level 6
+-- paladin's spellbook on 2026-11-07 (note "Judgement" with an e); the rest
+-- come from Forever spellbook and talent sites (foreverchanges.pro,
+-- wowforevertalent.com, talentsforever.com) as of 2026-11-07.
 
 ns.SETS = {}
 
+-- In Forever, Judgement does not use up the seal, so no macro re-seals.
 ns.SETS.PALADIN = {
-    -- Every specialization gets these.
     shared = {
-        { name = "Interrupt", desc = "Rebuke your focus, mouseover or target", spells = { "Rebuke" }, body = [[
-#showtooltip Rebuke
-/cast [@focus,harm,nodead][@mouseover,harm,nodead][] Rebuke]] },
+        { name = "Holy Strike", desc = "Starts attacking and uses Holy Strike", spells = { "Holy Strike" }, body = [[
+#showtooltip Holy Strike
+/startattack
+/cast Holy Strike]] },
+
+        { name = "Seal", desc = "Seal of Righteousness; Shift for the Crusader", spells = { "Seal of Righteousness", "Seal of the Crusader" }, body = [[
+#showtooltip
+/cast [mod:shift] Seal of the Crusader; Seal of Righteousness]] },
+
+        { name = "Heal", desc = "Holy Light on a mouseover friend, target or you", spells = { "Holy Light" }, body = [[
+#showtooltip Holy Light
+/cast [@mouseover,help,nodead][help,nodead][@player] Holy Light]] },
+
+        { name = "Quick Heal", desc = "Flash of Light on a mouseover friend, target or you", spells = { "Flash of Light" }, body = [[
+#showtooltip Flash of Light
+/cast [@mouseover,help,nodead][help,nodead][@player] Flash of Light]] },
+
+        { name = "Might", desc = "Blessing of Might on a mouseover friend, target or you", spells = { "Blessing of Might" }, body = [[
+#showtooltip Blessing of Might
+/cast [@mouseover,help,nodead][help,nodead][@player] Blessing of Might]] },
 
         { name = "Stun", desc = "Hammer of Justice on mouseover or target", spells = { "Hammer of Justice" }, body = [[
 #showtooltip Hammer of Justice
 /cast [@mouseover,harm,nodead][] Hammer of Justice]] },
 
-        { name = "Freedom", desc = "Blessing of Freedom on a mouseover friend or you", spells = { "Blessing of Freedom" }, body = [[
+        { name = "Protect Ally", desc = "Blessing of Protection on a mouseover friend, target or you", spells = { "Blessing of Protection" }, body = [[
+#showtooltip Blessing of Protection
+/cast [@mouseover,help,nodead][help,nodead][@player] Blessing of Protection]] },
+
+        { name = "Freedom", desc = "Blessing of Freedom on a mouseover friend, target or you", spells = { "Blessing of Freedom" }, body = [[
 #showtooltip Blessing of Freedom
-/cast [@mouseover,help,nodead][@player] Blessing of Freedom]] },
+/cast [@mouseover,help,nodead][help,nodead][@player] Blessing of Freedom]] },
 
-        -- Shift turns it into Blessing of Sacrifice, which cannot target you.
-        { name = "Protect Ally", desc = "Blessing of Protection; Shift for Sacrifice", spells = { "Blessing of Protection" }, body = [[
-#showtooltip
-/cast [mod:shift,@mouseover,help,nodead][mod:shift] Blessing of Sacrifice; [@mouseover,help,nodead][@player] Blessing of Protection]] },
-
-        { name = "Lay on Hands", desc = "On a mouseover friend, else yourself", spells = { "Lay on Hands" }, body = [[
+        { name = "Lay on Hands", desc = "On a mouseover friend, target or you", spells = { "Lay on Hands" }, body = [[
 #showtooltip Lay on Hands
-/cast [@mouseover,help,nodead][@player] Lay on Hands]] },
+/cast [@mouseover,help,nodead][help,nodead][@player] Lay on Hands]] },
 
-        -- Blessing of Protection would stop Divine Shield, so it is removed first.
-        { name = "Bubble", desc = "Drops Blessing of Protection, then Divine Shield", spells = { "Divine Shield" }, body = [[
-#showtooltip Divine Shield
-/cancelaura Blessing of Protection
-/cast Divine Shield]] },
+        -- Divine Shield once learned (level 34); Divine Protection until then.
+        -- Both apply Forbearance, so only one ever goes off.
+        { name = "Bubble", desc = "Divine Shield, or Divine Protection before you have it", spells = { "Divine Protection" }, body = [[
+#showtooltip
+/cast Divine Shield
+/cast Divine Protection]] },
 
-        { name = "Battle Rez", desc = "Intercession on a dead mouseover friend or target", spells = { "Intercession" }, body = [[
-#showtooltip Intercession
-/cast [@mouseover,help,dead][] Intercession]] },
+        -- Cleanse once learned (level 42); Purify until then.
+        { name = "Dispel", desc = "Cleanse (or Purify) a mouseover friend, target or you", spells = { "Purify" }, body = [[
+#showtooltip
+/cast [@mouseover,help,nodead][help,nodead][@player] Cleanse
+/cast [@mouseover,help,nodead][help,nodead][@player] Purify]] },
 
-        -- The ! stops a second press from cancelling it.
-        { name = "Steed", desc = "Divine Steed; a second press does not cancel it", spells = { "Divine Steed" }, body = [[
-#showtooltip Divine Steed
-/cast [nomounted] !Divine Steed]] },
+        { name = "Rez", desc = "Redemption on a dead mouseover friend or target", spells = { "Redemption" }, body = [[
+#showtooltip Redemption
+/cast [@mouseover,help,dead][] Redemption]] },
+
+        { name = "Exorcism", desc = "Exorcism on mouseover or target (undead, demons)", spells = { "Exorcism" }, body = [[
+#showtooltip Exorcism
+/cast [@mouseover,harm,nodead][] Exorcism]] },
     },
 
-    -- Order used when the client cannot say which spec the character is.
     order = { 65, 66, 70 },
-    -- Spec names, in case the client cannot give them.
     names = { [65] = "Holy", [66] = "Protection", [70] = "Retribution" },
+
+    -- Talent spells: active abilities only one tree grants.
+    treeSpells = {
+        [65] = { "Holy Shock", "Divine Favor", "Oath of Light", "Light's Vigil" },
+        [66] = { "Templar's Bulwark", "Swift Judgement", "Holy Shield" },
+        [70] = { "Seal of Command", "Repentance" },
+    },
 
     specs = {
         -- Holy
         [65] = {
-            { name = "Cleanse", desc = "Cleanse a mouseover friend, else yourself", spells = { "Cleanse" }, body = [[
-#showtooltip Cleanse
-/cast [@mouseover,help,nodead][@player] Cleanse]] },
-
-            -- Heals a friend or hits an enemy, whichever is under the mouse.
-            { name = "Holy Shock", desc = "Heals or hits whatever is under the mouse", spells = { "Holy Shock" }, body = [[
+            { name = "Holy Shock", desc = "Heals a friend or hits a foe under the mouse", spells = { "Holy Shock" }, body = [[
 #showtooltip Holy Shock
 /cast [@mouseover,exists,nodead][] Holy Shock]] },
 
-            { name = "Word of Glory", desc = "Heals a mouseover friend, else yourself", spells = { "Word of Glory" }, body = [[
-#showtooltip Word of Glory
-/cast [@mouseover,help,nodead][help,nodead][@player] Word of Glory]] },
+            { name = "Big Heal", desc = "Divine Favor, then a sure critical Holy Light", spells = { "Divine Favor", "Holy Light" }, body = [[
+#showtooltip Divine Favor
+/cast Divine Favor
+/cast [@mouseover,help,nodead][help,nodead][@player] Holy Light]] },
 
-            { name = "Beacon", desc = "Beacon of Light; Shift puts it on your focus", spells = { "Beacon of Light" }, body = [[
-#showtooltip Beacon of Light
-/cast [mod:shift,@focus][@mouseover,help,nodead][] Beacon of Light]] },
+            { name = "Oath", desc = "Oath of Light on a mouseover friend, target or you", spells = { "Oath of Light" }, body = [[
+#showtooltip Oath of Light
+/cast [@mouseover,help,nodead][help,nodead][@player] Oath of Light]] },
 
-            { name = "Holy Burst", desc = "Avenging Wrath, top trinket, then Holy Shock", spells = { "Avenging Wrath", "Holy Shock" }, body = [[
-#showtooltip Avenging Wrath
-/cast Avenging Wrath
-/use 13
-/cast [@mouseover,help,nodead][] Holy Shock]] },
+            { name = "Vigil", desc = "Light's Vigil on a mouseover friend, target or you", spells = { "Light's Vigil" }, body = [[
+#showtooltip Light's Vigil
+/cast [@mouseover,help,nodead][help,nodead][@player] Light's Vigil]] },
         },
 
         -- Protection
         [66] = {
-            { name = "Cleanse Toxins", desc = "Cleanse Toxins on a mouseover friend or you", spells = { "Cleanse Toxins" }, body = [[
-#showtooltip Cleanse Toxins
-/cast [@mouseover,help,nodead][@player] Cleanse Toxins]] },
+            { name = "Tank Up", desc = "Seal of Fury; Shift for Righteous Fury", spells = { "Seal of Fury", "Righteous Fury" }, body = [[
+#showtooltip
+/cast [mod:shift] Righteous Fury; Seal of Fury]] },
 
-            { name = "Taunt", desc = "Hand of Reckoning on mouseover, focus or target", spells = { "Hand of Reckoning" }, body = [[
-#showtooltip Hand of Reckoning
-/cast [@mouseover,harm,nodead][@focus,harm,nodead][] Hand of Reckoning]] },
+            -- With Seal of Fury up, Judgement taunts.
+            { name = "Taunt", desc = "Judgement on mouseover or target; taunts with Seal of Fury", spells = { "Judgement" }, body = [[
+#showtooltip Judgement
+/cast [@mouseover,harm,nodead][] Judgement]] },
 
-            -- The trinket goes first so the shield is never lost to it.
-            { name = "Shield Up", desc = "Top trinket, then Shield of the Righteous", spells = { "Shield of the Righteous" }, body = [[
-#showtooltip Shield of the Righteous
-/use 13
-/cast Shield of the Righteous]] },
+            { name = "Swift Judge", desc = "Swift Judgement on mouseover or target", spells = { "Swift Judgement" }, body = [[
+#showtooltip Swift Judgement
+/cast [@mouseover,harm,nodead][] Swift Judgement]] },
 
-            { name = "Shield Throw", desc = "Avenger's Shield on mouseover or target", spells = { "Avenger's Shield" }, body = [[
-#showtooltip Avenger's Shield
-/cast [@mouseover,harm,nodead][] Avenger's Shield]] },
-
-            { name = "Self Heal", desc = "Word of Glory on yourself", spells = { "Word of Glory" }, body = [[
-#showtooltip Word of Glory
-/cast [@player] Word of Glory]] },
+            { name = "Bulwark", desc = "Templar's Bulwark: a big absorb shield on you", spells = { "Templar's Bulwark" }, body = [[
+#showtooltip Templar's Bulwark
+/cast Templar's Bulwark]] },
         },
 
         -- Retribution
         [70] = {
-            { name = "Cleanse Toxins", desc = "Cleanse Toxins on a mouseover friend or you", spells = { "Cleanse Toxins" }, body = [[
-#showtooltip Cleanse Toxins
-/cast [@mouseover,help,nodead][@player] Cleanse Toxins]] },
-
-            { name = "Ret Burst", desc = "Avenging Wrath and both trinkets", spells = { "Avenging Wrath" }, body = [[
-#showtooltip Avenging Wrath
-/cast Avenging Wrath
-/use 13
-/use 14]] },
-
-            -- Shift for Divine Storm when there are several enemies.
-            { name = "Spender", desc = "Templar's Verdict; Shift for Divine Storm", spells = { "Templar's Verdict" }, body = [[
+            { name = "Command", desc = "Seal of Command; Shift for the Crusader", spells = { "Seal of Command" }, body = [[
 #showtooltip
-/cast [mod:shift] Divine Storm; Templar's Verdict]] },
+/cast [mod:shift] Seal of the Crusader; Seal of Command]] },
 
-            { name = "Execute", desc = "Hammer of Wrath on mouseover or target", spells = { "Hammer of Wrath" }, body = [[
+            { name = "Repent", desc = "Repentance on a mouseover humanoid or target", spells = { "Repentance" }, body = [[
+#showtooltip Repentance
+/cast [@mouseover,harm,nodead][] Repentance]] },
+
+            { name = "Execute", desc = "Hammer of Wrath on mouseover or target, under 20%", spells = { "Hammer of Wrath" }, body = [[
 #showtooltip Hammer of Wrath
 /cast [@mouseover,harm,nodead][] Hammer of Wrath]] },
-
-            { name = "Word of Glory", desc = "Heals a mouseover friend, else yourself", spells = { "Word of Glory" }, body = [[
-#showtooltip Word of Glory
-/cast [@mouseover,help,nodead][@player] Word of Glory]] },
         },
     },
 }
