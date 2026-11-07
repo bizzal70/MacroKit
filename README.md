@@ -6,7 +6,7 @@ Adds ready-made macros for your class and talent spec to your macro list, and ke
 
 MacroKit adds macros to your character's own macro list (`/macro`, the character tab) as soon as your character knows the spells they use.
 
-- **It keeps up as you level.** When you level up, train at a trainer or learn a talent, it looks again straight away: macros you can now use are added (or, with automatic adding off, announced once in chat), the window updates, and the minimap button shows how many are ready to add.
+- **It keeps up as you level.** When you level up, train at a trainer or learn a talent, it looks again straight away: macros you can now use are added (or, with automatic adding off, announced once in chat), the window updates, and a red badge on the minimap button counts what is new since you last opened the window. New macros are marked New in the window.
 - **It knows your spec from your talents.** Forever has talent trees rather than a specialization choice, so MacroKit spots your tree from its talent spells: Holy Shock, Divine Favor, Oath of Light or Light's Vigil for Holy; Templar's Bulwark, Swift Judgement or Holy Shield for Protection; Seal of Command or Repentance for Retribution. Until you have one, pick your spec in the window's menu; MacroKit remembers it for that character.
 - It never overwrites a macro: if you already have one with the same name, yours stays.
 - It stops when your character's macro slots are full, and tells you which macros did not fit.

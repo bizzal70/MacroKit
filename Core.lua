@@ -21,6 +21,7 @@ local defaults = {
     view = nil,    -- the spec picked in the window's menu, before talents show it
     lastSpec = nil, -- the spec last worked out, so a change resets the view
     seen = {},     -- macro name -> true once announced as newly ready
+    fresh = {},    -- macro name -> true: new since the window was last opened
     done = {},     -- spec ID (or "any") -> true once it has been offered
     made = {},     -- macro name -> true for each macro MacroKit added
 }
@@ -302,12 +303,12 @@ function ns.Install(quiet)
     elseif not quiet then
         ns.Print("No new macros to add.")
     end
-    if quiet and #added == 0 then return end
+    if quiet and #added == 0 then return added end
     if #kept > 0 and not quiet then
         ns.Print("Already have: " .. table.concat(kept, ", ") .. ".")
     end
     if #unknown > 0 then
-        ns.Print("Not added yet, spell not known: " .. table.concat(unknown, ", ") .. ". Type /macrokit once you have learned them.")
+        ns.Print("Not added yet, spell not known: " .. table.concat(unknown, ", ") .. ". They are ready once you learn the spell.")
     end
     if #noRoom > 0 then
         ns.Print("No room for: " .. table.concat(noRoom, ", ") .. ". Your character macros are full.")
@@ -315,6 +316,7 @@ function ns.Install(quiet)
     if #failed > 0 then
         ns.Print("The game would not create: " .. table.concat(failed, ", ") .. ".")
     end
+    return added
 end
 
 -- Deletes the macros MacroKit added. Any you made yourself stay.
@@ -358,6 +360,25 @@ function ns.List()
     end
 end
 
+-- How many macros are new since the window was last opened, and how many
+-- are ready to add, for the minimap button.
+function ns.Counts()
+    if not ns.char then return 0, 0 end
+    local ready = ns.ReadyNames()
+    local isReady, total = {}, 0
+    for _, name in ipairs(ready) do isReady[name] = true end
+    for name in pairs(ns.char.fresh) do
+        -- Only macros still on offer: one removed since then no longer counts.
+        if isReady[name] or ns.Exists(name) then total = total + 1 else ns.char.fresh[name] = nil end
+    end
+    for name in pairs(isReady) do
+        if not ns.char.fresh[name] then total = total + 1 end
+    end
+    local new = 0
+    for _ in pairs(ns.char.fresh) do new = new + 1 end
+    return new, #ready, total
+end
+
 -- The macros that could be added right now.
 function ns.ReadyNames()
     local names = {}
@@ -383,12 +404,15 @@ function ns.CheckSpells(quietStart)
     local ready = ns.ReadyNames()
     if #ready > 0 and not InCombatLockdown() then
         if ns.char.auto then
-            ns.Install(true)
+            for _, name in ipairs(ns.Install(true) or {}) do
+                ns.char.fresh[name] = true
+            end
         else
             local fresh = {}
             for _, name in ipairs(ready) do
                 if not ns.char.seen[name] then
                     ns.char.seen[name] = true
+                    ns.char.fresh[name] = true
                     fresh[#fresh + 1] = name
                 end
             end

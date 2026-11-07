@@ -1,5 +1,10 @@
 # MacroKit
 
+## 0.4.2
+
+- The minimap button now has a red badge with a count, on its top edge, whenever there are macros new since you last opened the window: ones MacroKit added by itself as you levelled, and ones ready to add. Before, it only counted macros waiting to be added, so with automatic adding on (the default) levelling up showed nothing, and the small number could hide under the button's ring.
+- New macros are marked New in the window; opening it clears the badge. The button's tooltip says what the number means.
+
 ## 0.4.1
 
 - Every macro explains how it works: who it targets and in what order, what Shift does, and the game rules behind it. Hover a macro to read it in the new How it works panel under the list, or in its tooltip.

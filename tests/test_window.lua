@@ -46,16 +46,17 @@ local function MenuOptions()
     end
     return list
 end
+-- The badge's number, or "" while the badge is hidden.
 local function Badge()
-    for _, r in ipairs(regions) do
-        if r.__parent == MacroKitMinimapButton and r.__text ~= nil then return r.__text end
-    end
+    if not MacroKitMinimapBadge.__shown then return "" end
+    return MacroKitMinimapBadge.count.__text
 end
 
 -- The minimap button counts the macros ready to add.
 Fire("PLAYER_ENTERING_WORLD")
 RunAfters()
 check(Badge() == "3", "the minimap button shows how many macros are ready to add: " .. tostring(Badge()))
+check(MacroKitMinimapBadge.__shown, "on a red badge")
 
 -- Opening it, with no talents yet.
 Click(MacroKitMinimapButton)
@@ -91,7 +92,7 @@ Click(RowFor("Holy Strike").add)
 check(Has("Holy Strike") and ns.char.made["Holy Strike"], "Add puts that macro in the character's list")
 strike = RowFor("Holy Strike")
 check(strike.status.__text:find("In your macros", 1, true) and not strike.add.__shown, "and the row updates at once")
-check(Badge() == "2", "and the minimap count goes down: " .. tostring(Badge()))
+check(Badge() == "", "while the window is open the badge stays hidden: " .. tostring(Badge()))
 PICKED = nil
 strike.__scripts.OnDragStart(strike)
 check(PICKED == "Holy Strike", "dragging a row picks the macro up, ready for the action bars")
@@ -117,7 +118,7 @@ Fire("TRAINER_CLOSED")
 RunAfters()
 check(readyTab.label.__text == "Ready to use (5)" and RowFor("Quick Heal"), "a newly learned spell moves its macro to Ready to use while the window is open")
 check(table.concat(PRINTED, " | ", before + 1):find("New macro ready: Quick Heal", 1, true), "and it is announced in chat")
-check(Badge() == "3", "and the minimap count rises: " .. tostring(Badge()))
+check(Badge() == "" and RowFor("Quick Heal").status.__text:find("New", 1, true), "it is marked New in the open window, and the badge stays hidden")
 
 -- Picking a spec in the menu before the talents show one.
 Click(specButton)

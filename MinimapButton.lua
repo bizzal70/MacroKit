@@ -47,7 +47,10 @@ button:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
     GameTooltip:AddLine("MacroKit")
     GameTooltip:AddLine("Click: macros for your class and spec", 1, 1, 1)
-    local ready = ns.char and #ns.ReadyNames() or 0
+    local new, ready = ns.Counts()
+    if new > 0 then
+        GameTooltip:AddLine(new .. " new macro" .. (new > 1 and "s" or "") .. " since you last looked", 1, 0.3, 0.3)
+    end
     if ready > 0 then
         GameTooltip:AddLine(ready .. " ready to add", 1, 0.82, 0)
     end
@@ -56,13 +59,33 @@ button:SetScript("OnEnter", function(self)
 end)
 button:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
--- A small gold count on the button while macros are ready to add.
-local badge = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-badge:SetPoint("BOTTOMRIGHT", -4, 4)
-badge:SetTextColor(1, 0.82, 0)
+-- A red badge with a count, on the button's top-right edge, while there
+-- are new macros (added by MacroKit, or ready to add) the player has not
+-- looked at, or macros waiting to be added. It sits on its own frame above
+-- the button, so the gold ring never covers it.
+local badge = CreateFrame("Frame", addonName .. "MinimapBadge", button)
+badge:SetSize(18, 18)
+badge:SetPoint("CENTER", button, "TOPRIGHT", -5, -5)
+badge:SetFrameLevel((button:GetFrameLevel() or 8) + 5)
+local dot = badge:CreateTexture(nil, "ARTWORK")
+dot:SetAllPoints()
+dot:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
+dot:SetVertexColor(0.85, 0.1, 0.1, 1)
+local count = badge:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+count:SetPoint("CENTER", 0, 0)
+count:SetTextColor(1, 1, 1)
+badge:Hide()
+badge.count = count
 function ns.UpdateBadge()
-    local count = ns.char and #ns.ReadyNames() or 0
-    badge:SetText(count > 0 and tostring(count) or "")
+    local _, _, total = ns.Counts()
+    -- Not while the window is open: the player is looking at it already.
+    if total and total > 0 and not (ns.WindowShown and ns.WindowShown()) then
+        count:SetText(total > 9 and "9+" or tostring(total))
+        badge:Show()
+    else
+        count:SetText("")
+        badge:Hide()
+    end
 end
 
 -- Shows or hides the button as the setting says.

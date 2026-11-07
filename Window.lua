@@ -281,12 +281,13 @@ local function Refresh()
         row.name:SetText(macro.name)
         row.desc:SetText(macro.desc or "")
         local status, missing = ns.Status(macro)
+        local isNew = ns.char.fresh[macro.name] and "|cffff4040New|r  " or ""
         if status == "have" then
-            row.status:SetText("|cff40ff40In your macros|r")
+            row.status:SetText(isNew .. "|cff40ff40In your macros|r")
             row.icon:SetDesaturated(false)
             row.add:Hide()
         elseif status == "ready" then
-            row.status:SetText("|cffffd100Ready to add|r")
+            row.status:SetText(isNew .. "|cffffd100Ready to add|r")
             row.icon:SetDesaturated(false)
             row.add:Show()
             row.add:SetActive(not inCombat)
@@ -382,7 +383,12 @@ local function CreateWindow()
     window:SetMovable(true)
     window:SetClampedToScreen(true)
     window:Hide()
-    window:SetScript("OnHide", CloseMenu)
+    -- Closing the window counts as having seen what was new.
+    window:SetScript("OnHide", function()
+        CloseMenu()
+        ns.char.fresh = {}
+        if ns.UpdateBadge then ns.UpdateBadge() end
+    end)
     Fill(window, 0.05, 0.05, 0.06, 0.97)
     Outline(window, 0.55)
     -- Lets Escape close the window.
@@ -497,7 +503,12 @@ function ns.ToggleWindow()
     else
         Refresh()
         window:Show()
+        if ns.UpdateBadge then ns.UpdateBadge() end
     end
+end
+
+function ns.WindowShown()
+    return window ~= nil and window:IsShown()
 end
 
 -- Called whenever macros, spells, spec or combat change.
