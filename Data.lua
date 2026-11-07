@@ -58,6 +58,8 @@ ns.SETS.PALADIN = {
 
     -- Order used when the client cannot say which spec the character is.
     order = { 65, 66, 70 },
+    -- Spec names, in case the client cannot give them.
+    names = { [65] = "Holy", [66] = "Protection", [70] = "Retribution" },
 
     specs = {
         -- Holy

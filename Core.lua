@@ -94,6 +94,68 @@ function ns.Wanted()
     return list, class, spec
 end
 
+-- What the window lists. With a spec chosen, the same as ns.Wanted().
+-- Before one is chosen, only the class's shared macros, and the names of
+-- the specs whose macros will appear later (for example "Holy, Protection
+-- and Retribution").
+function ns.WindowList()
+    local class, spec = ns.ClassAndSpec()
+    local set = ns.SETS[class]
+    if not set then return nil, class, spec end
+    if spec then
+        local list = ns.Wanted()
+        return list, class, spec
+    end
+    local names = {}
+    for _, id in ipairs(set.order) do
+        local name
+        if type(GetSpecializationInfoByID) == "function" then
+            local ok, _, specName = pcall(GetSpecializationInfoByID, id)
+            if ok and type(specName) == "string" then name = specName end
+        end
+        names[#names + 1] = name or set.names and set.names[id] or tostring(id)
+    end
+    local waiting
+    if #names > 1 then
+        waiting = table.concat(names, ", ", 1, #names - 1) .. " and " .. names[#names]
+    else
+        waiting = names[1]
+    end
+    local list = {}
+    for _, macro in ipairs(set.shared) do list[#list + 1] = macro end
+    return list, class, nil, waiting
+end
+
+-- Prints the character's spec and every spell in its spellbook, to check
+-- the spell names in Data.lua against this client.
+function ns.ListSpells()
+    local class, spec = ns.ClassAndSpec()
+    local count = "?"
+    if type(GetNumSpecializations) == "function" then
+        local ok, n = pcall(GetNumSpecializations)
+        if ok then count = tostring(n) end
+    end
+    ns.Print(("Class %s, spec %s (the game offers %s specs)."):format(tostring(class), tostring(spec or "none chosen"), count))
+    local names = {}
+    local ok = pcall(function()
+        local bank = Enum and Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or 0
+        for line = 1, C_SpellBook.GetNumSpellBookSkillLines() do
+            local info = C_SpellBook.GetSpellBookSkillLineInfo(line)
+            if info and not info.shouldHide then
+                for index = info.itemIndexOffset + 1, info.itemIndexOffset + info.numSpellBookItems do
+                    local name = C_SpellBook.GetSpellBookItemName(index, bank)
+                    if name then names[#names + 1] = name end
+                end
+            end
+        end
+    end)
+    if not ok or #names == 0 then
+        ns.Print("Could not read the spellbook on this client.")
+        return
+    end
+    ns.Print(#names .. " spells: " .. table.concat(names, ", "))
+end
+
 local function Exists(name)
     local ok, index = pcall(GetMacroIndexByName, name)
     return ok and type(index) == "number" and index > 0
@@ -267,6 +329,8 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("Minimap button " .. (ns.db.minimapButton and "shown." or "hidden."))
     elseif command == "list" then
         ns.List()
+    elseif command == "spells" then
+        ns.ListSpells()
     elseif command == "remove" then
         ns.Remove()
     elseif command == "auto" then
@@ -283,6 +347,7 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit remove - delete the macros MacroKit added")
         ns.Print("/macrokit auto on|off - add macros by itself for each new spec")
         ns.Print("/macrokit button - show or hide the minimap button")
+        ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
     end
 end
 

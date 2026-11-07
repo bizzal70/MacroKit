@@ -16,7 +16,7 @@ Click the MacroKit button on the minimap, or type `/macrokit`. The window shows 
 
 Hover over a line to see the macro itself. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding a spec's macros by itself. The buttons are greyed out in combat, when the game does not allow changing macros.
 
-Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
+Before you choose a specialization, the window lists only the macros every spec shares; the spec's own macros appear once you choose one. Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
 
 - It never overwrites a macro: if you already have one with the same name, yours stays.
 - It only adds a macro once your character knows its spells. Learn the spell, then click **Add** in the window (or type `/macrokit add`).
@@ -52,6 +52,7 @@ Retribution: **Cleanse Toxins**, **Ret Burst** (Avenging Wrath and both trinkets
 | Add the macros you are missing | `/macrokit add` |
 | See the macros and whether you have them, in chat | `/macrokit list` |
 | Show or hide the minimap button | `/macrokit button` |
+| List your spec and spellbook, to report a spell name | `/macrokit spells` |
 | Delete the macros MacroKit added | `/macrokit remove` (macros you made yourself stay) |
 | Stop adding macros by itself for each new spec | `/macrokit auto off` |
 

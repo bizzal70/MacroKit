@@ -15,7 +15,7 @@ local LIST_TOP = HEADER_HEIGHT + 40     -- below the title and the class line
 local FOOTER_HEIGHT = 74
 local QUESTION_MARK = 134400
 
-local window, classLine, emptyText, addAllButton, removeButton, autoBox
+local window, classLine, emptyText, specNote, addAllButton, removeButton, autoBox
 local rows = {}
 
 local function Fill(frame, r, g, b, a)
@@ -130,9 +130,10 @@ local function CreateRow(index)
     row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 8, -1)
     row.desc = Label(row, "GameFontDisableSmall")
     row.desc:SetPoint("BOTTOMLEFT", row.icon, "BOTTOMRIGHT", 8, 1)
-    row.desc:SetWidth(WIDTH - PADDING * 2 - 40 - 150)
+    row.desc:SetWidth(WIDTH - PADDING * 2 - 40 - 70)
     row.status = Label(row, "GameFontHighlightSmall", "RIGHT")
-    row.status:SetPoint("RIGHT", -70, 0)
+    row.status:SetPoint("TOPRIGHT", -70, -4)
+    row.name:SetPoint("RIGHT", row.status, "LEFT", -8, 0)
     row.add = TextButton(row, 56, "Add", function() ns.AddOne(row.macro) end)
     row.add:SetPoint("RIGHT", -4, 0)
 
@@ -146,7 +147,7 @@ local function CreateRow(index)
 end
 
 local function Refresh()
-    local list, class = ns.Wanted()
+    local list, class, _, waitingSpecs = ns.WindowList()
     local className, specName = ns.ClassAndSpecNames()
     local r, g, b = ClassColour(class)
     classLine:SetText((className or "Your class") .. (specName and ("  -  " .. specName) or ""))
@@ -187,7 +188,19 @@ local function Refresh()
     else
         emptyText:Hide()
     end
-    local listHeight = list and (count * ROW_HEIGHT) or 40
+    -- Before a spec is chosen, only the class's shared macros are listed,
+    -- with a line saying where the rest will come from.
+    local noteHeight = 0
+    if list and waitingSpecs then
+        specNote:SetText(waitingSpecs .. " macros appear here once you choose a specialization.")
+        specNote:ClearAllPoints()
+        specNote:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + count * ROW_HEIGHT + 8))
+        specNote:Show()
+        noteHeight = 28
+    else
+        specNote:Hide()
+    end
+    local listHeight = list and (count * ROW_HEIGHT + noteHeight) or 40
     window:SetHeight(LIST_TOP + listHeight + FOOTER_HEIGHT)
 
     addAllButton.label:SetText(ready > 0 and ("Add all missing (" .. ready .. ")") or "Add all missing")
@@ -252,6 +265,9 @@ local function CreateWindow()
     emptyText:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + 10))
     emptyText:SetWidth(WIDTH - PADDING * 2)
     emptyText:SetWordWrap(true)
+
+    specNote = Label(window, "GameFontDisableSmall")
+    specNote:SetWidth(WIDTH - PADDING * 2)
 
     -- Footer: add everything, take back what MacroKit added, and the
     -- automatic adding switch.

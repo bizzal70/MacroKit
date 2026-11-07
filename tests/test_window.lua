@@ -25,7 +25,7 @@ end
 local function AllTexts()
     local found = {}
     for _, r in ipairs(regions) do
-        if r.__text and (r.__parent.__shown ~= false) then found[#found + 1] = r.__text end
+        if r.__text and r.__shown ~= false and r.__parent.__shown ~= false then found[#found + 1] = r.__text end
     end
     return table.concat(found, " | ")
 end
@@ -144,3 +144,35 @@ check(MacroKitMinimapButton.__shown, "and shows it again")
 MacroKitMinimapButton.__scripts.OnDragStart(MacroKitMinimapButton)
 MacroKitMinimapButton.__scripts.OnUpdate(MacroKitMinimapButton)
 check(math.abs(ns.db.minimapAngle - math.pi / 2) < 0.001, "dragging the button moves it round the minimap and remembers where")
+
+-- A paladin who has not chosen a spec yet: only the shared macros, and a
+-- line saying the spec macros come later.
+CLASS, SPEC = "PALADIN", nil
+Fire("PLAYER_ENTERING_WORLD")
+check(#Rows() == 8 and RowFor("Interrupt") and not RowFor("Spender") and not RowFor("Holy Shock"),
+    "with no spec chosen, only the 8 shared macros are listed: " .. #Rows())
+check(AllTexts():find("Holy, Protection and Retribution macros appear here once you choose a specialization", 1, true),
+    "and a line says the spec macros will appear once one is chosen")
+SPEC = 70
+Fire("PLAYER_SPECIALIZATION_CHANGED", "player")
+check(#Rows() == 13 and not AllTexts():find("once you choose a specialization", 1, true), "choosing a spec lists its macros and drops the line")
+
+-- /macrokit spells lists the spellbook.
+local bank = 0
+C_SpellBook = {
+    GetNumSpellBookSkillLines = function() return 2 end,
+    GetSpellBookSkillLineInfo = function(line)
+        if line == 1 then return { itemIndexOffset = 0, numSpellBookItems = 2 } end
+        return { itemIndexOffset = 2, numSpellBookItems = 1 }
+    end,
+    GetSpellBookItemName = function(index) return ({ "Crusader Strike", "Judgment", "Holy Light" })[index] end,
+}
+local before = #PRINTED
+SlashCmdList.MACROKIT("spells")
+local said = table.concat(PRINTED, " | ", before + 1)
+check(said:find("spec 70", 1, true) and said:find("3 spells: Crusader Strike, Judgment, Holy Light", 1, true),
+    "/macrokit spells lists the spec and the spellbook: " .. said)
+C_SpellBook = nil
+before = #PRINTED
+SlashCmdList.MACROKIT("spells")
+check(table.concat(PRINTED, " | ", before + 1):find("Could not read the spellbook", 1, true), "without a spellbook API it says so instead of erroring")
