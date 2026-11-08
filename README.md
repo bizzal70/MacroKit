@@ -20,6 +20,7 @@ Click the MacroKit button on the minimap, or type `/macrokit`.
 - **Top:** your class, in its colour, and a **Spec** menu: Every spec (the macros all specs share), Holy, Protection or Retribution. It follows your talents; before you have any, pick your spec there. You can also pick another spec to look at its macros.
 - **Ready to use** tab: macros whose spells you know. Those **in your macros** can be dragged straight onto your action bars (or clicked to pick up); those **ready to add** have an **Add** button.
 - **Not learned yet** tab: macros waiting on a spell, each saying which. Learn the spell and the macro moves to Ready to use by itself, even with the window open.
+- **Controller** tab: the controller pack (see below).
 - Hover over a macro to see how it works, in the **How it works** panel under the list and in its tooltip, along with the macro's text. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding new macros by themselves. The buttons are greyed out in combat, when the game does not allow changing macros.
 
 Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
@@ -36,6 +37,21 @@ With "Add new macros by themselves" on (the default), step 2 is already done for
 The window shows these steps too, in its panel under the list, until you hover over a macro.
 
 Once a macro is on your bar, hovering its button shows the spell's tooltip as usual, with MacroKit's explanation of what the macro does underneath. Turn that off with `/macrokit tooltips`.
+
+## Controller pack
+
+For playing with a gamepad or on a Steam Deck: macros for things a controller makes awkward. Put one on your gamepad's action bar and it is one button. Open the window's **Controller** tab and click **Add the pack**, or type `/macrokit controller`. It is never added by itself.
+
+| Macro | What it does |
+|---|---|
+| Heal Me | Heals yourself, whatever you have targeted (Holy Light, Lesser Heal or Heal, Healing Touch, Healing Wave; paladins, priests, druids and shamans) |
+| Quest Item | Uses the quest item in your bags: one that starts a quest first, else a quest item you can use. MacroKit keeps it pointing at the right item as your bags change |
+| Save Gear | Saves what you are wearing as the gear set "MacroKit" |
+| Wear Gear | Puts that gear set back on (not in combat) |
+| Leave Group | Leaves your party or raid |
+| Hello, Thanks, Follow Me, Need Help | The /wave, /thank, /followme and /helpme emotes |
+
+All but Heal Me are account-wide General macros, so they use none of a character's 18 macro slots and every character shares them. **Remove MacroKit's macros** removes the pack too.
 
 ## Macros for every class
 
@@ -110,6 +126,7 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 |---|---|
 | Open the MacroKit window | `/macrokit`, the minimap button, or MacroKit's entry in the minimap's addon list |
 | Add the macros you are missing | `/macrokit add` |
+| Add the controller pack | `/macrokit controller` |
 | See the macros and whether you have them, in chat | `/macrokit list` |
 | Show or hide the minimap button | `/macrokit button` |
 | Explain MacroKit's macros in action button tooltips, on or off | `/macrokit tooltips` |

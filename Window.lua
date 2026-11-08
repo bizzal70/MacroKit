@@ -2,8 +2,9 @@ local addonName, ns = ...
 
 -- The MacroKit window. At the top, the character's class and a Spec menu
 -- (Every spec, or one specialization, to look at its macros). Under that,
--- two tabs: "Ready to use" (macros whose spells are known: in the macro
--- list, or ready to add) and "Not learned yet" (macros waiting on a spell).
+-- three tabs: "Ready to use" (macros whose spells are known: in the macro
+-- list, or ready to add), "Not learned yet" (macros waiting on a spell) and
+-- "Controller" (the controller pack, Controller.lua, added only on request).
 -- Ready macros can be added one at a time or all at once; macros already in
 -- the list can be dragged, or clicked up, straight onto the action bars.
 -- Drawn from plain colours and the game's own icons, so it ships no images.
@@ -35,7 +36,7 @@ local menuRows = {}
 
 -- What the window is showing. The spec comes from ns.ActiveSpec(), or from
 -- ns.char.view when a spec has been picked in the menu (kept per
--- character). tab: "ready" or "later".
+-- character). tab: "ready", "later" or "controller".
 local tab = "ready"
 
 local function Fill(frame, r, g, b, a)
@@ -96,6 +97,7 @@ local function ClassColour(class)
 end
 
 local function Icon(macro)
+    if macro.icon then return "Interface\\Icons\\" .. macro.icon end
     local spell = macro.spells and macro.spells[1]
     if spell and C_Spell and C_Spell.GetSpellTexture then
         local ok, icon = pcall(C_Spell.GetSpellTexture, spell)
@@ -269,14 +271,19 @@ local function Refresh()
     for _, macro in ipairs(list or {}) do
         if ns.Status(macro) == "needs" then later[#later + 1] = macro else ready[#ready + 1] = macro end
     end
+    local pack = ns.ControllerList()
     tabs.ready.label:SetText("Ready to use (" .. #ready .. ")")
     tabs.later.label:SetText("Not learned yet (" .. #later .. ")")
+    tabs.controller.label:SetText("Controller (" .. #pack .. ")")
     SetTab(tabs.ready, tab == "ready")
     SetTab(tabs.later, tab == "later")
-    for _, button in pairs(tabs) do button:SetShown(list ~= nil) end
+    SetTab(tabs.controller, tab == "controller")
+    tabs.ready:SetShown(list ~= nil)
+    tabs.later:SetShown(list ~= nil)
+    tabs.controller:Show()
 
     local inCombat = InCombatLockdown()
-    local shownList = tab == "ready" and ready or later
+    local shownList = tab == "ready" and ready or tab == "later" and later or pack
     local count, addable = 0, 0
     for index, macro in ipairs(shownList) do
         count = index
@@ -304,13 +311,15 @@ local function Refresh()
         row:Show()
     end
     for index = count + 1, #rows do rows[index]:Hide() end
-    for _, macro in ipairs(ready) do
+    for _, macro in ipairs(tab == "controller" and pack or ready) do
         if ns.Status(macro) == "ready" then addable = addable + 1 end
     end
 
     -- What to say when there is nothing to list.
     local message
-    if not list then
+    if tab == "controller" then
+        message = nil
+    elseif not list then
         message = ("There are no macros for %s yet."):format(className or "your class")
     elseif count == 0 and tab == "ready" then
         message = "Nothing ready yet: the spells these macros need are not learned. See Not learned yet (" .. #later .. ")."
@@ -322,7 +331,7 @@ local function Refresh()
 
     -- Before a spec is chosen, a word on where its macros will come from.
     local noteHeight = 0
-    if list and hasSpecs and spec == nil and shown == "shared" then
+    if tab ~= "controller" and list and hasSpecs and spec == nil and shown == "shared" then
         specNote:SetText("Your spec shows once you learn a talent spell. Until then, pick yours in the Spec menu.")
         specNote:ClearAllPoints()
         specNote:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + math.max(count, message and 1 or 0) * ROW_HEIGHT + 6))
@@ -333,11 +342,11 @@ local function Refresh()
     end
 
     local listHeight = math.max(count, 1) * ROW_HEIGHT + noteHeight
-    if not list then listHeight = 40 end
+    if not list and tab ~= "controller" then listHeight = 40 end
     -- How it works sits between the list and the buttons, while there are
     -- macros to explain.
     local howHeight = 0
-    if list and count > 0 then
+    if count > 0 then
         howPanel:ClearAllPoints()
         howPanel:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + listHeight + 6))
         howPanel:SetPoint("TOPRIGHT", -PADDING, -(LIST_TOP + listHeight + 6))
@@ -360,9 +369,10 @@ local function Refresh()
     end
     window:SetHeight(LIST_TOP + listHeight + howHeight + staleHeight + FOOTER_HEIGHT)
 
-    addAllButton.label:SetText(addable > 0 and ("Add all missing (" .. addable .. ")") or "Add all missing")
+    local addLabel = tab == "controller" and "Add the pack" or "Add all missing"
+    addAllButton.label:SetText(addable > 0 and (addLabel .. " (" .. addable .. ")") or addLabel)
     addAllButton:SetActive(addable > 0 and not inCombat)
-    removeButton:SetActive(next(ns.char.made) ~= nil and not inCombat)
+    removeButton:SetActive((next(ns.char.made) ~= nil or next(ns.db.generalMade) ~= nil) and not inCombat)
     autoBox.tick:SetShown(ns.char.auto and true or false)
 end
 
@@ -457,10 +467,11 @@ local function CreateWindow()
     Outline(menu, 0.6)
     menu:Hide()
 
-    -- The two tabs, side by side across the window.
-    local tabWidth = (WIDTH - PADDING * 2 - 6) / 2
+    -- The three tabs, side by side across the window.
+    local tabWidth = (WIDTH - PADDING * 2 - 12) / 3
     CreateTab("ready", PADDING, tabWidth)
     CreateTab("later", PADDING + tabWidth + 6, tabWidth)
+    CreateTab("controller", PADDING + (tabWidth + 6) * 2, tabWidth)
 
     emptyText = Label(window, "GameFontHighlight")
     emptyText:SetPoint("TOPLEFT", PADDING, -(LIST_TOP + 10))
@@ -499,7 +510,9 @@ local function CreateWindow()
     staleButton:SetPoint("RIGHT", -4, 0)
     staleBar:Hide()
 
-    addAllButton = TextButton(window, 170, "Add all missing", function() ns.Install(false) end)
+    addAllButton = TextButton(window, 170, "Add all missing", function()
+        if tab == "controller" then ns.InstallController() else ns.Install(false) end
+    end)
     addAllButton:SetPoint("BOTTOMLEFT", PADDING, 40)
     removeButton = TextButton(window, 200, "Remove MacroKit's macros", function() ns.Remove() end)
     removeButton:SetPoint("BOTTOMRIGHT", -PADDING, 40)

@@ -20,6 +20,14 @@ Adds ready-made class and spec macros to the character's macro list. One addon, 
 - If `GetSpecialization` gives nothing, every spec's macros are offered and the spell check filters them.
 - Not yet seen in game (built 2026-11-05). Unverified: whether Forever's Paladin spell names match Retail, whether `C_Spell.GetSpellInfo` resolves names for unlearned spells, and whether icon 134400 shows the dynamic question mark. `/macrokit list` shows which spell each held-back macro is waiting on; ask the user for it.
 
+## Controller pack (0.6.0, 2026-11-08)
+
+- `Controller.lua`: `ns.ControllerList()` builds the pack for the character's class; `ns.InstallController()` adds it (window's Controller tab, `/macrokit controller`). Never added automatically.
+- Built from the controller research (`reports\WoW Forever controller addon ideas.md` in the user's CLAUDE folder): Forever's gamepad players asked for self-heal without targeting, using quest items from bags, saving gear sets, leaving a group, and a quick-chat wheel.
+- Account-wide General macros (`general = true`, recorded in `ns.db.generalMade`) except Heal Me (per character, `ns.char.made`). `ns.AddOne` creates with `perCharacter = not macro.general` and checks General slots (`MAX_ACCOUNT_MACROS`, 120).
+- Quest Item's body is rewritten by `ns.UpdateQuestItemMacro()` (EditMacro, out of combat only, only if MacroKit made it) on bag and quest events: `#showtooltip item:ID` / `/use item:ID`.
+- Optional `needs` functions mark a macro as waiting when this client lacks something (`C_EquipmentSet`, `C_PartyInfo.LeaveParty`). None of the pack's APIs, the emote commands or `/equipset` have been checked in Forever yet.
+
 ## Client facts
 
 

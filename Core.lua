@@ -15,6 +15,7 @@ local accountDefaults = {
     minimapButton = true,
     minimapAngle = 5.4,
     actionTooltips = true,   -- explain MacroKit's macros in action button tooltips
+    generalMade = {},        -- name -> true for each account-wide macro MacroKit added (controller pack)
 }
 
 local defaults = {
@@ -374,11 +375,14 @@ local function Exists(name)
 end
 ns.Exists = Exists
 
-local function FreeSlots()
-    local max = MAX_CHARACTER_MACROS or 18
-    local ok, _, perCharacter = pcall(GetNumMacros)
-    if not ok or type(perCharacter) ~= "number" then return max end
-    return max - perCharacter
+-- Free macro slots: the character's own, or with general the account-wide
+-- General ones.
+local function FreeSlots(general)
+    local max = general and (MAX_ACCOUNT_MACROS or 120) or (MAX_CHARACTER_MACROS or 18)
+    local ok, account, perCharacter = pcall(GetNumMacros)
+    local used = general and account or perCharacter
+    if not ok or type(used) ~= "number" then return max end
+    return max - used
 end
 
 -- The first spell a macro needs that this character does not know.
@@ -393,26 +397,32 @@ end
 -- "ready" (can be added).
 function ns.Status(macro)
     if Exists(macro.name) then return "have" end
-    local missing = MissingSpell(macro)
+    local missing = MissingSpell(macro) or (macro.needs and macro.needs())
     if missing then return "needs", missing end
     return "ready"
 end
 
 -- Adds a single macro, from the window. Returns whether it was added.
-function ns.AddOne(macro)
+-- With quiet, says nothing when it works (for adding a whole pack).
+function ns.AddOne(macro, quiet)
     if InCombatLockdown() then
         ns.Print("Macros cannot be added in combat.")
         return false
     end
     if ns.Status(macro) ~= "ready" then return false end
-    if FreeSlots() <= 0 then
-        ns.Print("Your character macros are full, so " .. macro.name .. " was not added.")
+    if FreeSlots(macro.general) <= 0 then
+        ns.Print("Your " .. (macro.general and "General" or "character") .. " macros are full, so " .. macro.name .. " was not added.")
         return false
     end
-    local ok, index = pcall(CreateMacro, macro.name, ICON, macro.body, true)
+    local body = macro.Body and macro.Body() or macro.body
+    local ok, index = pcall(CreateMacro, macro.name, macro.icon or ICON, body, not macro.general)
+    if not (ok and index) and macro.icon then
+        -- An icon this client does not know: the question mark instead.
+        ok, index = pcall(CreateMacro, macro.name, ICON, body, not macro.general)
+    end
     if ok and index then
-        ns.char.made[macro.name] = true
-        ns.Print("Added " .. macro.name .. ". Drag it from this window or /macro to your bars.")
+        if macro.general then ns.db.generalMade[macro.name] = true else ns.char.made[macro.name] = true end
+        if not quiet then ns.Print("Added " .. macro.name .. ". Drag it from this window or /macro to your bars.") end
         ns.RefreshWindow()
         return true
     end
@@ -490,6 +500,14 @@ function ns.Remove()
             if ok then removed[#removed + 1] = name end
         end
         ns.char.made[name] = nil
+    end
+    -- The controller pack's account-wide macros too.
+    for name in pairs(ns.db.generalMade) do
+        if Exists(name) then
+            local ok = pcall(DeleteMacro, GetMacroIndexByName(name))
+            if ok then removed[#removed + 1] = name end
+        end
+        ns.db.generalMade[name] = nil
     end
     table.sort(removed)
     ns.RefreshWindow()
@@ -622,6 +640,8 @@ SlashCmdList.MACROKIT = function(msg)
         ns.ToggleWindow()
     elseif command == "install" or command == "add" then
         ns.Install(false)
+    elseif command == "controller" or command == "pad" then
+        ns.InstallController()
     elseif command == "tooltips" then
         ns.db.actionTooltips = not ns.db.actionTooltips
         ns.Print(ns.db.actionTooltips and "Action button tooltips explain MacroKit's macros."
@@ -651,6 +671,7 @@ SlashCmdList.MACROKIT = function(msg)
     else
         ns.Print("/macrokit - open the MacroKit window")
         ns.Print("/macrokit add - add the macros you are missing")
+        ns.Print("/macrokit controller - add the controller pack (heal yourself, quest item, gear, leave group, emotes)")
         ns.Print("/macrokit list - show the macros and whether you have them, in chat")
         ns.Print("/macrokit remove - delete the macros MacroKit added")
         ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
@@ -684,7 +705,7 @@ frame:SetScript("OnEvent", function(self, event, arg)
         ns.char = MacroKitCharDB
         MacroKitDB = MacroKitDB or {}
         for key, value in pairs(accountDefaults) do
-            if MacroKitDB[key] == nil then MacroKitDB[key] = value end
+            if MacroKitDB[key] == nil then MacroKitDB[key] = type(value) == "table" and {} or value end
         end
         ns.db = MacroKitDB
         ns.UpdateMinimapButton()

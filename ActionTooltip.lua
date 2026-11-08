@@ -23,6 +23,13 @@ function ns.FindMacro(name)
     end
 end
 
+-- The controller pack's macro of this name, if any.
+local function FindControllerMacro(name)
+    for _, macro in ipairs(ns.ControllerList and ns.ControllerList() or {}) do
+        if macro.name == name then return macro end
+    end
+end
+
 local function Usable(value)
     return value ~= nil and not (issecretvalue and issecretvalue(value))
 end
@@ -42,8 +49,13 @@ end
 local function AddExplanation(tooltip, slot)
     if not ns.db or ns.db.actionTooltips == false or not ns.char then return end
     local name = MacroInSlot(slot)
-    if not name or not ns.char.made[name] then return end
-    local macro = ns.FindMacro(name)
+    if not name then return end
+    local macro
+    if ns.char.made[name] then
+        macro = ns.FindMacro(name) or FindControllerMacro(name)
+    elseif ns.db.generalMade and ns.db.generalMade[name] then
+        macro = FindControllerMacro(name)
+    end
     if not macro then return end
     tooltip:AddLine(" ")
     tooltip:AddLine("MacroKit: " .. macro.name, ACCENT_R, ACCENT_G, ACCENT_B)

@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.6.0
+
+- New: the **controller pack**, for playing with a gamepad or on a Steam Deck. In the window's new Controller tab, or with `/macrokit controller`: Heal Me (heals yourself whatever you have targeted), Quest Item (uses the quest item in your bags, and follows your bags as they change), Save Gear and Wear Gear (a gear set), Leave Group, and the Hello, Thanks, Follow Me and Need Help emotes. All but Heal Me are account-wide General macros, so they cost none of a character's macro slots. The pack is only added when you ask.
+
 ## 0.5.4
 
 - Fixed: the minimap button could keep following the mouse after a drag, and then move together with another addon's button sitting on top of it. It now stops the moment you let go.
