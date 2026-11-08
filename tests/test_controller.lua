@@ -107,20 +107,20 @@ for _, f in ipairs(Frames()) do
 end
 check(#shown == 9, "it lists the whole pack: " .. table.concat(shown, ","))
 
--- Without a controller connected, the tab goes away.
+-- Until a controller is used, the tab stays away.
 local function TabShown() return tabButton.__shown end
-DEVICES = {}
-C_GamePad = { GetAllDeviceIDs = function() return DEVICES end }
-Fire("GAME_PAD_DISCONNECTED")
-check(not TabShown(), "with no controller connected there is no Controller tab")
+C_GamePad = {}
+ns.RefreshWindow()
+check(not TabShown(), "until a controller is used there is no Controller tab, even with one connected")
 local readyTab
 for _, f in ipairs(Frames()) do
     if rawget(f, "label") and f.label.__text and f.label.__text:find("^Ready to use") then readyTab = f end
 end
 check(readyTab.underline.__shown, "and the window goes back to Ready to use")
-DEVICES = { 1 }
-Fire("GAME_PAD_CONNECTED", 1)
-check(TabShown(), "connecting a controller brings the tab back")
+Fire("GAME_PAD_ACTIVE_CHANGED", true)
+check(TabShown(), "using a controller brings the tab out")
+Fire("GAME_PAD_ACTIVE_CHANGED", false)
+check(TabShown(), "and going back to the mouse does not hide it again")
 C_GamePad = nil
 
 -- Action button tooltips explain the pack's macros too.

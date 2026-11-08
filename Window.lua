@@ -272,9 +272,9 @@ local function Refresh()
         if ns.Status(macro) == "needs" then later[#later + 1] = macro else ready[#ready + 1] = macro end
     end
     local pack = ns.ControllerList()
-    -- The Controller tab only while a controller is connected; the other
+    -- The Controller tab only once a controller is used; the other
     -- two share the width when it is not there.
-    local padOn = ns.ControllerConnected()
+    local padOn = ns.ControllerInUse()
     if not padOn and tab == "controller" then tab = "ready" end
     local tabCount = padOn and 3 or 2
     local tabWidth = (WIDTH - PADDING * 2 - 6 * (tabCount - 1)) / tabCount

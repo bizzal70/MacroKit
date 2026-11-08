@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.6.2
+
+- The Controller tab now shows once you actually use a controller (a button or a stick), not merely when one is connected: some PCs report controllers that are not being used.
+
 ## 0.6.1
 
 - The window's Controller tab only shows while a controller is connected (a Steam Deck's own controls count). `/macrokit controller` still adds the pack either way, and macros already added stay.
