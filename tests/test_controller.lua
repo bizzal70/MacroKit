@@ -107,6 +107,22 @@ for _, f in ipairs(Frames()) do
 end
 check(#shown == 9, "it lists the whole pack: " .. table.concat(shown, ","))
 
+-- Without a controller connected, the tab goes away.
+local function TabShown() return tabButton.__shown end
+DEVICES = {}
+C_GamePad = { GetAllDeviceIDs = function() return DEVICES end }
+Fire("GAME_PAD_DISCONNECTED")
+check(not TabShown(), "with no controller connected there is no Controller tab")
+local readyTab
+for _, f in ipairs(Frames()) do
+    if rawget(f, "label") and f.label.__text and f.label.__text:find("^Ready to use") then readyTab = f end
+end
+check(readyTab.underline.__shown, "and the window goes back to Ready to use")
+DEVICES = { 1 }
+Fire("GAME_PAD_CONNECTED", 1)
+check(TabShown(), "connecting a controller brings the tab back")
+C_GamePad = nil
+
 -- Action button tooltips explain the pack's macros too.
 ACTIONS[1] = { kind = "macro", id = GetMacroIndexByName("Thanks"), text = "Thanks" }
 GameTooltip:SetAction(1)

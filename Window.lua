@@ -272,6 +272,17 @@ local function Refresh()
         if ns.Status(macro) == "needs" then later[#later + 1] = macro else ready[#ready + 1] = macro end
     end
     local pack = ns.ControllerList()
+    -- The Controller tab only while a controller is connected; the other
+    -- two share the width when it is not there.
+    local padOn = ns.ControllerConnected()
+    if not padOn and tab == "controller" then tab = "ready" end
+    local tabCount = padOn and 3 or 2
+    local tabWidth = (WIDTH - PADDING * 2 - 6 * (tabCount - 1)) / tabCount
+    for index, key in ipairs({ "ready", "later", "controller" }) do
+        tabs[key]:SetWidth(tabWidth)
+        tabs[key]:ClearAllPoints()
+        tabs[key]:SetPoint("TOPLEFT", PADDING + (tabWidth + 6) * (index - 1), -TAB_TOP)
+    end
     tabs.ready.label:SetText("Ready to use (" .. #ready .. ")")
     tabs.later.label:SetText("Not learned yet (" .. #later .. ")")
     tabs.controller.label:SetText("Controller (" .. #pack .. ")")
@@ -280,7 +291,7 @@ local function Refresh()
     SetTab(tabs.controller, tab == "controller")
     tabs.ready:SetShown(list ~= nil)
     tabs.later:SetShown(list ~= nil)
-    tabs.controller:Show()
+    tabs.controller:SetShown(padOn)
 
     local inCombat = InCombatLockdown()
     local shownList = tab == "ready" and ready or tab == "later" and later or pack

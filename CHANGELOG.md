@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.6.1
+
+- The window's Controller tab only shows while a controller is connected (a Steam Deck's own controls count). `/macrokit controller` still adds the pack either way, and macros already added stay.
+
 ## 0.6.0
 
 - New: the **controller pack**, for playing with a gamepad or on a Steam Deck. In the window's new Controller tab, or with `/macrokit controller`: Heal Me (heals yourself whatever you have targeted), Quest Item (uses the quest item in your bags, and follows your bags as they change), Save Gear and Wear Gear (a gear set), Leave Group, and the Hello, Thanks, Follow Me and Need Help emotes. All but Heal Me are account-wide General macros, so they cost none of a character's macro slots. The pack is only added when you ask.

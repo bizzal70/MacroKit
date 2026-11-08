@@ -7,7 +7,8 @@ local addonName, ns = ...
 -- keyboard). Put one on the gamepad's action bar and it is one button.
 --
 -- The pack is never added by itself: it waits in the window's Controller
--- tab (or /macrokit controller). Macros every character can share go in
+-- tab, which only shows while a controller is connected (or
+-- /macrokit controller, which works either way). Macros every character can share go in
 -- the account-wide General macros (120 slots), so they cost none of a
 -- character's 18. Only the heal, whose spell is the class's, is a
 -- character macro.
@@ -19,6 +20,22 @@ local addonName, ns = ...
 --   Body     a function giving the body now (the quest item macro)
 
 local QUEST_ITEM = "Quest Item"
+
+-- Whether a controller is connected (a Steam Deck's own controls count).
+-- The Controller tab only shows while one is. If this client cannot say,
+-- the answer is yes.
+function ns.ControllerConnected()
+    if not C_GamePad then return true end
+    if C_GamePad.GetAllDeviceIDs then
+        local ok, ids = pcall(C_GamePad.GetAllDeviceIDs)
+        if ok and type(ids) == "table" then return #ids > 0 end
+    end
+    if C_GamePad.GetActiveDeviceID then
+        local ok, id = pcall(C_GamePad.GetActiveDeviceID)
+        if ok then return id ~= nil end
+    end
+    return true
+end
 local GEAR_SET = "MacroKit"
 
 -- The heal each class can cast on itself, from level 1. A priest learns
@@ -173,3 +190,10 @@ for _, event in ipairs({ "BAG_UPDATE_DELAYED", "QUEST_ACCEPTED", "QUEST_REMOVED"
     pcall(watcher.RegisterEvent, watcher, event)
 end
 watcher:SetScript("OnEvent", function() ns.UpdateQuestItemMacro() end)
+
+-- A controller plugged in or out: the window shows or hides its tab.
+local padWatcher = CreateFrame("Frame")
+for _, event in ipairs({ "GAME_PAD_CONNECTED", "GAME_PAD_DISCONNECTED", "GAME_PAD_ACTIVE_CHANGED" }) do
+    pcall(padWatcher.RegisterEvent, padWatcher, event)
+end
+padWatcher:SetScript("OnEvent", function() if ns.RefreshWindow then ns.RefreshWindow() end end)
