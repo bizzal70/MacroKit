@@ -130,13 +130,13 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 
 Other small addons for World of Warcraft: Forever, all free:
 
-- **[GatherLog](https://github.com/bizzal70/GatherLog)** remembers ore, herbs, fishing pools, skinning spots, chests and rares across all your characters, and guides you back to the best spots.
+- **[GatherLog](https://www.curseforge.com/wow/addons/gatherlog)** remembers ore, herbs, fishing pools, skinning spots, chests and rares across all your characters, and guides you back to the best spots.
 - **[MouseTip](https://www.curseforge.com/wow/addons/mousetip)** shows tooltips at your mouse cursor.
 - **[RangeShade](https://www.curseforge.com/wow/addons/rangeshade)** shades action buttons red when your target is out of range.
-- **[JunkMate](https://github.com/bizzal70/JunkMate)** sells junk and repairs at vendors, and warns when your gear is wearing out.
+- **[JunkMate](https://www.curseforge.com/wow/addons/junkmate)** sells junk and repairs at vendors, and warns when your gear is wearing out.
 - **[AltGlance](https://github.com/bizzal70/AltGlance)** shows all your characters at a glance: level, gold, rested and where you left them.
-- **[SwiftQuest](https://github.com/bizzal70/SwiftQuest)** accepts quests and hands them in as soon as you talk to the quest giver, without ever choosing a reward for you.
-- **[SessionRecap](https://github.com/bizzal70/SessionRecap)** keeps a running tally of your play session: gold, experience per hour, quests, gathering and loot.
+- **[SwiftQuest](https://www.curseforge.com/wow/addons/swiftquest)** accepts quests and hands them in as soon as you talk to the quest giver, without ever choosing a reward for you.
+- **[SessionRecap](https://www.curseforge.com/wow/addons/sessionrecap)** keeps a running tally of your play session: gold, experience per hour, quests, gathering and loot.
 - **[ZoomPad](https://github.com/bizzal70/ZoomPad)** puts big + and - buttons on screen that zoom the camera, made for the Steam Deck touchscreen.
 
 ## Installing
