@@ -2,7 +2,7 @@
 ## Title: MacroKit
 ## Notes: Ready-made macros for every class and talent spec, kept up to date as you level and respec. Type /macrokit.
 ## Author: bizzal70
-## Version: 0.5.3
+## Version: 0.5.4
 ## SavedVariables: MacroKitDB
 ## SavedVariablesPerCharacter: MacroKitCharDB
 ## IconTexture: Interface\Icons\INV_Misc_Note_01

@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.5.4
+
+- Fixed: the minimap button could keep following the mouse after a drag, and then move together with another addon's button sitting on top of it. It now stops the moment you let go.
+
 ## 0.5.3
 
 - Hovering an action button that holds one of MacroKit's macros now shows what the macro does under the spell's own tooltip. Macros you made yourself are left alone. `/macrokit tooltips` turns this off or on.
