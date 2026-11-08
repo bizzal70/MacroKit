@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.7.0
+
+- The controller pack has moved to its own addon, **GamepadMacros**, with its own Gamepad macros window. MacroKit is back to class and spec macros only. Gamepad macros MacroKit 0.6 added stay in your macro list, and GamepadMacros takes them over.
+
 ## 0.6.2
 
 - The Controller tab now shows once you actually use a controller (a button or a stick), not merely when one is connected: some PCs report controllers that are not being used.

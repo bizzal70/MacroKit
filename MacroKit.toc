@@ -2,7 +2,7 @@
 ## Title: MacroKit
 ## Notes: Ready-made macros for every class and talent spec, kept up to date as you level and respec. Type /macrokit.
 ## Author: bizzal70
-## Version: 0.6.2
+## Version: 0.7.0
 ## SavedVariables: MacroKitDB
 ## SavedVariablesPerCharacter: MacroKitCharDB
 ## IconTexture: Interface\Icons\INV_Misc_Note_01
@@ -11,7 +11,6 @@
 
 Data.lua
 Core.lua
-Controller.lua
 Window.lua
 MinimapButton.lua
 ActionTooltip.lua
