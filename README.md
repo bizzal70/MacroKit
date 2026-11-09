@@ -37,7 +37,7 @@ The window shows these steps too, in its panel under the list, until you hover o
 
 Once a macro is on your bar, hovering its button shows the spell's tooltip as usual, with MacroKit's explanation of what the macro does underneath. Turn that off with `/macrokit tooltips`.
 
-Playing with a controller or on a Steam Deck? The gamepad macros (heal yourself, use a quest item, save and wear gear, leave a group, emotes) are in their own addon, [GamepadMacros](https://github.com/bizzal70/GamepadMacros).
+Playing with a controller or on a Steam Deck? The gamepad macros (heal yourself, use a quest item, save and wear gear, leave a group, emotes) are in their own addon, [GamepadMacros](https://www.curseforge.com/wow/addons/gamepadmacros).
 
 ## Macros for every class
 
@@ -134,10 +134,10 @@ Other small addons for World of Warcraft: Forever, all free:
 - **[MouseTip](https://www.curseforge.com/wow/addons/mousetip)** shows tooltips at your mouse cursor.
 - **[RangeShade](https://www.curseforge.com/wow/addons/rangeshade)** shades action buttons red when your target is out of range.
 - **[JunkMate](https://www.curseforge.com/wow/addons/junkmate)** sells junk and repairs at vendors, and warns when your gear is wearing out.
-- **[AltGlance](https://github.com/bizzal70/AltGlance)** shows all your characters at a glance: level, gold, rested and where you left them.
+- **[AltGlance](https://www.curseforge.com/wow/addons/altglance)** shows all your characters at a glance: level, gold, rested and where you left them.
 - **[SwiftQuest](https://www.curseforge.com/wow/addons/swiftquest)** accepts quests and hands them in as soon as you talk to the quest giver, without ever choosing a reward for you.
 - **[SessionRecap](https://www.curseforge.com/wow/addons/sessionrecap)** keeps a running tally of your play session: gold, experience per hour, quests, gathering and loot.
-- **[ZoomPad](https://github.com/bizzal70/ZoomPad)** puts big + and - buttons on screen that zoom the camera, made for the Steam Deck touchscreen.
+- **[ZoomPad](https://www.curseforge.com/wow/addons/zoompad)** puts big + and - buttons on screen that zoom the camera, made for the Steam Deck touchscreen.
 
 ## Installing
 
