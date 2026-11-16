@@ -350,13 +350,17 @@ function ns.BuffBar() return bar, icons end
 -- can never be left off for a fight.
 ---------------------------------------------------------------------------
 
-local GCD_SPELL = 61304       -- the game's global cooldown "spell"
+-- Each icon reads its own spell's cooldown, which includes the global
+-- cooldown. (The modern game also reports the global cooldown alone, as
+-- spell 61304, but Forever does not have that spell: it answers nil,
+-- tested in game 2026-11-16.) A buff with a cooldown of its own stays
+-- greyed until that is ready too.
 
--- The global cooldown's start and length in seconds, or nil when it is
--- not running or the game will not say.
-function ns.GlobalCooldown()
-    if not (C_Spell and C_Spell.GetSpellCooldown) then return nil end
-    local ok, info = pcall(C_Spell.GetSpellCooldown, GCD_SPELL)
+-- A spell's cooldown: start and length in seconds, or nil when it is ready
+-- or the game will not say.
+function ns.SpellCooldown(spell)
+    if not spell or not (C_Spell and C_Spell.GetSpellCooldown) then return nil end
+    local ok, info = pcall(C_Spell.GetSpellCooldown, spell)
     if not ok or type(info) ~= "table" then return nil end
     local start, duration = info.startTime, info.duration
     if not Usable(start) or not Usable(duration) or type(duration) ~= "number" or duration <= 0 then return nil end
@@ -364,31 +368,38 @@ function ns.GlobalCooldown()
     return start, duration
 end
 
-local function SetIconsEnabled(enabled)
+local function SetIconEnabled(button, enabled)
     if InCombatLockdown() then return end
-    for _, button in ipairs(icons) do
-        pcall(button.SetEnabled, button, enabled)
-        button.icon:SetDesaturated(not enabled)
-    end
+    pcall(button.SetEnabled, button, enabled)
+    button.icon:SetDesaturated(not enabled)
 end
 
 local enableTimer = false
 function ns.UpdateGlobalCooldown()
-    local start, duration = ns.GlobalCooldown()
+    local soonest
     for _, button in ipairs(icons) do
+        local start, duration = ns.SpellCooldown(button:IsShown() and button.spell or nil)
         if button.cd then
             if start then pcall(button.cd.SetCooldown, button.cd, start, duration) else pcall(button.cd.Clear, button.cd) end
         end
+        SetIconEnabled(button, start == nil)
+        if start then
+            local ends = start + duration
+            if not soonest or ends < soonest then soonest = ends end
+        end
     end
-    SetIconsEnabled(start == nil)
-    -- Switch them back on as it ends.
-    if start and not enableTimer and C_Timer and C_Timer.After then
+    -- Switch them back on as their cooldowns end.
+    if soonest and not enableTimer and C_Timer and C_Timer.After then
         enableTimer = true
-        C_Timer.After(math.max(0.05, start + duration - GetTime() + 0.05), function()
+        C_Timer.After(math.max(0.05, soonest - GetTime() + 0.05), function()
             enableTimer = false
             ns.UpdateGlobalCooldown()
         end)
     end
+end
+
+local function SetIconsEnabled(enabled)
+    for _, button in ipairs(icons) do SetIconEnabled(button, enabled) end
 end
 
 local gcdWatcher = CreateFrame("Frame")

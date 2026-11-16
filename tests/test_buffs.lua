@@ -89,9 +89,12 @@ check(not icons[1]:IsShown(), "another unit's failed cast does not")
 -- while it runs, so a tap cannot hide them uselessly; the sweep shows.
 GCD = nil
 C_Spell.GetSpellCooldown = function(id)
-    if id == 61304 and GCD then return { startTime = GCD.start, duration = GCD.duration } end
+    -- Like Forever: no spell 61304; the global cooldown shows on each spell.
+    if id == 61304 then return nil end
+    if GCD then return { startTime = GCD.start, duration = GCD.duration } end
     return { startTime = 0, duration = 0 }
 end
+ns.RefreshBuffs()
 GCD = { start = NOW, duration = 1.5 }
 Fire("SPELL_UPDATE_COOLDOWN")
 check(icons[1].__enabled == false and icons[1].icon.__desaturated == true, "during the global cooldown the icon is switched off and greyed")
