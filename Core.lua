@@ -477,6 +477,60 @@ function ns.Install(quiet)
     return added
 end
 
+-- Lines 0.8.0 added to the attack macros. A macro body without them is
+-- what that macro was before.
+local ADDED_LINES = {
+    ["/startattack [harm,nodead]"] = true,
+    ["/startattack [nostealth,harm,nodead]"] = true,
+    ["/cast [harm,nodead] !Auto Shot"] = true,
+}
+
+local function Clean(body)
+    return ((body or ""):gsub("\r", ""):gsub("%s+$", ""))
+end
+
+local function Before080(body)
+    local kept = {}
+    for line in (Clean(body) .. "\n"):gmatch("(.-)\n") do
+        if not ADDED_LINES[line] then kept[#kept + 1] = line end
+    end
+    return table.concat(kept, "\n")
+end
+
+-- Brings macros MacroKit added up to date with Data.lua when they are
+-- exactly the older version of the same macro (before the auto-attack
+-- lines of 0.8.0). A macro the player has changed is left alone. Not in
+-- combat: the game does not allow it. Returns the names it updated.
+function ns.UpgradeMacros()
+    if InCombatLockdown() or not ns.char or type(EditMacro) ~= "function" then return {} end
+    local class = ns.ClassAndSpec()
+    local set = ns.SETS[class]
+    if not set then return {} end
+    local updated = {}
+    local function Check(macro)
+        if not ns.char.made[macro.name] then return end
+        local okIndex, index = pcall(GetMacroIndexByName, macro.name)
+        if not okIndex or type(index) ~= "number" or index == 0 then return end
+        local okInfo, _, _, current = pcall(GetMacroInfo, index)
+        if not okInfo or type(current) ~= "string" then return end
+        local wanted = Clean(macro.body)
+        if Clean(current) == wanted then return end
+        if Clean(current) == Before080(wanted) and pcall(EditMacro, index, nil, nil, macro.body) then
+            updated[#updated + 1] = macro.name
+        end
+    end
+    for _, macro in ipairs(set.shared or {}) do Check(macro) end
+    for _, list in pairs(set.specs or {}) do
+        for _, macro in ipairs(list) do Check(macro) end
+    end
+    table.sort(updated)
+    if #updated > 0 then
+        ns.Print("Updated " .. #updated .. " of your MacroKit macros so they also start your auto-attack: "
+            .. table.concat(updated, ", ") .. ".")
+    end
+    return updated
+end
+
 -- Deletes the macros MacroKit added. Any you made yourself stay.
 function ns.Remove()
     if InCombatLockdown() then
@@ -553,6 +607,7 @@ end
 -- (quietStart) nothing is announced, only remembered.
 function ns.CheckSpells(quietStart)
     if not ns.char then return end
+    if not InCombatLockdown() then ns.UpgradeMacros() end
     local class, spec = ns.ClassAndSpec()
     local old = ns.char.lastSpec
     if spec ~= old then

@@ -76,6 +76,7 @@ ns.SETS.PALADIN = {
           how = "Casts Hammer of Justice on the enemy under your mouse, else your target. Handy for stunning a second enemy, or a caster, without losing your target.",
           spells = { "Hammer of Justice" }, body = [[
 #showtooltip Hammer of Justice
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Hammer of Justice]] },
 
         { name = "Protect Ally", desc = "Blessing of Protection on a mouseover friend, target or you",
@@ -123,6 +124,7 @@ ns.SETS.PALADIN = {
           how = "Casts Exorcism on the enemy under your mouse, else your target. It only works on undead and demons.",
           spells = { "Exorcism" }, body = [[
 #showtooltip Exorcism
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Exorcism]] },
     },
 
@@ -143,6 +145,7 @@ ns.SETS.PALADIN = {
           how = "Casts Holy Shock on whoever is under your mouse, friend or foe: it heals a friend or damages an enemy. With nothing under the mouse it uses your target. Its cooldown is 10 seconds in Forever.",
           spells = { "Holy Shock" }, body = [[
 #showtooltip Holy Shock
+/startattack [harm,nodead]
 /cast [@mouseover,exists,nodead][] Holy Shock]] },
 
             { name = "Big Heal", desc = "Divine Favor, then a sure critical Holy Light",
@@ -178,12 +181,14 @@ ns.SETS.PALADIN = {
           how = "Uses Judgement on the enemy under your mouse, else your target. While Seal of Fury is up, this Judgement also taunts the enemy to attack you for 3 seconds, so it doubles as your taunt.",
           spells = { "Judgement" }, body = [[
 #showtooltip Judgement
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Judgement]] },
 
             { name = "Swift Judge", desc = "Swift Judgement on mouseover or target",
           how = "Uses Swift Judgement on the enemy under your mouse, else your target: an extra Judgement of your seal that does not share Judgement's cooldown and does not remove the seal.",
           spells = { "Swift Judgement" }, body = [[
 #showtooltip Swift Judgement
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Swift Judgement]] },
 
             { name = "Bulwark", desc = "Templar's Bulwark: a big absorb shield on you",
@@ -211,6 +216,7 @@ ns.SETS.PALADIN = {
           how = "Casts Hammer of Wrath on the enemy under your mouse, else your target. It only works on enemies at 20% health or less, so use it to finish them off.",
           spells = { "Hammer of Wrath" }, body = [[
 #showtooltip Hammer of Wrath
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Hammer of Wrath]] },
         },
     },
@@ -260,11 +266,13 @@ ns.SETS.PRIEST = {
           "Casts Shadow Word: Pain on the enemy under your mouse, else your target, so you can put it on several enemies without changing target.",
           { "Shadow Word: Pain" }, [[
 #showtooltip Shadow Word: Pain
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Shadow Word: Pain]]),
         M("SW: Death", "Shadow Word: Death on mouseover or target",
           "Casts Shadow Word: Death, new in Forever, on the enemy under your mouse, else your target. If the target survives you take damage equal to 30% of your health, so save it to finish enemies off.",
           { "Shadow Word: Death" }, [[
 #showtooltip Shadow Word: Death
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Shadow Word: Death]]),
         M("Fear Ward", "Fear Ward on a mouseover friend, target or you",
           "Casts Fear Ward on the friend under your mouse, else your friendly target, else you. Every race has it in Forever.",
@@ -295,6 +303,7 @@ ns.SETS.PRIEST = {
               "Channels Penance, new in Forever, on whoever is under your mouse: it heals a friend or damages an enemy, at once and then every second for 2 seconds. With nothing under the mouse it uses your target. 12 second cooldown.",
               { "Penance" }, [[
 #showtooltip Penance
+/startattack [harm,nodead]
 /cast [@mouseover,exists,nodead][] Penance]]),
             M("Power Infusion", "Power Infusion on a mouseover friend, target or you",
               "Casts Power Infusion on the friend under your mouse, else your friendly target, else you: 20% more spell damage and healing for 15 seconds.",
@@ -330,16 +339,19 @@ ns.SETS.PRIEST = {
               "Casts Silence on the enemy under your mouse, else your target, to stop a caster. 45 second cooldown.",
               { "Silence" }, [[
 #showtooltip Silence
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Silence]]),
             M("Vamp Embrace", "Vampiric Embrace on mouseover or target",
               "Casts Vampiric Embrace on the enemy under your mouse, else your target; your Shadow damage to it heals your party.",
               { "Vampiric Embrace" }, [[
 #showtooltip Vampiric Embrace
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Vampiric Embrace]]),
             M("Mind Flay", "Mind Flay on mouseover or target",
               "Channels Mind Flay on the enemy under your mouse, else your target. It also slows them.",
               { "Mind Flay" }, [[
 #showtooltip Mind Flay
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Mind Flay]]),
         },
     },
@@ -367,21 +379,25 @@ ns.SETS.SHAMAN = {
           "Casts Earth Shock on the enemy under your mouse, else your target. It interrupts spellcasting, so it is your interrupt.",
           { "Earth Shock" }, [[
 #showtooltip Earth Shock
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Earth Shock]]),
         M("Flame Shock", "Flame Shock on mouseover or target",
           "Casts Flame Shock on the enemy under your mouse, else your target, so you can put it on several enemies.",
           { "Flame Shock" }, [[
 #showtooltip Flame Shock
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Flame Shock]]),
         M("Frost Shock", "Frost Shock on mouseover or target",
           "Casts Frost Shock on the enemy under your mouse, else your target, slowing them.",
           { "Frost Shock" }, [[
 #showtooltip Frost Shock
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Frost Shock]]),
         M("Purge", "Purge on mouseover or target",
           "Casts Purge on the enemy under your mouse, else your target, removing helpful magic from them.",
           { "Purge" }, [[
 #showtooltip Purge
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Purge]]),
         M("Cure", "Cure Poison; Shift for Cure Disease",
           "Cures poison on the friend under your mouse, else your friendly target, else you. Hold Shift to cure disease instead.",
@@ -427,12 +443,14 @@ ns.SETS.SHAMAN = {
               "Uses Lightning Mastery (Forever's new name for Elemental Mastery: faster Lightning Bolts and no Chain Lightning cooldown for 15 seconds), then casts Lightning Bolt on the enemy under your mouse, else your target. 3 minute cooldown.",
               { "Lightning Mastery", "Lightning Bolt" }, [[
 #showtooltip Lightning Mastery
+/startattack [harm,nodead]
 /cast Lightning Mastery
 /cast [@mouseover,harm,nodead][] Lightning Bolt]]),
             M("Chain Lightning", "Chain Lightning on mouseover or target",
               "Casts Chain Lightning on the enemy under your mouse, else your target; it jumps to two more enemies.",
               { "Chain Lightning" }, [[
 #showtooltip Chain Lightning
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Chain Lightning]]),
         },
         [263] = {
@@ -533,11 +551,13 @@ ns.SETS.DRUID = {
           "Casts Faerie Fire on the enemy under your mouse, else your target. In Forever it also works in Cat and Bear form (free, 6 second cooldown there); the old Faerie Fire (Feral) is gone.",
           { "Faerie Fire" }, [[
 #showtooltip Faerie Fire
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Faerie Fire]]),
         M("Moonfire", "Moonfire on mouseover or target",
           "Casts Moonfire on the enemy under your mouse, else your target, so you can put it on several enemies.",
           { "Moonfire" }, [[
 #showtooltip Moonfire
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Moonfire]]),
     },
     order = { 102, 103, 105 },
@@ -558,6 +578,7 @@ ns.SETS.DRUID = {
               "Casts Insect Swarm (a Balance talent in Forever) on the enemy under your mouse, else your target.",
               { "Insect Swarm" }, [[
 #showtooltip Insect Swarm
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Insect Swarm]]),
         },
         [103] = {
@@ -565,6 +586,7 @@ ns.SETS.DRUID = {
               "Uses Feral Charge on the enemy under your mouse, else your target. In bear form it charges and roots them; in Forever it also works in cat form, where it leaps behind them.",
               { "Feral Charge" }, [[
 #showtooltip Feral Charge
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Feral Charge]]),
             M("Lacerate", "Starts attacking and uses Lacerate",
               "Turns on your auto-attack and uses Lacerate, new in Forever: a stacking bleed with high threat, for bear form.",
@@ -607,46 +629,55 @@ ns.SETS.WARRIOR = {
           "Charges your target in Battle Stance, or uses Intercept in Berserker Stance (level 30). In any other stance it switches you to Battle Stance first, so a second press charges. Charge cannot be used once you are in combat.",
           { "Charge", "Battle Stance" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [stance:1] Charge; [stance:3] Intercept; Battle Stance]]),
         M("Victory Rush", "Victory Rush after a kill",
           "Uses Victory Rush, new in Forever: after you kill an enemy worth experience you have 20 seconds to use it for damage and a 10% heal. It needs no stance and no Rage.",
           { "Victory Rush" }, [[
 #showtooltip Victory Rush
+/startattack [harm,nodead]
 /cast Victory Rush]]),
         M("Strike", "Heroic Strike; Shift for Cleave",
           "Queues Heroic Strike on your next swing. Hold Shift for Cleave instead (level 20), which hits two enemies.",
           { "Heroic Strike" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [mod:shift] Cleave; Heroic Strike]]),
         M("Rend", "Rend on mouseover or target",
           "Uses Rend, a bleed, on the enemy under your mouse, else your target. Battle or Defensive Stance.",
           { "Rend" }, [[
 #showtooltip Rend
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Rend]]),
         M("Hamstring", "Hamstring on mouseover or target",
           "Uses Hamstring on the enemy under your mouse, else your target, slowing them. Battle or Berserker Stance.",
           { "Hamstring" }, [[
 #showtooltip Hamstring
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Hamstring]]),
         M("Interrupt", "Pummel in Berserker Stance, else Shield Bash",
           "Interrupts the enemy under your mouse, else your target: Pummel in Berserker Stance (level 38), Shield Bash in Battle or Defensive Stance (needs a shield).",
           { "Shield Bash" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [stance:3,@mouseover,harm,nodead][stance:3] Pummel; [@mouseover,harm,nodead][] Shield Bash]]),
         M("Overpower", "Overpower, switching to Battle Stance if needed",
           "Uses Overpower after your target dodges. Outside Battle Stance it switches you to Battle Stance first (Tactical Mastery keeps some Rage); press again to strike.",
           { "Overpower", "Battle Stance" }, [[
 #showtooltip Overpower
+/startattack [harm,nodead]
 /cast [nostance:1] Battle Stance; Overpower]]),
         M("Execute", "Execute on a target under 20% health",
           "Uses Execute, which only works on enemies at 20% health or less, in Battle or Berserker Stance.",
           { "Execute" }, [[
 #showtooltip Execute
+/startattack [harm,nodead]
 /cast Execute]]),
         M("Taunt", "Taunt, switching to Defensive Stance if needed",
           "Taunts the enemy under your mouse, else your target. Outside Defensive Stance it switches you to Defensive Stance first; press again to taunt.",
           { "Taunt", "Defensive Stance" }, [[
 #showtooltip Taunt
+/startattack [harm,nodead]
 /cast [nostance:2] Defensive Stance; [@mouseover,harm,nodead][] Taunt]]),
         M("Shout", "Battle Shout; Shift for Demoralizing Shout",
           "Uses Battle Shout on your party. Hold Shift for Demoralizing Shout instead (level 14), which weakens nearby enemies.",
@@ -678,6 +709,7 @@ ns.SETS.WARRIOR = {
               "Uses Spearing Strike, new in Forever, on the enemy under your mouse, else your target. It hits harder against giants, dragonkin and riders, and knocks riders off their mounts. Battle Stance.",
               { "Spearing Strike" }, [[
 #showtooltip Spearing Strike
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Spearing Strike]]),
         },
         [72] = {
@@ -696,6 +728,7 @@ ns.SETS.WARRIOR = {
               "Uses Whirlwind, which in Forever swings both weapons at up to 4 enemies. Outside Berserker Stance it switches you to Berserker Stance first; press again to spin.",
               { "Whirlwind", "Berserker Stance" }, [[
 #showtooltip Whirlwind
+/startattack [harm,nodead]
 /cast [nostance:3] Berserker Stance; Whirlwind]]),
         },
         [73] = {
@@ -709,6 +742,7 @@ ns.SETS.WARRIOR = {
               "Uses Revenge after you block, dodge or parry. Outside Defensive Stance it switches you to Defensive Stance first.",
               { "Revenge", "Defensive Stance" }, [[
 #showtooltip Revenge
+/startattack [harm,nodead]
 /cast [nostance:2] Defensive Stance; Revenge]]),
             M("Shield Block", "Shield Block, switching to Defensive Stance if needed",
               "Uses Shield Block: in Forever it blocks your next 2 hits within 7 seconds. Outside Defensive Stance it switches you to Defensive Stance first.",
@@ -731,16 +765,19 @@ ns.SETS.ROGUE = {
           "Uses Ambush while you are in stealth (level 18, from behind, with a dagger), otherwise Sinister Strike, so one button opens and then keeps building combo points.",
           { "Sinister Strike" }, [[
 #showtooltip
+/startattack [nostealth,harm,nodead]
 /cast [stealth] Ambush; Sinister Strike]]),
         M("Stun", "Cheap Shot from stealth, else Kidney Shot",
           "Uses Cheap Shot while you are in stealth, otherwise Kidney Shot (a finisher, level 30).",
           { "Cheap Shot" }, [[
 #showtooltip
+/startattack [nostealth,harm,nodead]
 /cast [stealth] Cheap Shot; Kidney Shot]]),
         M("Interrupt", "Kick on mouseover or target",
           "Uses Kick on the enemy under your mouse, else your target, to interrupt a spell.",
           { "Kick" }, [[
 #showtooltip Kick
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Kick]]),
         M("Stealth", "Stealth, without leaving it",
           "Enters stealth. The ! stops a second press from taking you out of it.",
@@ -756,6 +793,7 @@ ns.SETS.ROGUE = {
           "Spends your combo points on Eviscerate. Hold Shift for Slice and Dice instead (level 10).",
           { "Eviscerate" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [mod:shift] Slice and Dice; Eviscerate]]),
         M("Shank", "Starts attacking and uses Shank",
           "Turns on your auto-attack and uses Shank, new in Forever: a cheap off-hand stab that gives you Energy back and cannot miss. 10 second cooldown.",
@@ -788,6 +826,7 @@ ns.SETS.ROGUE = {
               "Uses Cold Blood (no global cooldown) so your next finisher is a sure critical, then Eviscerate.",
               { "Cold Blood", "Eviscerate" }, [[
 #showtooltip Cold Blood
+/startattack [harm,nodead]
 /cast Cold Blood
 /cast Eviscerate]]),
         },
@@ -802,6 +841,7 @@ ns.SETS.ROGUE = {
               "Uses Riposte, which becomes usable after you parry: a heavy hit that also disarms the target.",
               { "Riposte" }, [[
 #showtooltip Riposte
+/startattack [harm,nodead]
 /cast Riposte]]),
         },
         [261] = {
@@ -826,6 +866,7 @@ ns.SETS.ROGUE = {
               "Uses Death Mark, new in Forever, on the enemy under your mouse, else your target: a finisher that stores part of your damage and releases it after 6 seconds.",
               { "Death Mark" }, [[
 #showtooltip Death Mark
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Death Mark]]),
         },
     },
@@ -843,27 +884,32 @@ ns.SETS.HUNTER = {
           "Uses Serpent Sting on the enemy under your mouse, else your target. Hold Shift for Scorpid Sting instead (level 22).",
           { "Serpent Sting" }, [[
 #showtooltip
-/cast [mod:shift,@mouseover,harm,nodead][mod:shift] Scorpid Sting; [@mouseover,harm,nodead][] Serpent Sting]]),
+/cast [mod:shift,@mouseover,harm,nodead][mod:shift] Scorpid Sting; [@mouseover,harm,nodead][] Serpent Sting
+/cast [harm,nodead] !Auto Shot]]),
         M("Arcane Shot", "Arcane Shot on mouseover or target",
           "Uses Arcane Shot on the enemy under your mouse, else your target. In Forever it shares a 6 second cooldown with Summon Hawk.",
           { "Arcane Shot" }, [[
 #showtooltip Arcane Shot
-/cast [@mouseover,harm,nodead][] Arcane Shot]]),
+/cast [@mouseover,harm,nodead][] Arcane Shot
+/cast [harm,nodead] !Auto Shot]]),
         M("Aimed Shot", "Aimed Shot on mouseover or target",
           "Uses Aimed Shot, trained by every hunter in Forever (level 20), on the enemy under your mouse, else your target. It shares a 6 second cooldown with Multi-Shot, and your Auto Shot keeps firing while you cast it.",
           { "Aimed Shot" }, [[
 #showtooltip Aimed Shot
-/cast [@mouseover,harm,nodead][] Aimed Shot]]),
+/cast [@mouseover,harm,nodead][] Aimed Shot
+/cast [harm,nodead] !Auto Shot]]),
         M("Multi-Shot", "Multi-Shot on mouseover or target",
           "Uses Multi-Shot on the enemy under your mouse, else your target, hitting enemies around it.",
           { "Multi-Shot" }, [[
 #showtooltip Multi-Shot
-/cast [@mouseover,harm,nodead][] Multi-Shot]]),
+/cast [@mouseover,harm,nodead][] Multi-Shot
+/cast [harm,nodead] !Auto Shot]]),
         M("Concussive", "Concussive Shot on mouseover or target",
           "Uses Concussive Shot on the enemy under your mouse, else your target, slowing them.",
           { "Concussive Shot" }, [[
 #showtooltip Concussive Shot
-/cast [@mouseover,harm,nodead][] Concussive Shot]]),
+/cast [@mouseover,harm,nodead][] Concussive Shot
+/cast [harm,nodead] !Auto Shot]]),
         M("Pet", "Calls, revives or heals your pet",
           "One button for your pet: calls it if it is not out, revives it if it is dead, otherwise heals it with Mend Pet. If Forever names Call Pet after your pet, this macro will wait for that spell; please report it.",
           { "Call Pet" }, [[
@@ -889,6 +935,7 @@ ns.SETS.HUNTER = {
           "Uses Lacerate, a melee bleed new for hunters in Forever (level 30), on the enemy under your mouse, else your target.",
           { "Lacerate" }, [[
 #showtooltip Lacerate
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Lacerate]]),
     },
     order = { 253, 254, 255 },
@@ -927,7 +974,8 @@ ns.SETS.HUNTER = {
               "Uses Sniper Shot, new in Forever, on the enemy under your mouse, else your target: a long-range shot that also extends the range of your next 3 shots.",
               { "Sniper Shot" }, [[
 #showtooltip Sniper Shot
-/cast [@mouseover,harm,nodead][] Sniper Shot]]),
+/cast [@mouseover,harm,nodead][] Sniper Shot
+/cast [harm,nodead] !Auto Shot]]),
         },
         [255] = {
             M("Deterrence", "Deterrence",
@@ -939,6 +987,7 @@ ns.SETS.HUNTER = {
               "Uses Counterattack, which becomes usable after you parry, rooting the enemy in place.",
               { "Counterattack" }, [[
 #showtooltip Counterattack
+/startattack [harm,nodead]
 /cast Counterattack]]),
             M("Strider Kick", "Starts attacking and uses Strider Kick",
               "Turns on your auto-attack and uses Strider Kick, new in Forever: a melee hit that makes you 30% faster for 3 seconds, to get back to range.",
@@ -962,6 +1011,7 @@ ns.SETS.MAGE = {
           "Uses Counterspell on the enemy under your mouse, else your target, to interrupt a spell.",
           { "Counterspell" }, [[
 #showtooltip Counterspell
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Counterspell]]),
         M("Decurse", "Remove Lesser Curse on a mouseover friend, target or you",
           "Casts Remove Lesser Curse on the friend under your mouse, else your friendly target, else you. In Forever it removes Banes too.",
@@ -982,6 +1032,7 @@ ns.SETS.MAGE = {
           "Uses Fire Blast, your instant fire spell, on the enemy under your mouse, else your target.",
           { "Fire Blast" }, [[
 #showtooltip Fire Blast
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Fire Blast]]),
         M("Slow Fall", "Slow Fall on a mouseover friend, target or you",
           "Casts Slow Fall on the friend under your mouse, else your friendly target, else you.",
@@ -992,6 +1043,7 @@ ns.SETS.MAGE = {
           "Casts Frostfire Bolt, new in Forever (level 40), on the enemy under your mouse, else your target. It counts as both Fire and Frost, slows the target and burns over 9 seconds.",
           { "Frostfire Bolt" }, [[
 #showtooltip Frostfire Bolt
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Frostfire Bolt]]),
     },
     order = { 62, 63, 64 },
@@ -1007,6 +1059,7 @@ ns.SETS.MAGE = {
               "Casts Arcane Blast, new in Forever, on the enemy under your mouse, else your target. Each cast stacks up to 4 times, raising its damage and its mana cost.",
               { "Arcane Blast" }, [[
 #showtooltip Arcane Blast
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Arcane Blast]]),
             M("Burst", "Arcane Power and Presence of Mind together",
               "Uses Arcane Power (30% more spell damage for 15 seconds) and, once you have it, Presence of Mind (your next spell is instant) in one press.",
@@ -1018,6 +1071,7 @@ ns.SETS.MAGE = {
               "Uses Presence of Mind so your next spell is instant, then Arcane Blast on the enemy under your mouse, else your target.",
               { "Presence of Mind", "Arcane Blast" }, [[
 #showtooltip Presence of Mind
+/startattack [harm,nodead]
 /cast Presence of Mind
 /cast [@mouseover,harm,nodead][] Arcane Blast]]),
         },
@@ -1026,6 +1080,7 @@ ns.SETS.MAGE = {
               "Casts Pyroblast on the enemy under your mouse, else your target.",
               { "Pyroblast" }, [[
 #showtooltip Pyroblast
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Pyroblast]]),
             M("Combustion", "Combustion",
               "Uses Combustion, raising your fire critical strike chance.",
@@ -1043,6 +1098,7 @@ ns.SETS.MAGE = {
               "Casts Ice Lance, new in Forever, on the enemy under your mouse, else your target. It does triple damage to frozen targets; 8 second cooldown.",
               { "Ice Lance" }, [[
 #showtooltip Ice Lance
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Ice Lance]]),
             M("Ice Block", "Ice Block; press again to leave it",
               "Uses Ice Block: immune to everything for 10 seconds. Pressing it again while you are in the block takes you out of it early.",
@@ -1066,21 +1122,25 @@ ns.SETS.WARLOCK = {
           "Casts Corruption on the enemy under your mouse, else your target, so you can spread it without changing target.",
           { "Corruption" }, [[
 #showtooltip Corruption
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Corruption]]),
         M("Agony", "Bane of Agony on mouseover or target",
           "Casts Bane of Agony (Forever's new name for Curse of Agony) on the enemy under your mouse, else your target. In Forever you can keep one Bane and one Curse on the same target.",
           { "Bane of Agony" }, [[
 #showtooltip Bane of Agony
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Bane of Agony]]),
         M("Curse", "Curse of Weakness; Shift for Elements, Ctrl for Tongues",
           "Casts Curse of Weakness on the enemy under your mouse, else your target. Hold Shift for Curse of the Elements (level 20) or Ctrl for Curse of Tongues (level 26).",
           { "Curse of Weakness" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [mod:ctrl,@mouseover,harm,nodead][mod:ctrl] Curse of Tongues; [mod:shift,@mouseover,harm,nodead][mod:shift] Curse of the Elements; [@mouseover,harm,nodead][] Curse of Weakness]]),
         M("Immolate", "Immolate on mouseover or target",
           "Casts Immolate on the enemy under your mouse, else your target.",
           { "Immolate" }, [[
 #showtooltip Immolate
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Immolate]]),
         M("Fear", "Fear on mouseover or target",
           "Casts Fear on the enemy under your mouse, else your target.",
@@ -1096,11 +1156,13 @@ ns.SETS.WARLOCK = {
           "Channels Drain Soul on your target, which can give you Soul Shards. Hold Shift for Drain Life instead (level 14).",
           { "Drain Soul" }, [[
 #showtooltip
+/startattack [harm,nodead]
 /cast [mod:shift] Drain Life; Drain Soul]]),
         M("Death Coil", "Death Coil on mouseover or target",
           "Casts Death Coil on the enemy under your mouse, else your target: it horrifies them and heals you.",
           { "Death Coil" }, [[
 #showtooltip Death Coil
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Death Coil]]),
     },
     order = { 265, 266, 267 },
@@ -1116,22 +1178,26 @@ ns.SETS.WARLOCK = {
               "Casts Siphon Life on the enemy under your mouse, else your target, draining their health to you.",
               { "Siphon Life" }, [[
 #showtooltip Siphon Life
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Siphon Life]]),
             M("Exhaustion", "Curse of Exhaustion on mouseover or target",
               "Casts Curse of Exhaustion on the enemy under your mouse, else your target, slowing them by 30%.",
               { "Curse of Exhaustion" }, [[
 #showtooltip Curse of Exhaustion
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Curse of Exhaustion]]),
             M("Big Agony", "Amplify Curse, then Bane of Agony",
               "Uses Amplify Curse, then Bane of Agony on the enemy under your mouse, else your target, so the Bane hits harder.",
               { "Amplify Curse", "Bane of Agony" }, [[
 #showtooltip Amplify Curse
+/startattack [harm,nodead]
 /cast Amplify Curse
 /cast [@mouseover,harm,nodead][] Bane of Agony]]),
             M("Wrack", "Wrack on mouseover or target",
               "Casts Wrack, new in Forever, on the enemy under your mouse, else your target: damage over time that also makes your other shadow effects on them 10% stronger.",
               { "Wrack" }, [[
 #showtooltip Wrack
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Wrack]]),
         },
         [266] = {
@@ -1157,21 +1223,25 @@ ns.SETS.WARLOCK = {
               "Uses Conflagrate on the enemy under your mouse, else your target. It needs your Immolate on them, which it uses up.",
               { "Conflagrate" }, [[
 #showtooltip Conflagrate
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Conflagrate]]),
             M("Shadowburn", "Shadowburn on mouseover or target",
               "Uses Shadowburn on the enemy under your mouse, else your target. In Forever you get the Soul Shard back.",
               { "Shadowburn" }, [[
 #showtooltip Shadowburn
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Shadowburn]]),
             M("Havoc", "Bane of Havoc on mouseover or target",
               "Casts Bane of Havoc, new in Forever, on the enemy under your mouse, else your target: 15% of the damage you do to others is copied to it. Put it on a second enemy.",
               { "Bane of Havoc" }, [[
 #showtooltip Bane of Havoc
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Bane of Havoc]]),
             M("Incinerate", "Incinerate on mouseover or target",
               "Casts Incinerate, new in Forever, on the enemy under your mouse, else your target. It hits harder if your Immolate is on them.",
               { "Incinerate" }, [[
 #showtooltip Incinerate
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Incinerate]]),
         },
     },

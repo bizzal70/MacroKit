@@ -1,5 +1,10 @@
 # MacroKit
 
+## 0.8.0
+
+- Every attack macro now also starts your auto-attack (`/startattack`), so a press still starts you swinging when you are out of rage, energy or mana. Hunters' shots start Auto Shot instead. Stealth openers only start attacking once you are out of stealth, so a swing never breaks stealth first. Crowd control that breaks on damage (Sap, Blind, Polymorph, Repentance, Hibernate, Entangling Roots, Fear, Banish, Shackle Undead, Scatter Shot) is left alone, as are heals and buffs.
+- Macros MacroKit already added are updated the next time you log in, unless you changed them yourself.
+
 ## 0.7.0
 
 - The controller pack has moved to its own addon, **GamepadMacros**, with its own Gamepad macros window. MacroKit is back to class and spec macros only. Gamepad macros MacroKit 0.6 added stay in your macro list, and GamepadMacros takes them over.
