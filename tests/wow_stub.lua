@@ -22,6 +22,7 @@ local function Stub()
         if k == "GetText" then return function(self) return self.__text end end
         if k == "SetTextColor" then return function(self, ...) self.__color = { ... } end end
         if k == "SetTexture" then return function(self, t) self.__texture = t end end
+        if k == "SetPoint" then return function(self, ...) self.__point = { ... } end end
         if k == "SetAttribute" then return function(self, key, v) self.__attributes = self.__attributes or {}; self.__attributes[key] = v end end
         if k == "SetDesaturated" then return function(self, v) self.__desaturated = v end end
         if k == "CreateTexture" or k == "CreateFontString" or k == "CreateLine" then
@@ -63,6 +64,8 @@ GetMacroInfo = function(id) local m = MACROS[id]; if m then return m.name, m.ico
 SlashCmdList = {}
 print = function(m) printed[#printed + 1] = m end
 IN_COMBAT = false
+-- The game clock, in seconds; tests that need it moving set their own.
+GetTime = function() return 0 end
 InCombatLockdown = function() return IN_COMBAT end
 
 AFTERS = {}          -- delayed callbacks, run by the tests with RunAfters()

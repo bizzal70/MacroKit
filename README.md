@@ -9,7 +9,7 @@ MacroKit adds macros to your character's own macro list (`/macro`, the character
 - **It keeps up as you level.** When you level up, train at a trainer or learn a talent, it looks again straight away: macros you can now use are added (or, with automatic adding off, announced once in chat), the window updates, and a red badge on the minimap button counts what is new since you last opened the window. New macros are marked New in the window.
 - **It knows your spec from your talents.** Forever has talent trees rather than a specialization choice, so MacroKit reads how many points you have in each tree (the same way the game's own talent window does) and takes the tree with the most. Before your first talent point, pick your spec in the window's menu; MacroKit remembers it for that character.
 - **It follows a respec, a reset and a dual-spec switch.** It switches to the new spec's macros and says so in chat. The macros it added for your old spec are not deleted by themselves: the window offers a **Clear them** button (or type `/macrokit clear`).
-- **Shows your missing buffs:** a row of glowing icons for the self-buffs your class should have up but does not, or that are about to run out. Click one to cast it on yourself. Shift-drag to move it; turn it off in the window or with `/macrokit buffs`.
+- **Shows your missing buffs:** a row of glowing icons for the self-buffs your class should have up but does not, or that are about to run out. Click one to cast it on yourself. Move it with the **Position** button in the window (it steps through set spots on screen, easy with a gamepad) or Shift-drag it; turn it off in the window or with `/macrokit buffs`.
 - **The hunter's Pet macro feeds your pet when it is not happy** (Feed Pet with the best food in your bags; Shift to Mend Pet), and remembers foods your pet refuses.
 - **Attack macros also start your auto-attack**, so a press still starts you swinging when you are out of rage, energy or mana. For hunters at range it starts Auto Shot. Crowd control that breaks on damage, such as Sap or Polymorph, does not.
 - It never overwrites a macro: if you already have one with the same name, yours stays. (The one exception: a macro MacroKit itself added, still exactly as it added it, is brought up to date when MacroKit improves it.)
@@ -115,7 +115,8 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 |---|---|
 | Open the MacroKit window | `/macrokit`, the minimap button, or MacroKit's entry in the minimap's addon list |
 | Add the macros you are missing | `/macrokit add` |
-| Show or hide your missing buffs | `/macrokit buffs` (`/macrokit buffs reset` moves the row back) |
+| Show or hide your missing buffs | `/macrokit buffs` |
+| Move the missing-buffs row to the next spot on screen | `/macrokit buffs move` (`/macrokit buffs reset`: back to the first) |
 | See the macros and whether you have them, in chat | `/macrokit list` |
 | Show or hide the minimap button | `/macrokit button` |
 | Explain MacroKit's macros in action button tooltips, on or off | `/macrokit tooltips` |

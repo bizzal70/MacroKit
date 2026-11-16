@@ -686,8 +686,15 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Install(false)
     elseif command == "buffs" then
         if rest == "reset" then
-            ns.db.buffPoint = nil
-            ns.Print("The missing-buffs row goes back to its starting place after /reload.")
+            -- The step after the last spot is the first one.
+            ns.db.buffPoint, ns.db.buffSpot = nil, #ns.BUFF_SPOTS
+            local spot = ns.NextBuffSpot()
+            if spot then ns.Print("The missing-buffs row is back at its starting place: " .. spot .. ".") end
+            ns.RefreshWindow()
+        elseif rest == "move" then
+            local spot = ns.NextBuffSpot()
+            if spot then ns.Print("The missing-buffs row is now: " .. spot .. ".") end
+            ns.RefreshWindow()
         else
             ns.db.buffReminder = not ns.db.buffReminder
             ns.Print(ns.db.buffReminder and "Showing your missing buffs (click one to cast it on yourself)."
@@ -729,7 +736,8 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
         ns.Print("/macrokit button - show or hide the minimap button")
         ns.Print("/macrokit tooltips - explain MacroKit's macros in action button tooltips, on or off")
-        ns.Print("/macrokit buffs - show your missing self-buffs (click one to cast it), on or off; /macrokit buffs reset - move the row back")
+        ns.Print("/macrokit buffs - show your missing self-buffs (click one to cast it), on or off")
+        ns.Print("/macrokit buffs move - move that row to the next spot on screen; /macrokit buffs reset - back to the first")
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
         ns.Print("/macrokit talents - what the game reports about your talents")
         ns.Print("/macrokit clear - delete the macros MacroKit added for a spec you are no longer")

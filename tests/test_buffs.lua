@@ -89,6 +89,36 @@ check(Names() == "", "and not once both are on")
 CLASS = "ROGUE"
 check(Names() == "", "a rogue is never reminded")
 
+-- Moving the row through set spots (the gamepad-friendly way).
+CLASS = "PRIEST"
+AURAS = {}
+check(ns.BuffSpotLabel() == "Above the middle", "the row starts above the middle of the screen")
+local bar = ns.BuffBar()
+check(ns.NextBuffSpot() == "Below the middle" and bar.__point and bar.__point[5] == -160, "Position moves it to the next spot")
+for _ = 1, 4 do ns.NextBuffSpot() end
+check(ns.BuffSpotLabel() == "Right of the middle", "through every spot")
+check(ns.NextBuffSpot() == "Above the middle", "and round to the first again")
+-- With nothing missing, the row still shows for a moment so its new spot can be seen.
+AURAS["Power Word: Fortitude"] = { expirationTime = 0, duration = 0 }
+AURAS["Inner Fire"] = { expirationTime = 0, duration = 0 }
+ns.NextBuffSpot()
+check(bar:IsShown() and bar.preview:IsShown(), "after moving, the row shows where it is even with nothing missing")
+NOW = NOW + 5
+ns.RefreshBuffs()
+check(not bar:IsShown(), "and hides again a few seconds later")
+-- A place dragged with the mouse, then Position: back to the set spots.
+ns.db.buffPoint = { "TOPLEFT", "TOPLEFT", 50, -50 }
+check(ns.BuffSpotLabel() == "Where you dragged it", "a dragged place is named as such")
+check(ns.NextBuffSpot() == "Above the middle", "and Position goes back to the first set spot")
+SlashCmdList.MACROKIT("buffs move")
+check(ns.BuffSpotLabel() == "Below the middle", "/macrokit buffs move steps too")
+SlashCmdList.MACROKIT("buffs reset")
+check(ns.BuffSpotLabel() == "Above the middle", "/macrokit buffs reset goes back to the first spot")
+IN_COMBAT = true
+check(ns.NextBuffSpot() == nil and ns.BuffSpotLabel() == "Above the middle", "it cannot be moved in combat")
+IN_COMBAT = false
+AURAS = {}
+
 -- Off and on.
 CLASS = "PRIEST"
 AURAS = {}

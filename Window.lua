@@ -25,7 +25,7 @@ local HOW_HINT = "Ready to add? Click Add. Then drag the macro's line onto an ac
 local MENU_ROW = 22
 local QUESTION_MARK = 134400
 
-local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox, buffBox
+local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox, buffBox, buffSpotButton
 local howPanel, howTitle, howText
 local staleBar, staleText, staleButton
 local STALE_HEIGHT = 30
@@ -365,6 +365,8 @@ local function Refresh()
     removeButton:SetActive(next(ns.char.made) ~= nil and not inCombat)
     autoBox.tick:SetShown(ns.char.auto and true or false)
     buffBox.tick:SetShown(ns.db.buffReminder ~= false)
+    buffSpotButton.label:SetText("Position: " .. (ns.BuffSpotLabel and ns.BuffSpotLabel() or "?"))
+    buffSpotButton:SetActive(ns.db.buffReminder ~= false and not inCombat)
 end
 
 local function CreateTab(key, x, width)
@@ -528,9 +530,16 @@ local function CreateWindow()
     autoBox = TickBox("Add new macros by themselves as I learn their spells", 34, function()
         SlashCmdList.MACROKIT(ns.char.auto and "auto off" or "auto on")
     end)
-    buffBox = TickBox("Show my missing buffs (click one to cast it on myself)", 12, function()
+    buffBox = TickBox("Show my missing buffs", 12, function()
         SlashCmdList.MACROKIT("buffs")
     end)
+    buffBox:SetWidth(200)
+    -- Steps the buff row through set spots on screen: works with a gamepad.
+    buffSpotButton = TextButton(window, 220, "Position", function()
+        ns.NextBuffSpot()
+        ns.RefreshWindow()
+    end)
+    buffSpotButton:SetPoint("BOTTOMRIGHT", -PADDING, 10)
 end
 
 function ns.ToggleWindow()

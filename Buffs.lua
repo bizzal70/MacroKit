@@ -190,7 +190,7 @@ local function CreateIcon(index)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
         GameTooltip:AddLine(self.spell or "?")
         GameTooltip:AddLine(self.left and "Running out: click to cast it again on yourself." or "Missing: click to cast it on yourself.", 1, 1, 1, true)
-        GameTooltip:AddLine("Shift-drag to move this row. /macrokit buffs turns it off.", 0.6, 0.6, 0.6, true)
+        GameTooltip:AddLine("Move this row with the Position button in /macrokit, or Shift-drag it.", 0.6, 0.6, 0.6, true)
         GameTooltip:Show()
     end)
     button:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -201,17 +201,73 @@ local function CreateIcon(index)
     return button
 end
 
+-- Set spots for the row, chosen by clicking through them (the Position
+-- button in the window, or /macrokit buffs move): easy with a gamepad.
+-- Shift-drag still places it anywhere, with a mouse.
+ns.BUFF_SPOTS = {
+    { label = "Above the middle", point = "CENTER", x = 0, y = 160 },
+    { label = "Below the middle", point = "CENTER", x = 0, y = -160 },
+    { label = "Top of the screen", point = "TOP", x = 0, y = -110 },
+    { label = "Bottom, above the bars", point = "BOTTOM", x = 0, y = 220 },
+    { label = "Left of the middle", point = "CENTER", x = -280, y = 0 },
+    { label = "Right of the middle", point = "CENTER", x = 280, y = 0 },
+}
+
+-- Where the row is: "Where you dragged it", or the set spot's name.
+function ns.BuffSpotLabel()
+    if ns.db.buffPoint then return "Where you dragged it" end
+    local spot = ns.BUFF_SPOTS[ns.db.buffSpot or 1] or ns.BUFF_SPOTS[1]
+    return spot.label
+end
+
+local function Place()
+    bar:ClearAllPoints()
+    local point = ns.db.buffPoint
+    if point then
+        bar:SetPoint(point[1], UIParent, point[2], point[3], point[4])
+    else
+        local spot = ns.BUFF_SPOTS[ns.db.buffSpot or 1] or ns.BUFF_SPOTS[1]
+        bar:SetPoint(spot.point, UIParent, spot.point, spot.x, spot.y)
+    end
+end
+
 local function CreateBar()
     bar = CreateFrame("Frame", addonName .. "BuffBar", UIParent)
     bar:SetSize(ICON_SIZE, ICON_SIZE)
     bar:SetMovable(true)
     bar:SetClampedToScreen(true)
-    local point = ns.db.buffPoint
-    if point then
-        bar:SetPoint(point[1], UIParent, point[2], point[3], point[4])
-    else
-        bar:SetPoint("CENTER", UIParent, "CENTER", 0, 160)
+    -- Shown for a few seconds after moving, so the new spot can be seen
+    -- even with no buff missing.
+    bar.preview = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    bar.preview:SetPoint("CENTER")
+    bar.preview:SetText("Missing buffs show here")
+    bar.preview:Hide()
+    Place()
+end
+
+local previewUntil = 0
+
+-- Moves the row to the next set spot. Not in combat (the row holds
+-- click-to-cast buttons, which the game does not let addons move then).
+-- Returns the new spot's name, or nil.
+function ns.NextBuffSpot()
+    if not ns.db then return end
+    if InCombatLockdown() then
+        ns.Print("The missing-buffs row cannot be moved in combat.")
+        return
     end
+    if ns.db.buffPoint then
+        ns.db.buffPoint = nil          -- from a dragged place, start at the first spot
+        ns.db.buffSpot = 1
+    else
+        ns.db.buffSpot = (ns.db.buffSpot or 1) % #ns.BUFF_SPOTS + 1
+    end
+    if not bar then CreateBar() end
+    Place()
+    previewUntil = GetTime() + 4
+    ns.RefreshBuffs()
+    if C_Timer and C_Timer.After then C_Timer.After(4.1, function() ns.RefreshBuffs() end) end
+    return ns.BuffSpotLabel()
 end
 
 local function TimeText(seconds)
@@ -241,7 +297,10 @@ function ns.RefreshBuffs()
     end
     for index = #wanted + 1, #icons do icons[index]:Hide() end
     bar:SetWidth(math.max(1, #wanted) * (ICON_SIZE + GAP) - GAP)
-    bar:SetShown(#wanted > 0)
+    local previewing = #wanted == 0 and GetTime() < previewUntil
+    bar.preview:SetShown(previewing)
+    if previewing then bar:SetWidth(ICON_SIZE * 5) end
+    bar:SetShown(#wanted > 0 or previewing)
 end
 
 function ns.BuffBar() return bar, icons end
