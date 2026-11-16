@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.9.1
+
+- Priests get a **Smite** macro: Smite on the enemy under your mouse, else your target, starting your auto-attack like the other attack macros.
+
 ## 0.9.0
 
 - The hunter's **Pet** macro now feeds your pet when it is not happy. MacroKit switches the macro to Feed Pet with the best food in your bags (hold Shift to Mend Pet instead), and back to call, revive or mend once the pet is happy. A food your pet refuses is remembered for that pet and skipped. The macro is only changed outside combat, and only while it is still as MacroKit added it.

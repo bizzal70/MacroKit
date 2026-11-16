@@ -262,6 +262,12 @@ ns.SETS.PRIEST = {
 #showtooltip
 /cast [@mouseover,help,nodead][help,nodead][@player] Abolish Disease
 /cast [@mouseover,help,nodead][help,nodead][@player] Cure Disease]]),
+        M("Smite", "Smite on mouseover or target",
+          "Casts Smite, the priest's first damage spell, on the enemy under your mouse, else your target. It also starts your auto-attack.",
+          { "Smite" }, [[
+#showtooltip Smite
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Smite]]),
         M("SW: Pain", "Shadow Word: Pain on mouseover or target",
           "Casts Shadow Word: Pain on the enemy under your mouse, else your target, so you can put it on several enemies without changing target.",
           { "Shadow Word: Pain" }, [[

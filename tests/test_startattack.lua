@@ -44,7 +44,11 @@ for class, set in pairs(ns.SETS) do
     Each(set.shared)
     for _, list in pairs(set.specs or {}) do Each(list) end
 end
-check(count == 70, "70 attack macros gained the line (" .. count .. ")")
+check(count == 71, "71 attack macros start auto-attack (" .. count .. ")")
+check(Find("PRIEST", "Smite") and Has(Find("PRIEST", "Smite").body, "/startattack [harm,nodead]") and Has(Find("PRIEST", "Smite").body, "[@mouseover,harm,nodead][] Smite"), "priests have a Smite macro, on mouseover or target, that starts auto-attack")
+for _, id in ipairs(ns.SETS.PRIEST.order) do
+    check(#ns.SETS.PRIEST.shared + #(ns.SETS.PRIEST.specs[id] or {}) <= 18, "a priest's shared and spec macros still fit in 18 slots (spec " .. id .. ")")
+end
 
 -- Macros already in the list.
 SPEC = nil
