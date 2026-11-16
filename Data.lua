@@ -267,15 +267,13 @@ ns.SETS.PRIEST = {
           { "Smite" }, [[
 #showtooltip Smite
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Smite
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Smite]]),
         M("Mind Blast", "Mind Blast on mouseover or target",
           "Casts Mind Blast, the priest's hardest-hitting shadow spell, on the enemy under your mouse, else your target. It has an 8 second cooldown. It also starts your auto-attack.",
           { "Mind Blast" }, [[
 #showtooltip Mind Blast
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Mind Blast
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Mind Blast]]),
         M("SW: Pain", "Shadow Word: Pain on mouseover or target",
           "Casts Shadow Word: Pain on the enemy under your mouse, else your target, so you can put it on several enemies without changing target.",
           { "Shadow Word: Pain" }, [[
@@ -320,8 +318,7 @@ ns.SETS.PRIEST = {
               { "Penance" }, [[
 #showtooltip Penance
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,exists,nodead][] Penance
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,exists,nodead][] Penance]]),
             M("Power Infusion", "Power Infusion on a mouseover friend, target or you",
               "Casts Power Infusion on the friend under your mouse, else your friendly target, else you: 20% more spell damage and healing for 15 seconds.",
               { "Power Infusion" }, [[
@@ -338,8 +335,7 @@ ns.SETS.PRIEST = {
               { "Holy Fire" }, [[
 #showtooltip Holy Fire
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Holy Fire
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [257] = {
             M("Mending", "Prayer of Mending on a mouseover friend, target or you",
@@ -357,8 +353,7 @@ ns.SETS.PRIEST = {
               { "Holy Fire" }, [[
 #showtooltip Holy Fire
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Holy Fire
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [258] = {
             M("Shadowform", "Shadowform, without turning it off",
@@ -385,8 +380,7 @@ ns.SETS.PRIEST = {
               { "Mind Flay" }, [[
 #showtooltip Mind Flay
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Mind Flay
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Mind Flay]]),
         },
     },
 }
@@ -1080,8 +1074,7 @@ ns.SETS.MAGE = {
           { "Frostfire Bolt" }, [[
 #showtooltip Frostfire Bolt
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Frostfire Bolt
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Frostfire Bolt]]),
     },
     order = { 62, 63, 64 },
     names = { [62] = "Arcane", [63] = "Fire", [64] = "Frost" },
@@ -1097,8 +1090,7 @@ ns.SETS.MAGE = {
               { "Arcane Blast" }, [[
 #showtooltip Arcane Blast
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Arcane Blast
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Arcane Blast]]),
             M("Burst", "Arcane Power and Presence of Mind together",
               "Uses Arcane Power (30% more spell damage for 15 seconds) and, once you have it, Presence of Mind (your next spell is instant) in one press.",
               { "Arcane Power" }, [[
@@ -1111,8 +1103,7 @@ ns.SETS.MAGE = {
 #showtooltip Presence of Mind
 /startattack [harm,nodead,noequipped:Wands]
 /cast Presence of Mind
-/cast [@mouseover,harm,nodead][] Arcane Blast
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Arcane Blast]]),
         },
         [63] = {
             M("Pyroblast", "Pyroblast on mouseover or target",
@@ -1120,8 +1111,7 @@ ns.SETS.MAGE = {
               { "Pyroblast" }, [[
 #showtooltip Pyroblast
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Pyroblast
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Pyroblast]]),
             M("Combustion", "Combustion",
               "Uses Combustion, raising your fire critical strike chance.",
               { "Combustion" }, [[
@@ -1164,8 +1154,7 @@ ns.SETS.WARLOCK = {
           { "Corruption" }, [[
 #showtooltip Corruption
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Corruption
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Corruption]]),
         M("Agony", "Bane of Agony on mouseover or target",
           "Casts Bane of Agony (Forever's new name for Curse of Agony) on the enemy under your mouse, else your target. In Forever you can keep one Bane and one Curse on the same target.",
           { "Bane of Agony" }, [[
@@ -1184,8 +1173,7 @@ ns.SETS.WARLOCK = {
           { "Immolate" }, [[
 #showtooltip Immolate
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Immolate
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Immolate]]),
         M("Fear", "Fear on mouseover or target",
           "Casts Fear on the enemy under your mouse, else your target.",
           { "Fear" }, [[
@@ -1201,8 +1189,7 @@ ns.SETS.WARLOCK = {
           { "Drain Soul" }, [[
 #showtooltip
 /startattack [harm,nodead,noequipped:Wands]
-/cast [mod:shift] Drain Life; Drain Soul
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [mod:shift] Drain Life; Drain Soul]]),
         M("Death Coil", "Death Coil on mouseover or target",
           "Casts Death Coil on the enemy under your mouse, else your target: it horrifies them and heals you.",
           { "Death Coil" }, [[
@@ -1247,8 +1234,7 @@ ns.SETS.WARLOCK = {
               { "Wrack" }, [[
 #showtooltip Wrack
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Wrack
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Wrack]]),
         },
         [266] = {
             M("Quick Demon", "Fel Domination, then a demon; Shift Succubus, Ctrl Felhunter",
@@ -1295,8 +1281,7 @@ ns.SETS.WARLOCK = {
               { "Incinerate" }, [[
 #showtooltip Incinerate
 /startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Incinerate
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Incinerate]]),
         },
     },
 }
