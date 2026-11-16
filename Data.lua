@@ -910,8 +910,8 @@ ns.SETS.HUNTER = {
 #showtooltip Concussive Shot
 /startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Concussive Shot]]),
-        M("Pet", "Calls, revives or heals your pet",
-          "One button for your pet: calls it if it is not out, revives it if it is dead, otherwise heals it with Mend Pet. If Forever names Call Pet after your pet, this macro will wait for that spell; please report it.",
+        M("Pet", "Calls, revives, heals or feeds your pet",
+          "One button for your pet: calls it if it is not out, revives it if it is dead, otherwise heals it with Mend Pet. When your pet is not happy, MacroKit switches the macro to Feed Pet with the best food in your bags (hold Shift to Mend Pet instead), and back once it is happy. A food your pet refuses is remembered and skipped.",
           { "Call Pet" }, [[
 #showtooltip
 /cast [nopet] Call Pet; [@pet,dead] Revive Pet; Mend Pet]]),

@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.9.0
+
+- The hunter's **Pet** macro now feeds your pet when it is not happy. MacroKit switches the macro to Feed Pet with the best food in your bags (hold Shift to Mend Pet instead), and back to call, revive or mend once the pet is happy. A food your pet refuses is remembered for that pet and skipped. The macro is only changed outside combat, and only while it is still as MacroKit added it.
+
 ## 0.8.1
 
 - Hunters' shots now use `/startattack` like every other class: in World of Warcraft: Forever, as in the current game, it starts Auto Shot at range. The `!Auto Shot` line from 0.8.0 is gone, and hunter macros already updated by 0.8.0 are switched over the next time you log in (unless you changed them).
