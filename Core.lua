@@ -483,6 +483,9 @@ local ADDED_LINES = {
     ["/startattack [harm,nodead]"] = true,
     ["/startattack [nostealth,harm,nodead]"] = true,
     ["/cast [harm,nodead] !Auto Shot"] = true,
+    -- 0.10.0: casters shoot a wand when one is equipped, else swing.
+    ["/startattack [harm,nodead,noequipped:Wands]"] = true,
+    ["/cast [harm,nodead,equipped:Wands] !Shoot"] = true,
 }
 
 local function Clean(body)

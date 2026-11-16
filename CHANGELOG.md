@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.10.0
+
+- Mages, priests and warlocks: attack macros now shoot your **wand** (Shoot) when one is equipped, and swing your melee weapon only when none is. In Forever, `/startattack` swings the melee weapon even with a wand equipped. The warlock's Curse macro only shoots the wand, since both lines would take it past the game's 255 characters. Caster macros already in your list are updated the next time you log in, unless you changed them.
+
 ## 0.9.2
 
 - Priests get **Mind Blast** (every spec) and **Holy Fire** (Discipline and Holy; Shadow priests rarely use it, and it would take a Shadow priest past 18 macros). Both cast on the enemy under your mouse, else your target, and start your auto-attack.
