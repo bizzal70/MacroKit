@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.7
+
+- The missing-buffs icons now show the cooldown sweep in combat too. In combat the game hides cooldowns from addons, so MacroKit hands them straight to the sweep, which can still draw them. Greying out and ignoring taps stay out of combat only: the game does not allow either in combat.
+
 ## 0.11.6
 
 - Fixed: the missing-buffs icons did not grey out or show the cooldown sweep. Forever does not report the global cooldown on its own (spell 61304 does not exist there), so each icon now reads its own buff spell's cooldown, which includes the global cooldown. A buff with a cooldown of its own also stays greyed until it is ready.

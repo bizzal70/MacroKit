@@ -375,7 +375,33 @@ local function SetIconEnabled(button, enabled)
 end
 
 local enableTimer = false
+-- In combat Forever hides cooldowns from addons (secret values): they
+-- cannot be compared, so nothing can be switched off, but they can be
+-- handed to the sweep as they are, which draws them. Hiding them is also
+-- why the icons cannot grey out in combat.
+local function SweepInCombat(button)
+    if not (button.cd and button.spell and C_Spell) then return end
+    if C_Spell.GetSpellCooldownDuration and button.cd.SetCooldownFromDurationObject then
+        local ok, durationObject = pcall(C_Spell.GetSpellCooldownDuration, button.spell)
+        if ok and durationObject ~= nil and pcall(button.cd.SetCooldownFromDurationObject, button.cd, durationObject) then
+            return
+        end
+    end
+    if C_Spell.GetSpellCooldown then
+        local ok, info = pcall(C_Spell.GetSpellCooldown, button.spell)
+        if ok and type(info) == "table" then
+            pcall(button.cd.SetCooldown, button.cd, info.startTime, info.duration)
+        end
+    end
+end
+
 function ns.UpdateGlobalCooldown()
+    if InCombatLockdown() then
+        for _, button in ipairs(icons) do
+            if button:IsShown() then SweepInCombat(button) end
+        end
+        return
+    end
     local soonest
     for _, button in ipairs(icons) do
         local start, duration = ns.SpellCooldown(button:IsShown() and button.spell or nil)

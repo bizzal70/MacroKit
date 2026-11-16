@@ -109,8 +109,27 @@ check(icons[1].__enabled == false, "off again during the next global cooldown")
 Fire("PLAYER_REGEN_DISABLED")
 check(icons[1].__enabled == true, "combat starting switches it back on, so it is never off for a whole fight")
 IN_COMBAT = true
+-- In combat the game hides the numbers (secret values): they cannot be
+-- compared, only handed to the sweep, which draws them.
+local SECRET_START, SECRET_LENGTH = {}, {}
+local realIsSecret = issecretvalue
+issecretvalue = function(v) return v == SECRET_START or v == SECRET_LENGTH end
+local realGetCooldown = C_Spell.GetSpellCooldown
+C_Spell.GetSpellCooldown = function() return { startTime = SECRET_START, duration = SECRET_LENGTH } end
+icons[1].cd.__cooldown = nil
 Fire("SPELL_UPDATE_COOLDOWN")
-check(icons[1].__enabled == true and icons[1].cd.__cooldown, "in combat it stays clickable, and only the sweep shows")
+check(icons[1].__enabled == true, "in combat it stays clickable (the game does not allow switching it off)")
+check(icons[1].cd.__cooldown and icons[1].cd.__cooldown[1] == SECRET_START and icons[1].cd.__cooldown[2] == SECRET_LENGTH,
+    "and the hidden cooldown is handed straight to the sweep, which draws it")
+-- Where the game offers a duration object for the sweep, that is used.
+local DURATION = {}
+C_Spell.GetSpellCooldownDuration = function() return DURATION end
+icons[1].cd.SetCooldownFromDurationObject = function(self, d) self.__durationObject = d end
+Fire("SPELL_UPDATE_COOLDOWN")
+check(icons[1].cd.__durationObject == DURATION, "or its duration object, where the game has one")
+C_Spell.GetSpellCooldownDuration = nil
+C_Spell.GetSpellCooldown = realGetCooldown
+issecretvalue = realIsSecret
 IN_COMBAT = false
 GCD = nil
 NOW = NOW + 2
