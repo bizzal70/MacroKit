@@ -23,8 +23,8 @@ local function Has(body, text) return body:find(text, 1, true) ~= nil end
 -- What the macros say.
 check(Has(Find("WARRIOR", "Strike").body, "/startattack [harm,nodead]"), "Heroic Strike starts auto-attack")
 check(Has(Find("MAGE", "Fire Blast").body, "/startattack [harm,nodead]"), "a caster's attack starts auto-attack too")
-check(Has(Find("HUNTER", "Arcane Shot").body, "!Auto Shot") and not Has(Find("HUNTER", "Arcane Shot").body, "/startattack"),
-    "a hunter's shot starts Auto Shot, not a melee swing")
+check(Has(Find("HUNTER", "Arcane Shot").body, "/startattack [harm,nodead]") and not Has(Find("HUNTER", "Arcane Shot").body, "Auto Shot"),
+    "a hunter's shot uses /startattack too (Forever, like the current game, starts Auto Shot with it)")
 check(Has(Find("ROGUE", "Opener").body, "/startattack [nostealth,harm,nodead]"), "a stealth opener only starts attacking out of stealth")
 for _, cc in ipairs({ { "ROGUE", "Sap" }, { "ROGUE", "Blind" }, { "MAGE", "Sheep" }, { "PALADIN", "Repent" },
         { "DRUID", "Hibernate" }, { "DRUID", "Roots" }, { "WARLOCK", "Fear" }, { "WARLOCK", "Banish" },
@@ -69,3 +69,14 @@ check(#ns.UpgradeMacros() == 0, "a second look changes nothing")
 IN_COMBAT = true
 check(#ns.UpgradeMacros() == 0, "nothing is changed in combat")
 IN_COMBAT = false
+
+-- A hunter's shot already updated by 0.8.0 (with !Auto Shot at the end)
+-- is switched to /startattack.
+CLASS = "HUNTER"
+local arcane = Find("HUNTER", "Arcane Shot")
+local shot080 = "#showtooltip Arcane Shot\n/cast [@mouseover,harm,nodead][] Arcane Shot\n/cast [harm,nodead] !Auto Shot"
+CreateMacro("Arcane Shot", 1, shot080, true)
+ns.char.made["Arcane Shot"] = true
+ns.UpgradeMacros()
+check(BodyOf("Arcane Shot") == arcane.body, "a hunter macro from 0.8.0 is switched from !Auto Shot to /startattack")
+CLASS = "PALADIN"

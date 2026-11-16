@@ -884,32 +884,32 @@ ns.SETS.HUNTER = {
           "Uses Serpent Sting on the enemy under your mouse, else your target. Hold Shift for Scorpid Sting instead (level 22).",
           { "Serpent Sting" }, [[
 #showtooltip
-/cast [mod:shift,@mouseover,harm,nodead][mod:shift] Scorpid Sting; [@mouseover,harm,nodead][] Serpent Sting
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [mod:shift,@mouseover,harm,nodead][mod:shift] Scorpid Sting; [@mouseover,harm,nodead][] Serpent Sting]]),
         M("Arcane Shot", "Arcane Shot on mouseover or target",
           "Uses Arcane Shot on the enemy under your mouse, else your target. In Forever it shares a 6 second cooldown with Summon Hawk.",
           { "Arcane Shot" }, [[
 #showtooltip Arcane Shot
-/cast [@mouseover,harm,nodead][] Arcane Shot
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Arcane Shot]]),
         M("Aimed Shot", "Aimed Shot on mouseover or target",
           "Uses Aimed Shot, trained by every hunter in Forever (level 20), on the enemy under your mouse, else your target. It shares a 6 second cooldown with Multi-Shot, and your Auto Shot keeps firing while you cast it.",
           { "Aimed Shot" }, [[
 #showtooltip Aimed Shot
-/cast [@mouseover,harm,nodead][] Aimed Shot
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Aimed Shot]]),
         M("Multi-Shot", "Multi-Shot on mouseover or target",
           "Uses Multi-Shot on the enemy under your mouse, else your target, hitting enemies around it.",
           { "Multi-Shot" }, [[
 #showtooltip Multi-Shot
-/cast [@mouseover,harm,nodead][] Multi-Shot
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Multi-Shot]]),
         M("Concussive", "Concussive Shot on mouseover or target",
           "Uses Concussive Shot on the enemy under your mouse, else your target, slowing them.",
           { "Concussive Shot" }, [[
 #showtooltip Concussive Shot
-/cast [@mouseover,harm,nodead][] Concussive Shot
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Concussive Shot]]),
         M("Pet", "Calls, revives or heals your pet",
           "One button for your pet: calls it if it is not out, revives it if it is dead, otherwise heals it with Mend Pet. If Forever names Call Pet after your pet, this macro will wait for that spell; please report it.",
           { "Call Pet" }, [[
@@ -974,8 +974,8 @@ ns.SETS.HUNTER = {
               "Uses Sniper Shot, new in Forever, on the enemy under your mouse, else your target: a long-range shot that also extends the range of your next 3 shots.",
               { "Sniper Shot" }, [[
 #showtooltip Sniper Shot
-/cast [@mouseover,harm,nodead][] Sniper Shot
-/cast [harm,nodead] !Auto Shot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Sniper Shot]]),
         },
         [255] = {
             M("Deterrence", "Deterrence",

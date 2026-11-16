@@ -515,7 +515,9 @@ function ns.UpgradeMacros()
         if not okInfo or type(current) ~= "string" then return end
         local wanted = Clean(macro.body)
         if Clean(current) == wanted then return end
-        if Clean(current) == Before080(wanted) and pcall(EditMacro, index, nil, nil, macro.body) then
+        -- The same macro apart from the auto-attack lines MacroKit adds
+        -- (0.7.0, or 0.8.0 with a hunter's !Auto Shot): bring it up to date.
+        if Before080(current) == Before080(wanted) and pcall(EditMacro, index, nil, nil, macro.body) then
             updated[#updated + 1] = macro.name
         end
     end
