@@ -15,6 +15,7 @@ local accountDefaults = {
     minimapButton = true,
     minimapAngle = 5.4,
     actionTooltips = true,   -- explain MacroKit's macros in action button tooltips
+    buffReminder = true,     -- the row of missing self-buffs (Buffs.lua)
 }
 
 local defaults = {
@@ -683,6 +684,17 @@ SlashCmdList.MACROKIT = function(msg)
         ns.ToggleWindow()
     elseif command == "install" or command == "add" then
         ns.Install(false)
+    elseif command == "buffs" then
+        if rest == "reset" then
+            ns.db.buffPoint = nil
+            ns.Print("The missing-buffs row goes back to its starting place after /reload.")
+        else
+            ns.db.buffReminder = not ns.db.buffReminder
+            ns.Print(ns.db.buffReminder and "Showing your missing buffs (click one to cast it on yourself)."
+                or "No longer showing your missing buffs.")
+            if ns.RefreshBuffs then ns.RefreshBuffs() end
+            ns.RefreshWindow()
+        end
     elseif command == "tooltips" then
         ns.db.actionTooltips = not ns.db.actionTooltips
         ns.Print(ns.db.actionTooltips and "Action button tooltips explain MacroKit's macros."
@@ -717,6 +729,7 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit auto on|off - add new macros by itself as you learn their spells")
         ns.Print("/macrokit button - show or hide the minimap button")
         ns.Print("/macrokit tooltips - explain MacroKit's macros in action button tooltips, on or off")
+        ns.Print("/macrokit buffs - show your missing self-buffs (click one to cast it), on or off; /macrokit buffs reset - move the row back")
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
         ns.Print("/macrokit talents - what the game reports about your talents")
         ns.Print("/macrokit clear - delete the macros MacroKit added for a spec you are no longer")

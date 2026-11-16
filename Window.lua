@@ -16,7 +16,7 @@ local ROW_HEIGHT = 36
 local TAB_TOP = HEADER_HEIGHT + 40      -- the tabs sit under the class line
 local TAB_HEIGHT = 26
 local LIST_TOP = TAB_TOP + TAB_HEIGHT + 8
-local FOOTER_HEIGHT = 74
+local FOOTER_HEIGHT = 96
 local HOW_HEIGHT = 84                    -- the How it works panel under the list
 -- Shown in the How it works panel while no macro is hovered: how to get
 -- a macro onto an action bar, then how to read about one.
@@ -25,7 +25,7 @@ local HOW_HINT = "Ready to add? Click Add. Then drag the macro's line onto an ac
 local MENU_ROW = 22
 local QUESTION_MARK = 134400
 
-local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox
+local window, classLine, specButton, menu, emptyText, specNote, addAllButton, removeButton, autoBox, buffBox
 local howPanel, howTitle, howText
 local staleBar, staleText, staleButton
 local STALE_HEIGHT = 30
@@ -364,6 +364,7 @@ local function Refresh()
     addAllButton:SetActive(addable > 0 and not inCombat)
     removeButton:SetActive(next(ns.char.made) ~= nil and not inCombat)
     autoBox.tick:SetShown(ns.char.auto and true or false)
+    buffBox.tick:SetShown(ns.db.buffReminder ~= false)
 end
 
 local function CreateTab(key, x, width)
@@ -500,27 +501,35 @@ local function CreateWindow()
     staleBar:Hide()
 
     addAllButton = TextButton(window, 170, "Add all missing", function() ns.Install(false) end)
-    addAllButton:SetPoint("BOTTOMLEFT", PADDING, 40)
+    addAllButton:SetPoint("BOTTOMLEFT", PADDING, 62)
     removeButton = TextButton(window, 200, "Remove MacroKit's macros", function() ns.Remove() end)
-    removeButton:SetPoint("BOTTOMRIGHT", -PADDING, 40)
+    removeButton:SetPoint("BOTTOMRIGHT", -PADDING, 62)
 
-    autoBox = CreateFrame("Button", nil, window)
-    autoBox:SetSize(WIDTH - PADDING * 2, 20)
-    autoBox:SetPoint("BOTTOMLEFT", PADDING, 12)
-    local box = CreateFrame("Frame", nil, autoBox)
-    box:SetSize(14, 14)
-    box:SetPoint("LEFT", 2, 0)
-    Fill(box, 0, 0, 0, 0.5)
-    Outline(box, 0.7)
-    autoBox.tick = box:CreateTexture(nil, "ARTWORK")
-    autoBox.tick:SetPoint("TOPLEFT", 3, -3)
-    autoBox.tick:SetPoint("BOTTOMRIGHT", -3, 3)
-    autoBox.tick:SetColorTexture(ACCENT_R, ACCENT_G, ACCENT_B, 1)
-    local autoLabel = Label(autoBox, "GameFontHighlightSmall")
-    autoLabel:SetPoint("LEFT", box, "RIGHT", 8, 0)
-    autoLabel:SetText("Add new macros by themselves as I learn their spells")
-    autoBox:SetScript("OnClick", function()
+    -- A tick box row: label, where, and what a click does.
+    local function TickBox(text, y, onClick)
+        local row = CreateFrame("Button", nil, window)
+        row:SetSize(WIDTH - PADDING * 2, 20)
+        row:SetPoint("BOTTOMLEFT", PADDING, y)
+        local box = CreateFrame("Frame", nil, row)
+        box:SetSize(14, 14)
+        box:SetPoint("LEFT", 2, 0)
+        Fill(box, 0, 0, 0, 0.5)
+        Outline(box, 0.7)
+        row.tick = box:CreateTexture(nil, "ARTWORK")
+        row.tick:SetPoint("TOPLEFT", 3, -3)
+        row.tick:SetPoint("BOTTOMRIGHT", -3, 3)
+        row.tick:SetColorTexture(ACCENT_R, ACCENT_G, ACCENT_B, 1)
+        local label = Label(row, "GameFontHighlightSmall")
+        label:SetPoint("LEFT", box, "RIGHT", 8, 0)
+        label:SetText(text)
+        row:SetScript("OnClick", onClick)
+        return row
+    end
+    autoBox = TickBox("Add new macros by themselves as I learn their spells", 34, function()
         SlashCmdList.MACROKIT(ns.char.auto and "auto off" or "auto on")
+    end)
+    buffBox = TickBox("Show my missing buffs (click one to cast it on myself)", 12, function()
+        SlashCmdList.MACROKIT("buffs")
     end)
 end
 

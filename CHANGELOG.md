@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.0
+
+- New: **missing buffs**. A row of glowing icons near the middle of the screen shows the self-buffs your class should have up but does not (for example Inner Fire and Power Word: Fortitude, Arcane Intellect and an armor, an aspect, Battle Shout, a shaman's shield and weapon imbue), or that have under 2 minutes left (30 seconds for short buffs). Click an icon to cast it on yourself. Only learned spells are asked for, any version of a buff counts (any armor, the group Fortitude), and it stays quiet while mounted, dead or on a flight. In combat it waits, as the game allows no changes then. Shift-drag to move it; turn it off with the new tick box in the window or `/macrokit buffs`.
+
 ## 0.10.2
 
 - The wand lines from 0.10.0 and 0.10.1 are gone again: they got in the way of a caster's rotation. Caster attack macros are back to a plain `/startattack`; put your wand (Shoot) on a key of its own. Macros already in your list go back the next time you log in, unless you changed them.

@@ -155,7 +155,7 @@ check(Has("Heal") and not Has("Seal") and not Has("Tank Up"), "Remove deletes on
 
 -- The automatic-adding switch.
 local auto
-for _, f in ipairs(Frames()) do if rawget(f, "tick") then auto = f end end
+for _, f in ipairs(Frames()) do if rawget(f, "tick") and not auto then auto = f end end
 check(not auto.tick.__shown, "the tick box shows automatic adding is off")
 Click(auto)
 RunAfters()

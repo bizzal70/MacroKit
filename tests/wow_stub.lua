@@ -22,6 +22,7 @@ local function Stub()
         if k == "GetText" then return function(self) return self.__text end end
         if k == "SetTextColor" then return function(self, ...) self.__color = { ... } end end
         if k == "SetTexture" then return function(self, t) self.__texture = t end end
+        if k == "SetAttribute" then return function(self, key, v) self.__attributes = self.__attributes or {}; self.__attributes[key] = v end end
         if k == "SetDesaturated" then return function(self, v) self.__desaturated = v end end
         if k == "CreateTexture" or k == "CreateFontString" or k == "CreateLine" then
             return function(self) local child = Stub(); child.__parent = self; regions[#regions + 1] = child; return child end
