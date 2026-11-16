@@ -75,9 +75,9 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 
 **Priest**
 
-- Every spec: Shield, Renew, Flash Heal, Big Heal, Fortitude, Dispel, Cure, Smite, SW: Pain, SW: Death, Fear Ward, Shackle, Rez.
-- Discipline: Penance, Power Infusion, Focus Heal.
-- Holy: Mending, Group Heal.
+- Every spec: Shield, Renew, Flash Heal, Big Heal, Fortitude, Dispel, Cure, Smite, Mind Blast, SW: Pain, SW: Death, Fear Ward, Shackle, Rez.
+- Discipline: Penance, Power Infusion, Focus Heal, Holy Fire.
+- Holy: Mending, Group Heal, Holy Fire.
 - Shadow: Shadowform, Silence, Vamp Embrace, Mind Flay.
 
 **Shaman**

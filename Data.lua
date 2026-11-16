@@ -268,6 +268,12 @@ ns.SETS.PRIEST = {
 #showtooltip Smite
 /startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Smite]]),
+        M("Mind Blast", "Mind Blast on mouseover or target",
+          "Casts Mind Blast, the priest's hardest-hitting shadow spell, on the enemy under your mouse, else your target. It has an 8 second cooldown. It also starts your auto-attack.",
+          { "Mind Blast" }, [[
+#showtooltip Mind Blast
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Mind Blast]]),
         M("SW: Pain", "Shadow Word: Pain on mouseover or target",
           "Casts Shadow Word: Pain on the enemy under your mouse, else your target, so you can put it on several enemies without changing target.",
           { "Shadow Word: Pain" }, [[
@@ -322,6 +328,12 @@ ns.SETS.PRIEST = {
 #showtooltip Inner Focus
 /cast Inner Focus
 /cast [@mouseover,help,nodead][help,nodead][@player] Flash Heal]]),
+            M("Holy Fire", "Holy Fire on mouseover or target",
+              "Casts Holy Fire on the enemy under your mouse, else your target: a big holy hit that also burns over time. It also starts your auto-attack.",
+              { "Holy Fire" }, [[
+#showtooltip Holy Fire
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [257] = {
             M("Mending", "Prayer of Mending on a mouseover friend, target or you",
@@ -334,6 +346,12 @@ ns.SETS.PRIEST = {
               { "Prayer of Healing" }, [[
 #showtooltip Prayer of Healing
 /cast [@mouseover,help,nodead][help,nodead][@player] Prayer of Healing]]),
+            M("Holy Fire", "Holy Fire on mouseover or target",
+              "Casts Holy Fire on the enemy under your mouse, else your target: a big holy hit that also burns over time. It also starts your auto-attack.",
+              { "Holy Fire" }, [[
+#showtooltip Holy Fire
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [258] = {
             M("Shadowform", "Shadowform, without turning it off",

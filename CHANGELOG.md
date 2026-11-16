@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.9.2
+
+- Priests get **Mind Blast** (every spec) and **Holy Fire** (Discipline and Holy; Shadow priests rarely use it, and it would take a Shadow priest past 18 macros). Both cast on the enemy under your mouse, else your target, and start your auto-attack.
+
 ## 0.9.1
 
 - Priests get a **Smite** macro: Smite on the enemy under your mouse, else your target, starting your auto-attack like the other attack macros.

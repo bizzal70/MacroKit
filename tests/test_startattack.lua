@@ -44,7 +44,14 @@ for class, set in pairs(ns.SETS) do
     Each(set.shared)
     for _, list in pairs(set.specs or {}) do Each(list) end
 end
-check(count == 71, "71 attack macros start auto-attack (" .. count .. ")")
+check(count == 74, "74 attack macros start auto-attack (" .. count .. ")")
+check(Find("PRIEST", "Mind Blast") and Has(Find("PRIEST", "Mind Blast").body, "/startattack [harm,nodead]"), "every priest has Mind Blast, starting auto-attack")
+for _, id in ipairs({ 256, 257 }) do
+    local found
+    for _, macro in ipairs(ns.SETS.PRIEST.specs[id]) do if macro.name == "Holy Fire" then found = macro end end
+    check(found and Has(found.body, "[@mouseover,harm,nodead][] Holy Fire"), "spec " .. id .. " (Discipline, Holy) has Holy Fire")
+end
+for _, macro in ipairs(ns.SETS.PRIEST.specs[258]) do check(macro.name ~= "Holy Fire", "Shadow does not get Holy Fire (" .. macro.name .. ")") end
 check(Find("PRIEST", "Smite") and Has(Find("PRIEST", "Smite").body, "/startattack [harm,nodead]") and Has(Find("PRIEST", "Smite").body, "[@mouseover,harm,nodead][] Smite"), "priests have a Smite macro, on mouseover or target, that starts auto-attack")
 for _, id in ipairs(ns.SETS.PRIEST.order) do
     check(#ns.SETS.PRIEST.shared + #(ns.SETS.PRIEST.specs[id] or {}) <= 18, "a priest's shared and spec macros still fit in 18 slots (spec " .. id .. ")")
