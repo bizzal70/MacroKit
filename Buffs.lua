@@ -206,6 +206,13 @@ local function CreateIcon(index)
         button.pulse = pulse
     end)
 
+    -- The global cooldown's sweep, so it is clear when a tap would work.
+    local okCd, cd = pcall(CreateFrame, "Cooldown", nil, button, "CooldownFrameTemplate")
+    if okCd and cd then
+        cd:SetAllPoints()
+        button.cd = cd
+    end
+
     button.time = button:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
     button.time:SetPoint("BOTTOM", 0, 2)
 
@@ -324,9 +331,76 @@ function ns.RefreshBuffs()
     bar.preview:SetShown(previewing)
     if previewing then bar:SetWidth(ICON_SIZE * 5) end
     bar:SetShown(#wanted > 0 or previewing)
+    if ns.UpdateGlobalCooldown then ns.UpdateGlobalCooldown() end
 end
 
 function ns.BuffBar() return bar, icons end
+
+---------------------------------------------------------------------------
+-- The global cooldown
+--
+-- While it runs, a tap would only bring "Spell is not ready yet", and
+-- hide the icon. So during it:
+--   * every icon shows the cooldown sweep (in combat too), and
+--   * out of combat the icons are switched off, greyed, and switched back
+--     on as it ends. In combat the game does not let addons switch
+--     click-to-cast buttons off, so only the sweep shows then.
+-- The icons are always switched back on when combat starts
+-- (PLAYER_REGEN_DISABLED comes just before the game locks them), so they
+-- can never be left off for a fight.
+---------------------------------------------------------------------------
+
+local GCD_SPELL = 61304       -- the game's global cooldown "spell"
+
+-- The global cooldown's start and length in seconds, or nil when it is
+-- not running or the game will not say.
+function ns.GlobalCooldown()
+    if not (C_Spell and C_Spell.GetSpellCooldown) then return nil end
+    local ok, info = pcall(C_Spell.GetSpellCooldown, GCD_SPELL)
+    if not ok or type(info) ~= "table" then return nil end
+    local start, duration = info.startTime, info.duration
+    if not Usable(start) or not Usable(duration) or type(duration) ~= "number" or duration <= 0 then return nil end
+    if start + duration <= GetTime() then return nil end
+    return start, duration
+end
+
+local function SetIconsEnabled(enabled)
+    if InCombatLockdown() then return end
+    for _, button in ipairs(icons) do
+        pcall(button.SetEnabled, button, enabled)
+        button.icon:SetDesaturated(not enabled)
+    end
+end
+
+local enableTimer = false
+function ns.UpdateGlobalCooldown()
+    local start, duration = ns.GlobalCooldown()
+    for _, button in ipairs(icons) do
+        if button.cd then
+            if start then pcall(button.cd.SetCooldown, button.cd, start, duration) else pcall(button.cd.Clear, button.cd) end
+        end
+    end
+    SetIconsEnabled(start == nil)
+    -- Switch them back on as it ends.
+    if start and not enableTimer and C_Timer and C_Timer.After then
+        enableTimer = true
+        C_Timer.After(math.max(0.05, start + duration - GetTime() + 0.05), function()
+            enableTimer = false
+            ns.UpdateGlobalCooldown()
+        end)
+    end
+end
+
+local gcdWatcher = CreateFrame("Frame")
+pcall(gcdWatcher.RegisterEvent, gcdWatcher, "SPELL_UPDATE_COOLDOWN")
+pcall(gcdWatcher.RegisterEvent, gcdWatcher, "PLAYER_REGEN_DISABLED")
+gcdWatcher:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        SetIconsEnabled(true)     -- never into a fight switched off
+    else
+        ns.UpdateGlobalCooldown()
+    end
+end)
 
 local watcher = CreateFrame("Frame")
 -- A failed cast (UNIT_SPELLCAST_FAILED, or an error such as "Spell is not

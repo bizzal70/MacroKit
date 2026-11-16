@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.5
+
+- The missing-buffs icons show the global cooldown sweep, and out of combat they are greyed and ignore taps while it runs, so a tap too soon no longer makes an icon vanish with "Spell is not ready yet". In combat the game does not let addons switch them off, so only the sweep shows; wait for it before tapping. They are always switched back on as combat starts.
+
 ## 0.11.4
 
 - A tapped buff icon whose cast fails ("Spell is not ready yet", out of mana, interrupted) now comes straight back out of combat, instead of a few seconds later. In combat the game does not let addons show it again, so it comes back when the fight ends.

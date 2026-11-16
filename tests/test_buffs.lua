@@ -85,6 +85,35 @@ check(icons[1]:IsShown(), "as does any failed cast")
 SecureClick(icons[1], true); SecureClick(icons[1], false)
 Fire("UNIT_SPELLCAST_FAILED", "target")
 check(not icons[1]:IsShown(), "another unit's failed cast does not")
+-- The global cooldown: out of combat the icons are switched off (greyed)
+-- while it runs, so a tap cannot hide them uselessly; the sweep shows.
+GCD = nil
+C_Spell.GetSpellCooldown = function(id)
+    if id == 61304 and GCD then return { startTime = GCD.start, duration = GCD.duration } end
+    return { startTime = 0, duration = 0 }
+end
+GCD = { start = NOW, duration = 1.5 }
+Fire("SPELL_UPDATE_COOLDOWN")
+check(icons[1].__enabled == false and icons[1].icon.__desaturated == true, "during the global cooldown the icon is switched off and greyed")
+check(icons[1].cd and icons[1].cd.__cooldown and icons[1].cd.__cooldown[2] == 1.5, "and shows the cooldown sweep")
+NOW = NOW + 2
+RunAfters()
+check(icons[1].__enabled == true and icons[1].icon.__desaturated == false, "as it ends the icon is switched back on")
+-- Combat starting during it: switched back on first, never left off for a fight.
+GCD = { start = NOW, duration = 1.5 }
+Fire("SPELL_UPDATE_COOLDOWN")
+check(icons[1].__enabled == false, "off again during the next global cooldown")
+Fire("PLAYER_REGEN_DISABLED")
+check(icons[1].__enabled == true, "combat starting switches it back on, so it is never off for a whole fight")
+IN_COMBAT = true
+Fire("SPELL_UPDATE_COOLDOWN")
+check(icons[1].__enabled == true and icons[1].cd.__cooldown, "in combat it stays clickable, and only the sweep shows")
+IN_COMBAT = false
+GCD = nil
+NOW = NOW + 2
+RunAfters()
+Fire("SPELL_UPDATE_COOLDOWN")
+
 AURAS["Inner Fire"] = { expirationTime = NOW + 600, duration = 600 }
 ns.RefreshBuffs()
 

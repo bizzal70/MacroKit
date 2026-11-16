@@ -22,6 +22,9 @@ local function Stub()
         if k == "GetText" then return function(self) return self.__text end end
         if k == "SetTextColor" then return function(self, ...) self.__color = { ... } end end
         if k == "SetTexture" then return function(self, t) self.__texture = t end end
+        if k == "SetEnabled" then return function(self, v) self.__enabled = v end end
+        if k == "SetCooldown" then return function(self, ...) self.__cooldown = { ... } end end
+        if k == "Clear" then return function(self) self.__cooldown = nil end end
         if k == "WrapScript" then return function(self, frame, script, pre, post) frame.__wrap = { script = script, pre = pre, post = post } end end
         if k == "RegisterForClicks" then return function(self, ...) self.__clicks = { ... } end end
         if k == "SetPoint" then return function(self, ...) self.__point = { ... } end end
