@@ -53,6 +53,30 @@ AURAS["Inner Fire"] = { expirationTime = NOW + 600, duration = 600 }
 ns.RefreshBuffs()
 check(not bar:IsShown(), "and the row goes away once the buff is up")
 
+-- Clicking an icon hides it, in combat too, through a secure snippet run
+-- on the release of the click (here run the way the game would).
+local function SecureClick(button, down)
+    local wrap = button.__wrap
+    local pre = assert(loadstring("local self, button, down = ... " .. wrap.pre))
+    local _, message = pre(button, "LeftButton", down)
+    if message ~= nil then
+        assert(loadstring("local self, button, down, message = ... " .. wrap.post))(button, "LeftButton", down, message)
+    end
+end
+AURAS["Inner Fire"] = nil
+ns.RefreshBuffs()
+check(icons[1].__wrap and icons[1].__wrap.script == "OnClick", "each icon carries a secure snippet on its click")
+IN_COMBAT = true
+SecureClick(icons[1], true)
+check(icons[1]:IsShown(), "pressing does not hide it yet (the spell may cast on the release)")
+SecureClick(icons[1], false)
+check(not icons[1]:IsShown(), "releasing hides it, even in combat")
+IN_COMBAT = false
+Fire("PLAYER_REGEN_ENABLED")
+check(icons[1]:IsShown(), "if the buff still did not go up, the icon comes back after combat")
+AURAS["Inner Fire"] = { expirationTime = NOW + 600, duration = 600 }
+ns.RefreshBuffs()
+
 -- Combat: left alone.
 AURAS["Inner Fire"] = nil
 IN_COMBAT = true

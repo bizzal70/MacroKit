@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.3
+
+- An icon in the missing-buffs row now disappears as soon as you click (or tap) it, in combat too, so you can see what is left to cast. If the cast did not work (out of mana, too soon), the icon comes back after combat, or within a few seconds out of combat.
+
 ## 0.11.2
 
 - Fixed: clicking an icon in the missing-buffs row did nothing. The game's "cast on key down" setting (on by default) makes click-to-cast buttons ignore a release on its own; the icons now take the press too.

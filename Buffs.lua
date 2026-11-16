@@ -148,6 +148,24 @@ end
 local bar
 local icons = {}
 
+-- Hiding an icon once it has been clicked, in combat too. Addon code may
+-- not hide a click-to-cast button in combat, but the game's restricted
+-- "secure snippets" may. The snippet runs on the release of the click,
+-- which always comes after the spell is cast, whichever of press or
+-- release the game casts on. A cast that failed (no mana, too soon) is
+-- noticed when combat ends, and the icon comes back then.
+local secureHeader
+local HIDE_PRE = [[ if not down then return nil, "hide" end ]]
+local HIDE_POST = [[ if message == "hide" then self:Hide() end ]]
+local function HideOnClick(button)
+    if not secureHeader then
+        local ok, header = pcall(CreateFrame, "Frame", addonName .. "BuffSecure", UIParent, "SecureHandlerBaseTemplate")
+        if not ok or not header or not header.WrapScript then return end
+        secureHeader = header
+    end
+    pcall(secureHeader.WrapScript, secureHeader, button, "OnClick", HIDE_PRE, HIDE_POST)
+end
+
 local function SavePosition()
     local point, _, relativePoint, x, y = bar:GetPoint()
     if point then ns.db.buffPoint = { point, relativePoint, x, y } end
@@ -164,6 +182,7 @@ local function CreateIcon(index)
     button:RegisterForClicks("AnyUp", "AnyDown")
     button:SetAttribute("type", "spell")
     button:SetAttribute("unit", "player")
+    HideOnClick(button)
 
     button.icon = button:CreateTexture(nil, "ARTWORK")
     button.icon:SetAllPoints()
