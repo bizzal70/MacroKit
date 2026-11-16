@@ -329,12 +329,18 @@ end
 function ns.BuffBar() return bar, icons end
 
 local watcher = CreateFrame("Frame")
+-- A failed cast (UNIT_SPELLCAST_FAILED, or an error such as "Spell is not
+-- ready yet") brings a tapped icon straight back, out of combat. In combat
+-- the game does not let addons show it again, so it waits for the end.
+local PLAYER_EVENTS = { UNIT_AURA = true, UNIT_INVENTORY_CHANGED = true,
+    UNIT_SPELLCAST_FAILED = true, UNIT_SPELLCAST_FAILED_QUIET = true, UNIT_SPELLCAST_INTERRUPTED = true }
 for _, event in ipairs({ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD", "SPELLS_CHANGED",
-        "PLAYER_MOUNT_DISPLAY_CHANGED", "UNIT_INVENTORY_CHANGED", "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST" }) do
+        "PLAYER_MOUNT_DISPLAY_CHANGED", "UNIT_INVENTORY_CHANGED", "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST",
+        "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_FAILED_QUIET", "UNIT_SPELLCAST_INTERRUPTED", "UI_ERROR_MESSAGE" }) do
     pcall(watcher.RegisterEvent, watcher, event)
 end
 watcher:SetScript("OnEvent", function(_, event, unit)
-    if (event == "UNIT_AURA" or event == "UNIT_INVENTORY_CHANGED") and unit ~= "player" then return end
+    if PLAYER_EVENTS[event] and unit ~= "player" then return end
     ns.RefreshBuffs()
 end)
 -- Every few seconds as well, for buffs running out and weapon enchants

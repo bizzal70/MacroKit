@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.4
+
+- A tapped buff icon whose cast fails ("Spell is not ready yet", out of mana, interrupted) now comes straight back out of combat, instead of a few seconds later. In combat the game does not let addons show it again, so it comes back when the fight ends.
+
 ## 0.11.3
 
 - An icon in the missing-buffs row now disappears as soon as you click (or tap) it, in combat too, so you can see what is left to cast. If the cast did not work (out of mana, too soon), the icon comes back after combat, or within a few seconds out of combat.

@@ -74,6 +74,17 @@ check(not icons[1]:IsShown(), "releasing hides it, even in combat")
 IN_COMBAT = false
 Fire("PLAYER_REGEN_ENABLED")
 check(icons[1]:IsShown(), "if the buff still did not go up, the icon comes back after combat")
+-- Out of combat, a failed cast brings it straight back.
+SecureClick(icons[1], true); SecureClick(icons[1], false)
+check(not icons[1]:IsShown(), "tapped out of combat, it hides")
+Fire("UI_ERROR_MESSAGE", 51, "Spell is not ready yet")
+check(icons[1]:IsShown(), "and \"Spell is not ready yet\" brings it straight back")
+SecureClick(icons[1], true); SecureClick(icons[1], false)
+Fire("UNIT_SPELLCAST_FAILED", "player")
+check(icons[1]:IsShown(), "as does any failed cast")
+SecureClick(icons[1], true); SecureClick(icons[1], false)
+Fire("UNIT_SPELLCAST_FAILED", "target")
+check(not icons[1]:IsShown(), "another unit's failed cast does not")
 AURAS["Inner Fire"] = { expirationTime = NOW + 600, duration = 600 }
 ns.RefreshBuffs()
 
