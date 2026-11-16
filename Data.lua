@@ -266,28 +266,26 @@ ns.SETS.PRIEST = {
           "Casts Smite, the priest's first damage spell, on the enemy under your mouse, else your target. It also starts your auto-attack.",
           { "Smite" }, [[
 #showtooltip Smite
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Smite]]),
         M("Mind Blast", "Mind Blast on mouseover or target",
           "Casts Mind Blast, the priest's hardest-hitting shadow spell, on the enemy under your mouse, else your target. It has an 8 second cooldown. It also starts your auto-attack.",
           { "Mind Blast" }, [[
 #showtooltip Mind Blast
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Mind Blast]]),
         M("SW: Pain", "Shadow Word: Pain on mouseover or target",
           "Casts Shadow Word: Pain on the enemy under your mouse, else your target, so you can put it on several enemies without changing target.",
           { "Shadow Word: Pain" }, [[
 #showtooltip Shadow Word: Pain
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Shadow Word: Pain
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Shadow Word: Pain]]),
         M("SW: Death", "Shadow Word: Death on mouseover or target",
           "Casts Shadow Word: Death, new in Forever, on the enemy under your mouse, else your target. If the target survives you take damage equal to 30% of your health, so save it to finish enemies off.",
           { "Shadow Word: Death" }, [[
 #showtooltip Shadow Word: Death
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Shadow Word: Death
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Shadow Word: Death]]),
         M("Fear Ward", "Fear Ward on a mouseover friend, target or you",
           "Casts Fear Ward on the friend under your mouse, else your friendly target, else you. Every race has it in Forever.",
           { "Fear Ward" }, [[
@@ -317,7 +315,7 @@ ns.SETS.PRIEST = {
               "Channels Penance, new in Forever, on whoever is under your mouse: it heals a friend or damages an enemy, at once and then every second for 2 seconds. With nothing under the mouse it uses your target. 12 second cooldown.",
               { "Penance" }, [[
 #showtooltip Penance
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,exists,nodead][] Penance]]),
             M("Power Infusion", "Power Infusion on a mouseover friend, target or you",
               "Casts Power Infusion on the friend under your mouse, else your friendly target, else you: 20% more spell damage and healing for 15 seconds.",
@@ -334,7 +332,7 @@ ns.SETS.PRIEST = {
               "Casts Holy Fire on the enemy under your mouse, else your target: a big holy hit that also burns over time. It also starts your auto-attack.",
               { "Holy Fire" }, [[
 #showtooltip Holy Fire
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [257] = {
@@ -352,7 +350,7 @@ ns.SETS.PRIEST = {
               "Casts Holy Fire on the enemy under your mouse, else your target: a big holy hit that also burns over time. It also starts your auto-attack.",
               { "Holy Fire" }, [[
 #showtooltip Holy Fire
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Holy Fire]]),
         },
         [258] = {
@@ -365,21 +363,19 @@ ns.SETS.PRIEST = {
               "Casts Silence on the enemy under your mouse, else your target, to stop a caster. 45 second cooldown.",
               { "Silence" }, [[
 #showtooltip Silence
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Silence
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Silence]]),
             M("Vamp Embrace", "Vampiric Embrace on mouseover or target",
               "Casts Vampiric Embrace on the enemy under your mouse, else your target; your Shadow damage to it heals your party.",
               { "Vampiric Embrace" }, [[
 #showtooltip Vampiric Embrace
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Vampiric Embrace
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Vampiric Embrace]]),
             M("Mind Flay", "Mind Flay on mouseover or target",
               "Channels Mind Flay on the enemy under your mouse, else your target. It also slows them.",
               { "Mind Flay" }, [[
 #showtooltip Mind Flay
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Mind Flay]]),
         },
     },
@@ -1039,9 +1035,8 @@ ns.SETS.MAGE = {
           "Uses Counterspell on the enemy under your mouse, else your target, to interrupt a spell.",
           { "Counterspell" }, [[
 #showtooltip Counterspell
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Counterspell
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Counterspell]]),
         M("Decurse", "Remove Lesser Curse on a mouseover friend, target or you",
           "Casts Remove Lesser Curse on the friend under your mouse, else your friendly target, else you. In Forever it removes Banes too.",
           { "Remove Lesser Curse" }, [[
@@ -1061,9 +1056,8 @@ ns.SETS.MAGE = {
           "Uses Fire Blast, your instant fire spell, on the enemy under your mouse, else your target.",
           { "Fire Blast" }, [[
 #showtooltip Fire Blast
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Fire Blast
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Fire Blast]]),
         M("Slow Fall", "Slow Fall on a mouseover friend, target or you",
           "Casts Slow Fall on the friend under your mouse, else your friendly target, else you.",
           { "Slow Fall" }, [[
@@ -1073,7 +1067,7 @@ ns.SETS.MAGE = {
           "Casts Frostfire Bolt, new in Forever (level 40), on the enemy under your mouse, else your target. It counts as both Fire and Frost, slows the target and burns over 9 seconds.",
           { "Frostfire Bolt" }, [[
 #showtooltip Frostfire Bolt
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Frostfire Bolt]]),
     },
     order = { 62, 63, 64 },
@@ -1089,7 +1083,7 @@ ns.SETS.MAGE = {
               "Casts Arcane Blast, new in Forever, on the enemy under your mouse, else your target. Each cast stacks up to 4 times, raising its damage and its mana cost.",
               { "Arcane Blast" }, [[
 #showtooltip Arcane Blast
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Arcane Blast]]),
             M("Burst", "Arcane Power and Presence of Mind together",
               "Uses Arcane Power (30% more spell damage for 15 seconds) and, once you have it, Presence of Mind (your next spell is instant) in one press.",
@@ -1101,7 +1095,7 @@ ns.SETS.MAGE = {
               "Uses Presence of Mind so your next spell is instant, then Arcane Blast on the enemy under your mouse, else your target.",
               { "Presence of Mind", "Arcane Blast" }, [[
 #showtooltip Presence of Mind
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast Presence of Mind
 /cast [@mouseover,harm,nodead][] Arcane Blast]]),
         },
@@ -1110,7 +1104,7 @@ ns.SETS.MAGE = {
               "Casts Pyroblast on the enemy under your mouse, else your target.",
               { "Pyroblast" }, [[
 #showtooltip Pyroblast
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Pyroblast]]),
             M("Combustion", "Combustion",
               "Uses Combustion, raising your fire critical strike chance.",
@@ -1128,9 +1122,8 @@ ns.SETS.MAGE = {
               "Casts Ice Lance, new in Forever, on the enemy under your mouse, else your target. It does triple damage to frozen targets; 8 second cooldown.",
               { "Ice Lance" }, [[
 #showtooltip Ice Lance
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Ice Lance
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Ice Lance]]),
             M("Ice Block", "Ice Block; press again to leave it",
               "Uses Ice Block: immune to everything for 10 seconds. Pressing it again while you are in the block takes you out of it early.",
               { "Ice Block" }, [[
@@ -1153,26 +1146,25 @@ ns.SETS.WARLOCK = {
           "Casts Corruption on the enemy under your mouse, else your target, so you can spread it without changing target.",
           { "Corruption" }, [[
 #showtooltip Corruption
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Corruption]]),
         M("Agony", "Bane of Agony on mouseover or target",
           "Casts Bane of Agony (Forever's new name for Curse of Agony) on the enemy under your mouse, else your target. In Forever you can keep one Bane and one Curse on the same target.",
           { "Bane of Agony" }, [[
 #showtooltip Bane of Agony
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Bane of Agony
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Bane of Agony]]),
         M("Curse", "Curse of Weakness; Shift for Elements, Ctrl for Tongues",
           "Casts Curse of Weakness on the enemy under your mouse, else your target. Hold Shift for Curse of the Elements (level 20) or Ctrl for Curse of Tongues (level 26).",
           { "Curse of Weakness" }, [[
 #showtooltip
-/cast [mod:ctrl,@mouseover,harm,nodead][mod:ctrl] Curse of Tongues; [mod:shift,@mouseover,harm,nodead][mod:shift] Curse of the Elements; [@mouseover,harm,nodead][] Curse of Weakness
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [mod:ctrl,@mouseover,harm,nodead][mod:ctrl] Curse of Tongues; [mod:shift,@mouseover,harm,nodead][mod:shift] Curse of the Elements; [@mouseover,harm,nodead][] Curse of Weakness]]),
         M("Immolate", "Immolate on mouseover or target",
           "Casts Immolate on the enemy under your mouse, else your target.",
           { "Immolate" }, [[
 #showtooltip Immolate
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Immolate]]),
         M("Fear", "Fear on mouseover or target",
           "Casts Fear on the enemy under your mouse, else your target.",
@@ -1188,15 +1180,14 @@ ns.SETS.WARLOCK = {
           "Channels Drain Soul on your target, which can give you Soul Shards. Hold Shift for Drain Life instead (level 14).",
           { "Drain Soul" }, [[
 #showtooltip
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [mod:shift] Drain Life; Drain Soul]]),
         M("Death Coil", "Death Coil on mouseover or target",
           "Casts Death Coil on the enemy under your mouse, else your target: it horrifies them and heals you.",
           { "Death Coil" }, [[
 #showtooltip Death Coil
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Death Coil
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Death Coil]]),
     },
     order = { 265, 266, 267 },
     names = { [265] = "Affliction", [266] = "Demonology", [267] = "Destruction" },
@@ -1211,29 +1202,26 @@ ns.SETS.WARLOCK = {
               "Casts Siphon Life on the enemy under your mouse, else your target, draining their health to you.",
               { "Siphon Life" }, [[
 #showtooltip Siphon Life
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Siphon Life
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Siphon Life]]),
             M("Exhaustion", "Curse of Exhaustion on mouseover or target",
               "Casts Curse of Exhaustion on the enemy under your mouse, else your target, slowing them by 30%.",
               { "Curse of Exhaustion" }, [[
 #showtooltip Curse of Exhaustion
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Curse of Exhaustion
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Curse of Exhaustion]]),
             M("Big Agony", "Amplify Curse, then Bane of Agony",
               "Uses Amplify Curse, then Bane of Agony on the enemy under your mouse, else your target, so the Bane hits harder.",
               { "Amplify Curse", "Bane of Agony" }, [[
 #showtooltip Amplify Curse
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast Amplify Curse
-/cast [@mouseover,harm,nodead][] Bane of Agony
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/cast [@mouseover,harm,nodead][] Bane of Agony]]),
             M("Wrack", "Wrack on mouseover or target",
               "Casts Wrack, new in Forever, on the enemy under your mouse, else your target: damage over time that also makes your other shadow effects on them 10% stronger.",
               { "Wrack" }, [[
 #showtooltip Wrack
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Wrack]]),
         },
         [266] = {
@@ -1259,28 +1247,25 @@ ns.SETS.WARLOCK = {
               "Uses Conflagrate on the enemy under your mouse, else your target. It needs your Immolate on them, which it uses up.",
               { "Conflagrate" }, [[
 #showtooltip Conflagrate
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Conflagrate
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Conflagrate]]),
             M("Shadowburn", "Shadowburn on mouseover or target",
               "Uses Shadowburn on the enemy under your mouse, else your target. In Forever you get the Soul Shard back.",
               { "Shadowburn" }, [[
 #showtooltip Shadowburn
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Shadowburn
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Shadowburn]]),
             M("Havoc", "Bane of Havoc on mouseover or target",
               "Casts Bane of Havoc, new in Forever, on the enemy under your mouse, else your target: 15% of the damage you do to others is copied to it. Put it on a second enemy.",
               { "Bane of Havoc" }, [[
 #showtooltip Bane of Havoc
-/startattack [harm,nodead,noequipped:Wands]
-/cast [@mouseover,harm,nodead][] Bane of Havoc
-/cast [harm,nodead,equipped:Wands] !Shoot]]),
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Bane of Havoc]]),
             M("Incinerate", "Incinerate on mouseover or target",
               "Casts Incinerate, new in Forever, on the enemy under your mouse, else your target. It hits harder if your Immolate is on them.",
               { "Incinerate" }, [[
 #showtooltip Incinerate
-/startattack [harm,nodead,noequipped:Wands]
+/startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Incinerate]]),
         },
     },

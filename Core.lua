@@ -483,7 +483,8 @@ local ADDED_LINES = {
     ["/startattack [harm,nodead]"] = true,
     ["/startattack [nostealth,harm,nodead]"] = true,
     ["/cast [harm,nodead] !Auto Shot"] = true,
-    -- 0.10.0: casters shoot a wand when one is equipped, else swing.
+    -- 0.10.0-0.10.1 (removed in 0.10.2): casters shot a wand when one was
+    -- equipped. Kept here so those macros go back to plain /startattack.
     ["/startattack [harm,nodead,noequipped:Wands]"] = true,
     ["/cast [harm,nodead,equipped:Wands] !Shoot"] = true,
 }

@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.10.2
+
+- The wand lines from 0.10.0 and 0.10.1 are gone again: they got in the way of a caster's rotation. Caster attack macros are back to a plain `/startattack`; put your wand (Shoot) on a key of its own. Macros already in your list go back the next time you log in, unless you changed them.
+
 ## 0.10.1
 
 - Fixed: the wand line cancelled spells with a cast time or a channel (Mind Blast, Smite, Holy Fire, Mind Flay, Penance, Frostfire Bolt, Arcane Blast, Pyroblast, Corruption, Immolate, Drain, Wrack, Incinerate), because starting Shoot interrupts a spell still being cast. Only instant attack macros start the wand now; the others still swing in melee when no wand is equipped. Macros already in your list are updated the next time you log in, unless you changed them.

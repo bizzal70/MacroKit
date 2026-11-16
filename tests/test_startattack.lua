@@ -22,24 +22,7 @@ local function Has(body, text) return body:find(text, 1, true) ~= nil end
 
 -- What the macros say.
 check(Has(Find("WARRIOR", "Strike").body, "/startattack [harm,nodead]"), "Heroic Strike starts auto-attack")
-local fireBlast = Find("MAGE", "Fire Blast").body
-check(Has(fireBlast, "/startattack [harm,nodead,noequipped:Wands]") and fireBlast:sub(-#"/cast [harm,nodead,equipped:Wands] !Shoot") == "/cast [harm,nodead,equipped:Wands] !Shoot",
-    "a caster's attack shoots the wand when one is equipped, else swings")
-for _, class in ipairs({ "WARRIOR", "ROGUE", "HUNTER", "PALADIN", "SHAMAN", "DRUID" }) do
-    for _, list in pairs({ ns.SETS[class].shared, unpack((function() local t = {} for _, l in pairs(ns.SETS[class].specs or {}) do t[#t + 1] = l end return t end)()) }) do
-        for _, macro in ipairs(list or {}) do check(not Has(macro.body, "Shoot") or Has(macro.body, "Shot"), class .. " " .. macro.name .. " has no wand line") end
-    end
-end
-for _, cast in ipairs({ { "PRIEST", "Mind Blast" }, { "PRIEST", "Smite" }, { "PRIEST", "Mind Flay" }, { "MAGE", "Frostfire" },
-        { "MAGE", "Pyroblast" }, { "WARLOCK", "Immolate" }, { "WARLOCK", "Drain" }, { "WARLOCK", "Corruption" } }) do
-    check(not Has(Find(cast[1], cast[2]).body, "Shoot"), cast[2] .. " (cast time or channel) does not start the wand, which would cancel it")
-end
-for _, instant in ipairs({ { "PRIEST", "SW: Pain" }, { "PRIEST", "SW: Death" }, { "MAGE", "Fire Blast" }, { "MAGE", "Ice Lance" },
-        { "WARLOCK", "Agony" }, { "WARLOCK", "Death Coil" }, { "WARLOCK", "Conflagrate" } }) do
-    check(Has(Find(instant[1], instant[2]).body, "!Shoot"), instant[2] .. " (instant) starts the wand after the spell")
-end
-check(not Has(Find("WARLOCK", "Curse").body, "/startattack") and Has(Find("WARLOCK", "Curse").body, "!Shoot"),
-    "the warlock's long Curse macro keeps the wand line and drops the melee one, to fit 255 characters")
+check(Has(Find("MAGE", "Fire Blast").body, "/startattack [harm,nodead]"), "a caster's attack starts auto-attack too")
 check(Has(Find("HUNTER", "Arcane Shot").body, "/startattack [harm,nodead]") and not Has(Find("HUNTER", "Arcane Shot").body, "Auto Shot"),
     "a hunter's shot uses /startattack too (Forever, like the current game, starts Auto Shot with it)")
 check(Has(Find("ROGUE", "Opener").body, "/startattack [nostealth,harm,nodead]"), "a stealth opener only starts attacking out of stealth")
@@ -55,21 +38,21 @@ for class, set in pairs(ns.SETS) do
     local function Each(list)
         for _, macro in ipairs(list or {}) do
             check(#macro.body <= ns.MAX_BODY, class .. " " .. macro.name .. " still fits the game's macro size")
-            if Has(macro.body, "/startattack [") or Has(macro.body, "!Shoot") then count = count + 1 end
+            if Has(macro.body, "/startattack [") or Has(macro.body, "!Auto Shot") then count = count + 1 end
         end
     end
     Each(set.shared)
     for _, list in pairs(set.specs or {}) do Each(list) end
 end
 check(count == 74, "74 attack macros start auto-attack (" .. count .. ")")
-check(Find("PRIEST", "Mind Blast") and Has(Find("PRIEST", "Mind Blast").body, "/startattack [harm,nodead,noequipped:Wands]"), "every priest has Mind Blast, starting auto-attack")
+check(Find("PRIEST", "Mind Blast") and Has(Find("PRIEST", "Mind Blast").body, "/startattack [harm,nodead]"), "every priest has Mind Blast, starting auto-attack")
 for _, id in ipairs({ 256, 257 }) do
     local found
     for _, macro in ipairs(ns.SETS.PRIEST.specs[id]) do if macro.name == "Holy Fire" then found = macro end end
     check(found and Has(found.body, "[@mouseover,harm,nodead][] Holy Fire"), "spec " .. id .. " (Discipline, Holy) has Holy Fire")
 end
 for _, macro in ipairs(ns.SETS.PRIEST.specs[258]) do check(macro.name ~= "Holy Fire", "Shadow does not get Holy Fire (" .. macro.name .. ")") end
-check(Find("PRIEST", "Smite") and Has(Find("PRIEST", "Smite").body, "/startattack [harm,nodead,noequipped:Wands]") and Has(Find("PRIEST", "Smite").body, "[@mouseover,harm,nodead][] Smite"), "priests have a Smite macro, on mouseover or target, that starts auto-attack")
+check(Find("PRIEST", "Smite") and Has(Find("PRIEST", "Smite").body, "/startattack [harm,nodead]") and Has(Find("PRIEST", "Smite").body, "[@mouseover,harm,nodead][] Smite"), "priests have a Smite macro, on mouseover or target, that starts auto-attack")
 for _, id in ipairs(ns.SETS.PRIEST.order) do
     check(#ns.SETS.PRIEST.shared + #(ns.SETS.PRIEST.specs[id] or {}) <= 18, "a priest's shared and spec macros still fit in 18 slots (spec " .. id .. ")")
 end
@@ -109,11 +92,22 @@ ns.UpgradeMacros()
 check(BodyOf("Arcane Shot") == arcane.body, "a hunter macro from 0.8.0 is switched from !Auto Shot to /startattack")
 CLASS = "PALADIN"
 
--- A caster macro from 0.8/0.9 (plain /startattack) gets the wand lines.
+-- 0.10.x shot the wand from caster macros; 0.10.2 took that out again (it
+-- got in the way of the rotation). Macros from 0.10.x go back to plain
+-- /startattack.
+for _, macro in pairs({ Find("MAGE", "Fire Blast"), Find("PRIEST", "Mind Blast") }) do
+    check(not Has(macro.body, "Shoot") and Has(macro.body, "/startattack [harm,nodead]"), macro.name .. " no longer touches the wand")
+end
 CLASS = "MAGE"
 local fb = Find("MAGE", "Fire Blast")
-CreateMacro("Fire Blast", 1, "#showtooltip Fire Blast\n/startattack [harm,nodead]\n/cast [@mouseover,harm,nodead][] Fire Blast", true)
+CreateMacro("Fire Blast", 1, "#showtooltip Fire Blast\n/startattack [harm,nodead,noequipped:Wands]\n/cast [@mouseover,harm,nodead][] Fire Blast\n/cast [harm,nodead,equipped:Wands] !Shoot", true)
 ns.char.made["Fire Blast"] = true
 ns.UpgradeMacros()
-check(BodyOf("Fire Blast") == fb.body, "a caster macro from 0.9 is switched to the wand lines")
+check(BodyOf("Fire Blast") == fb.body, "a caster macro from 0.10.0 loses its wand lines")
+CLASS = "PRIEST"
+local mb = Find("PRIEST", "Mind Blast")
+CreateMacro("Mind Blast", 1, "#showtooltip Mind Blast\n/startattack [harm,nodead,noequipped:Wands]\n/cast [@mouseover,harm,nodead][] Mind Blast", true)
+ns.char.made["Mind Blast"] = true
+ns.UpgradeMacros()
+check(BodyOf("Mind Blast") == mb.body, "and one from 0.10.1 goes back to plain /startattack")
 CLASS = "PALADIN"
