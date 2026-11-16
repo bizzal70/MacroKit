@@ -157,7 +157,11 @@ local function CreateIcon(index)
     -- A secure button, so a click can cast a spell.
     local button = CreateFrame("Button", addonName .. "Buff" .. index, bar, "SecureActionButtonTemplate")
     button:SetSize(ICON_SIZE, ICON_SIZE)
-    button:RegisterForClicks("AnyUp")
+    -- Both: the game's click-to-cast code acts on the press or the release,
+    -- whichever the "cast on key down" setting (ActionButtonUseKeyDown, on
+    -- by default) says, and ignores the other. With "AnyUp" alone, clicks
+    -- did nothing while that setting was on (0.11.0-0.11.1).
+    button:RegisterForClicks("AnyUp", "AnyDown")
     button:SetAttribute("type", "spell")
     button:SetAttribute("unit", "player")
 

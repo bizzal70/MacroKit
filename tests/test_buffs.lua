@@ -46,6 +46,7 @@ AURAS["Inner Fire"] = nil
 ns.RefreshBuffs()
 local bar, icons = ns.BuffBar()
 check(bar:IsShown() and icons[1]:IsShown() and icons[1].spell == "Inner Fire", "the row shows a button for the missing buff")
+check(table.concat(icons[1].__clicks or {}, ",") == "AnyUp,AnyDown", "the button takes both press and release, as the game's cast-on-key-down setting needs")
 check(icons[1].__attributes and icons[1].__attributes.type == "spell" and icons[1].__attributes.spell == "Inner Fire"
     and icons[1].__attributes.unit == "player", "clicking it casts Inner Fire on yourself")
 AURAS["Inner Fire"] = { expirationTime = NOW + 600, duration = 600 }

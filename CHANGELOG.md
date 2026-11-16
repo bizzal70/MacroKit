@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.2
+
+- Fixed: clicking an icon in the missing-buffs row did nothing. The game's "cast on key down" setting (on by default) makes click-to-cast buttons ignore a release on its own; the icons now take the press too.
+
 ## 0.11.1
 
 - The missing-buffs row can be moved with a gamepad: the new **Position** button in the MacroKit window (or `/macrokit buffs move`) steps it through set spots on screen: above the middle, below the middle, the top, the bottom above the bars, left and right of the middle. After each step the row shows for a few seconds, even with no buff missing, so you can see where it is. Shift-drag still places it anywhere with a mouse.
