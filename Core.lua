@@ -26,6 +26,7 @@ local defaults = {
     fresh = {},    -- macro name -> true: new since the window was last opened
     done = {},     -- spec ID (or "any") -> true once it has been offered
     made = {},     -- macro name -> true for each macro MacroKit added
+    written = {},  -- macro name -> the text MacroKit last gave it
 }
 
 function ns.Print(msg)
@@ -413,6 +414,7 @@ function ns.AddOne(macro)
     local ok, index = pcall(CreateMacro, macro.name, ICON, macro.body, true)
     if ok and index then
         ns.char.made[macro.name] = true
+        ns.char.written[macro.name] = macro.body
         ns.Print("Added " .. macro.name .. ". Drag it from this window or /macro to your bars.")
         ns.RefreshWindow()
         return true
@@ -449,6 +451,7 @@ function ns.Install(quiet)
             if ok and index then
                 added[#added + 1] = macro.name
                 ns.char.made[macro.name] = true
+                ns.char.written[macro.name] = macro.body
                 free = free - 1
             else
                 failed[#failed + 1] = macro.name
@@ -502,10 +505,13 @@ local function Before080(body)
     return table.concat(kept, "\n")
 end
 
--- Brings macros MacroKit added up to date with Data.lua when they are
--- exactly the older version of the same macro (before the auto-attack
--- lines of 0.8.0). A macro the player has changed is left alone. Not in
--- combat: the game does not allow it. Returns the names it updated.
+-- Brings the macros MacroKit added up to date with this version's Data.lua,
+-- so an improvement in a later version reaches macros added before it.
+-- Runs when you log in and after levelling, training or a respec. A macro
+-- is only rewritten while it still has exactly the text MacroKit last gave
+-- it (ns.char.written, kept since 0.11.8), or is the same macro as before
+-- the auto-attack lines of 0.8.0; one the player has changed is left alone.
+-- Not in combat: the game does not allow it. Returns the names it updated.
 function ns.UpgradeMacros()
     if InCombatLockdown() or not ns.char or type(EditMacro) ~= "function" then return {} end
     local class = ns.ClassAndSpec()
@@ -519,10 +525,19 @@ function ns.UpgradeMacros()
         local okInfo, _, _, current = pcall(GetMacroInfo, index)
         if not okInfo or type(current) ~= "string" then return end
         local wanted = Clean(macro.body)
-        if Clean(current) == wanted then return end
-        -- The same macro apart from the auto-attack lines MacroKit adds
-        -- (0.7.0, or 0.8.0 with a hunter's !Auto Shot): bring it up to date.
-        if Before080(current) == Before080(wanted) and pcall(EditMacro, index, nil, nil, macro.body) then
+        if Clean(current) == wanted then
+            -- Already current: remembered as what MacroKit wrote (macros
+            -- added before 0.11.8 have no record until now).
+            ns.char.written[macro.name] = macro.body
+            return
+        end
+        local written = ns.char.written[macro.name]
+        -- Still exactly as MacroKit last wrote it, or the same macro apart
+        -- from the auto-attack lines MacroKit adds (0.7.0, or 0.8.0 with a
+        -- hunter's !Auto Shot): bring it up to date.
+        local untouched = (written and Clean(current) == Clean(written)) or Before080(current) == Before080(wanted)
+        if untouched and pcall(EditMacro, index, nil, nil, macro.body) then
+            ns.char.written[macro.name] = macro.body
             updated[#updated + 1] = macro.name
         end
     end
@@ -532,7 +547,7 @@ function ns.UpgradeMacros()
     end
     table.sort(updated)
     if #updated > 0 then
-        ns.Print("Updated " .. #updated .. " of your MacroKit macros so they also start your auto-attack: "
+        ns.Print("Brought " .. #updated .. " of your MacroKit macros up to date with this version: "
             .. table.concat(updated, ", ") .. ".")
     end
     return updated

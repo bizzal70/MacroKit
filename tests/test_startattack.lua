@@ -75,7 +75,8 @@ check(BodyOf("Stun") == stun.body, "a macro MacroKit added before is brought up 
 check(BodyOf("Exorcism") == "#showtooltip\n/cast Exorcism\n/say changed by me", "one the player changed is left alone")
 check(BodyOf("Heal") == "/say my own heal", "and one the player made is never touched")
 check(#updated == 1 and updated[1] == "Stun", "only the untouched one is updated")
-check(table.concat(PRINTED, " | "):find("so they also start your auto-attack: Stun", 1, true), "and it says so in chat")
+check(table.concat(PRINTED, " | "):find("up to date with this version: Stun", 1, true), "and it says so in chat")
+check(ns.char.written.Stun == stun.body, "the text it gave the macro is remembered")
 check(#ns.UpgradeMacros() == 0, "a second look changes nothing")
 IN_COMBAT = true
 check(#ns.UpgradeMacros() == 0, "nothing is changed in combat")
@@ -111,3 +112,20 @@ ns.char.made["Mind Blast"] = true
 ns.UpgradeMacros()
 check(BodyOf("Mind Blast") == mb.body, "and one from 0.10.1 goes back to plain /startattack")
 CLASS = "PALADIN"
+
+-- Any later change reaches a macro still exactly as MacroKit last wrote it
+-- (ns.char.written); one the player has changed since is left alone.
+local seal = Find("PALADIN", "Seal")
+CreateMacro("Seal", 1, "#showtooltip\n/cast Seal of Righteousness", true)   -- an older version's text
+ns.char.made.Seal = true
+ns.char.written.Seal = "#showtooltip\n/cast Seal of Righteousness"
+local heal = Find("PALADIN", "Heal")
+DeleteMacro(GetMacroIndexByName("Heal"))
+CreateMacro("Heal", 1, "#showtooltip\n/cast Holy Light\n/say healing!", true)  -- the player edited it after MacroKit added it
+ns.char.made.Heal = true
+ns.char.written.Heal = "#showtooltip\n/cast Holy Light"
+ns.UpgradeMacros()
+check(BodyOf("Seal") == seal.body and ns.char.written.Seal == seal.body, "a macro still as MacroKit last wrote it gets this version's text")
+check(BodyOf("Heal") == "#showtooltip\n/cast Holy Light\n/say healing!", "one the player edited since is left alone")
+-- Adding a macro remembers its text.
+ns.char.written.Exorcism = nil

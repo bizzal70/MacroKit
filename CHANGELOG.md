@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.8
+
+- MacroKit now remembers the exact text it gave each macro it added, so any later improvement to a macro reaches yours: when you log in (and after levelling, training or a respec), each one still exactly as MacroKit last wrote it is brought up to date, and chat says which. A macro you have changed yourself is still left alone. Before, only the 0.8.0 auto-attack change could be carried over this way.
+
 ## 0.11.7
 
 - The missing-buffs icons now show the cooldown sweep in combat too. In combat the game hides cooldowns from addons, so MacroKit hands them straight to the sweep, which can still draw them. Greying out and ignoring taps stay out of combat only: the game does not allow either in combat.
