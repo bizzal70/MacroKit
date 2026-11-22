@@ -131,6 +131,10 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 - Macros are saved on Blizzard's servers, so once added they follow your character to any computer, even without the addon.
 - The spell names are Forever's, from spell lists built from the live game and checked against each other. Only the paladin's early spells have been checked in game so far. If a macro says it needs a spell you know you have, type `/macrokit spells` and please report what it lists.
 
+## Controller
+
+With a game controller, the **B** button closes the MacroKit window, like the X and Escape do. While a window is open, B closes it; once it is closed, B goes back to whatever you have it set to. (In combat the game does not let addons change a button, so B goes back to normal when the fight ends.)
+
 ## More from this author
 
 Other small addons for World of Warcraft: Forever, all free:
