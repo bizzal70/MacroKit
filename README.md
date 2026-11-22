@@ -133,7 +133,7 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 
 ## Controller
 
-With a game controller, the **B** button closes the MacroKit window, like the X and Escape do. While a window is open, B closes it; once it is closed, B goes back to whatever you have it set to. (In combat the game does not let addons change a button, so B goes back to normal when the fight ends.)
+With a game controller, the **B** button closes the MacroKit window, like the X and Escape do. While a window is open, B closes it; once it is closed, B goes back to whatever you have it set to. When a fight starts, B goes straight back to its usual job, even with the window open.
 
 ## More from this author
 

@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.12.1
+
+- **Controller:** when a fight starts, B goes straight back to its usual job, even with a MacroKit window open (it used to stay on closing the window until the fight ended). It closes the window again once the fight is over.
+
 ## 0.12.0
 
 - **Gathering tracking in the missing-buffs row:** Find Herbs, Find Minerals, Find Fish and Find Treasure, whichever you have learned, show in the row whenever their minimap tracking is switched off. Click (or tap) one to switch it back on. Any class.
