@@ -65,6 +65,11 @@ ns.BUFFS = {
     },
 }
 
+-- Gathering tracking, for any class: each one learned and not switched on
+-- shows in the row too, and clicking it switches it on (casting the spell
+-- turns its minimap tracking on).
+ns.TRACKING = { "Find Herbs", "Find Minerals", "Find Fish", "Find Treasure" }
+
 -- The first learned spell of a list, or nil.
 local function FirstLearned(list)
     for _, spell in ipairs(list or {}) do
@@ -106,6 +111,35 @@ local function FindWeaponEnchant()
     return true
 end
 
+-- Whether a tracking spell is switched on: from the minimap's tracking list
+-- where the game has one, else from the buff it shows. nil when the game
+-- will not say.
+local function TrackingOn(spell)
+    local map = C_Minimap
+    if map and map.GetNumTrackingTypes and map.GetTrackingInfo then
+        local okCount, count = pcall(map.GetNumTrackingTypes)
+        if okCount and type(count) == "number" then
+            for index = 1, count do
+                local ok, first, _, third = pcall(map.GetTrackingInfo, index)
+                if ok then
+                    -- A table on current clients; name, texture, active on older ones.
+                    local name, active
+                    if type(first) == "table" then
+                        name, active = first.name, first.active
+                    else
+                        name, active = first, third
+                    end
+                    if name == spell and Usable(active) then return active and true or false end
+                end
+            end
+        end
+    end
+    local has, unknown = FindBuff({ spell })
+    if unknown == "unknown" then return nil end
+    return has
+end
+ns.TrackingOn = TrackingOn
+
 -- Whether now is a time to remind at all.
 local function Quiet()
     local function Yes(fn, ...)
@@ -135,6 +169,13 @@ function ns.MissingBuffs()
             elseif has == true and left and duration then
                 local warn = duration > LONG_BUFF and WARN_LONG or WARN_SHORT
                 if left < warn then wanted[#wanted + 1] = { spell = spell, left = math.max(0, left) } end
+            end
+        end
+    end
+    if ns.db.trackingReminder ~= false then
+        for _, spell in ipairs(ns.TRACKING) do
+            if ns.Learned(spell) and TrackingOn(spell) == false then
+                wanted[#wanted + 1] = { spell = spell, tracking = true }
             end
         end
     end

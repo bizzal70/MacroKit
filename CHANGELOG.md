@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.12.0
+
+- **Gathering tracking in the missing-buffs row:** Find Herbs, Find Minerals, Find Fish and Find Treasure, whichever you have learned, show in the row whenever their minimap tracking is switched off. Click (or tap) one to switch it back on. Any class.
+
 ## 0.11.9
 
 - **Controller:** the B button now closes MacroKit's window, like the X and Escape. While one is open, B closes it; once it is closed, B does whatever you have it set to again.

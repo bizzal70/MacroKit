@@ -712,7 +712,7 @@ SlashCmdList.MACROKIT = function(msg)
             ns.RefreshWindow()
         else
             ns.db.buffReminder = not ns.db.buffReminder
-            ns.Print(ns.db.buffReminder and "Showing your missing buffs (click one to cast it on yourself)."
+            ns.Print(ns.db.buffReminder and "Showing your missing buffs and gathering tracking (click one to cast it)."
                 or "No longer showing your missing buffs.")
             if ns.RefreshBuffs then ns.RefreshBuffs() end
             ns.RefreshWindow()

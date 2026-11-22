@@ -49,3 +49,7 @@ Everything below, unless marked verified, comes from community sources during th
 ## Controller B closes windows (2026-11-22)
 
 - `ns.CloseWithPadB(window, name)` in PadClose.lua (first in the TOC): every window listed in `UISpecialFrames` also calls it. While the window is shown, `SetOverrideBinding(window, true, "PAD2", "CLICK <name>PadClose:LeftButton")` points the controller's B at an invisible, mouse-disabled button that hides it; `ClearOverrideBindings(window)` on hide. Bindings cannot change in combat, so a change then waits for PLAYER_REGEN_ENABLED. Any new window: add it to UISpecialFrames and call `ns.CloseWithPadB` right after. Not yet confirmed in game.
+
+## Gathering tracking (0.12.0)
+
+- `ns.TRACKING` (Find Herbs, Find Minerals, Find Fish, Find Treasure) is appended to `ns.MissingBuffs()` for any class when learned and `TrackingOn(spell) == false`: `C_Minimap.GetNumTrackingTypes/GetTrackingInfo` (table with name/active, or the older name, texture, active returns), else the tracking buff via FindBuff. Clicking casts the spell like any buff icon. `ns.db.trackingReminder = false` turns only this part off (no UI for it yet). Whether Forever tracks one or several at once, and its tracking names, are unverified.

@@ -34,6 +34,28 @@ AURAS["Inner Fire"].expirationTime = NOW + 90
 local list = ns.MissingBuffs()
 check(#list == 1 and list[1].spell == "Inner Fire" and math.floor(list[1].left) == 90, "a long buff with under 2 minutes left is shown, with the time")
 
+-- Gathering tracking that is off shows too, for any class.
+local TRACKING = { { name = "Find Herbs", active = false }, { name = "Find Minerals", active = true } }
+C_Minimap = {
+    GetNumTrackingTypes = function() return #TRACKING end,
+    GetTrackingInfo = function(index) return TRACKING[index] end,
+}
+Learn("Find Herbs", "Find Minerals")
+AURAS["Inner Fire"] = { expirationTime = NOW + 500, duration = 600 }
+check(Names() == "Find Herbs", "Find Herbs switched off is shown; Find Minerals, on, is not: " .. Names())
+TRACKING[1].active = true
+check(Names() == "", "and it goes once tracking is on")
+TRACKING[1].active = false
+ns.db.trackingReminder = false
+check(Names() == "", "it can be turned off")
+ns.db.trackingReminder = nil
+C_Minimap = nil
+AURAS["Find Herbs"], AURAS["Find Minerals"] = { expirationTime = 0, duration = 0 }, nil
+check(Names() == "Find Minerals", "without the minimap's list, the tracking buff is looked for instead")
+AURAS["Find Herbs"] = nil
+AURAS["Inner Fire"] = { expirationTime = NOW + 90, duration = 600 }
+ns.db.trackingReminder = false
+
 -- Quiet while mounted or dead.
 MOUNTED = true
 check(Names() == "", "nothing while mounted")
