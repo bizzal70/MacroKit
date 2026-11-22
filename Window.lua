@@ -414,6 +414,7 @@ local function CreateWindow()
     -- Lets Escape close the window.
     tinsert(UISpecialFrames, addonName .. "Window")
 
+    ns.CloseWithPadB(_G[addonName .. "Window"], addonName .. "Window")
     local header = CreateFrame("Frame", nil, window)
     header:SetPoint("TOPLEFT", 1, -1)
     header:SetPoint("TOPRIGHT", -1, -1)

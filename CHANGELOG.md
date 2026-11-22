@@ -1,5 +1,9 @@
 # MacroKit
 
+## 0.11.9
+
+- **Controller:** the B button now closes MacroKit's window, like the X and Escape. While one is open, B closes it; once it is closed, B does whatever you have it set to again.
+
 ## 0.11.8
 
 - MacroKit now remembers the exact text it gave each macro it added, so any later improvement to a macro reaches yours: when you log in (and after levelling, training or a respec), each one still exactly as MacroKit last wrote it is brought up to date, and chat says which. A macro you have changed yourself is still left alone. Before, only the 0.8.0 auto-attack change could be carried over this way.
