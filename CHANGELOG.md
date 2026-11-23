@@ -1,5 +1,10 @@
 # MacroKit
 
+## 0.13.0
+
+- **Starting attacks for every class:** new macros for the first attack each class learns: **Lightning Bolt** (shaman), **Fireball**, **Frostbolt** and **Missiles** (mage), **Shadow Bolt** (warlock, also sends your demon in), **Wrath** (druid) and **Shoot** (hunter: Auto Shot plus your pet). Like the others, they cast on the enemy under your mouse, else your target, and start your auto-attack. If you have no enemy targeted, they target the nearest one first, so one button starts a fight; handy on a controller. Warriors, rogues and paladins already had theirs (Strike, Opener, Holy Strike).
+- **Priests:** Smite targets the nearest enemy in the same way, and **Big Heal** now works from level 1: Lesser Heal until you learn Heal (16), then Heal until Greater Heal (40). Macros you already have are brought up to date unless you changed them.
+
 ## 0.12.1
 
 - **Controller:** when a fight starts, B goes straight back to its usual job, even with a MacroKit window open (it used to stay on closing the window until the fight ended). It closes the window again once the fight is over.

@@ -11,6 +11,7 @@ MacroKit adds macros to your character's own macro list (`/macro`, the character
 - **It follows a respec, a reset and a dual-spec switch.** It switches to the new spec's macros and says so in chat. The macros it added for your old spec are not deleted by themselves: the window offers a **Clear them** button (or type `/macrokit clear`).
 - **Shows your missing buffs:** a row of glowing icons for the self-buffs your class should have up but does not, or that are about to run out, and for gathering tracking (Find Herbs, Find Minerals and the like) that is switched off. Click (or tap) one to cast it on yourself; it disappears straight away, in combat too. Move it with the **Position** button in the window (it steps through set spots on screen, easy with a gamepad) or Shift-drag it; turn it off in the window or with `/macrokit buffs`.
 - **The hunter's Pet macro feeds your pet when it is not happy** (Feed Pet with the best food in your bags; Shift to Mend Pet), and remembers foods your pet refuses.
+- **A starting attack for every class from level 1** (Lightning Bolt, Fireball, Frostbolt, Missiles, Shadow Bolt, Wrath, Smite, Shoot, alongside Strike, Opener and Holy Strike): with no enemy targeted, it targets the nearest one first, so one button starts a fight; handy on a controller.
 - **Attack macros also start your auto-attack**, so a press still starts you swinging when you are out of rage, energy or mana. For hunters at range it starts Auto Shot. Crowd control that breaks on damage, such as Sap or Polymorph, does not.
 - It never overwrites a macro: if you already have one with the same name, yours stays. (The one exception: a macro MacroKit itself added, still exactly as it added it, is brought up to date when MacroKit improves it.)
 - It stops when your character's macro slots are full, and tells you which macros did not fit.
@@ -62,7 +63,7 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 
 **Hunter**
 
-- Every spec: Mark, Sting, Arcane Shot, Aimed Shot, Multi-Shot, Concussive, Pet, Trap, Melee, Aspect, Lacerate.
+- Every spec: Shoot, Mark, Sting, Arcane Shot, Aimed Shot, Multi-Shot, Concussive, Pet, Trap, Melee, Aspect, Lacerate.
 - Beast Mastery: Bestial Wrath, Intimidation, Hawk.
 - Marksmanship: Scatter Shot, Sniper Shot.
 - Survival: Deterrence, Counterattack, Strider Kick.
@@ -76,35 +77,35 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 
 **Priest**
 
-- Every spec: Shield, Renew, Flash Heal, Big Heal, Fortitude, Dispel, Cure, Smite, Mind Blast, SW: Pain, SW: Death, Fear Ward, Shackle, Rez.
+- Every spec: Shield, Renew, Flash Heal, Big Heal, Fortitude, Dispel, Cure, Smite, Mind Blast, SW: Pain, SW: Death, Fear Ward, Shackle, Rez. Smite targets the nearest enemy if you have none; Big Heal is Lesser Heal from level 1, then Heal, then Greater Heal.
 - Discipline: Penance, Power Infusion, Focus Heal, Holy Fire.
 - Holy: Mending, Group Heal, Holy Fire.
 - Shadow: Shadowform, Silence, Vamp Embrace, Mind Flay.
 
 **Shaman**
 
-- Every spec: Heal, Quick Heal, Chain Heal, Interrupt, Flame Shock, Frost Shock, Purge, Cure, Totems, Recall, Shield, Ghost Wolf, Rez.
+- Every spec: Lightning Bolt, Heal, Quick Heal, Chain Heal, Interrupt, Flame Shock, Frost Shock, Purge, Cure, Totems, Recall, Shield, Ghost Wolf, Rez.
 - Elemental: Mastery Bolt, Chain Lightning.
 - Enhancement: Stormstrike, Farseer.
 - Restoration: Riptide, Swift Heal.
 
 **Mage**
 
-- Every spec: Sheep, Counterspell, Decurse, Intellect, Conjure, Fire Blast, Slow Fall, Frostfire.
+- Every spec: Fireball, Frostbolt, Missiles, Sheep, Counterspell, Decurse, Intellect, Conjure, Fire Blast, Slow Fall, Frostfire.
 - Arcane: Arcane Blast, Burst, Quick Blast.
 - Fire: Pyroblast, Combustion, Blast Wave.
 - Frost: Ice Lance, Ice Block, Ice Barrier.
 
 **Warlock**
 
-- Every spec: Corruption, Agony, Curse, Immolate, Fear, Banish, Drain, Death Coil.
+- Every spec: Shadow Bolt, Corruption, Agony, Curse, Immolate, Fear, Banish, Drain, Death Coil.
 - Affliction: Siphon Life, Exhaustion, Big Agony, Wrack.
 - Demonology: Quick Demon, Sacrifice, Soul Link.
 - Destruction: Conflagrate, Shadowburn, Havoc, Incinerate.
 
 **Druid**
 
-- Every spec: Heal, Rejuv, Regrowth, Mark, Thorns, Decurse, Cure Poison, Innervate, Battle Rez, Rez, Roots, Hibernate, Faerie Fire, Moonfire.
+- Every spec: Wrath, Heal, Rejuv, Regrowth, Mark, Thorns, Decurse, Cure Poison, Innervate, Battle Rez, Rez, Roots, Hibernate, Faerie Fire, Moonfire.
 - Balance: Moonkin, Insect Swarm.
 - Feral Combat: Feral Charge, Lacerate, Primal Bite.
 - Restoration: Swiftmend, Wild Growth, Swift Heal.

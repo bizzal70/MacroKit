@@ -240,12 +240,13 @@ ns.SETS.PRIEST = {
           { "Flash Heal" }, [[
 #showtooltip Flash Heal
 /cast [@mouseover,help,nodead][help,nodead][@player] Flash Heal]]),
-        M("Big Heal", "Greater Heal, or Heal before you have it",
-          "Casts Greater Heal on the friend under your mouse, else your friendly target, else you. Until you learn Greater Heal at level 40, the first line does nothing and Heal is cast instead.",
-          { "Heal" }, [[
+        M("Big Heal", "Your biggest heal: Greater Heal, Heal or Lesser Heal",
+          "Casts your biggest heal on the friend under your mouse, else your friendly target, else you: Greater Heal once you learn it (level 40), Heal before that (level 16), and Lesser Heal from level 1. Lines for heals you do not have yet do nothing.",
+          { "Lesser Heal" }, [[
 #showtooltip
 /cast [@mouseover,help,nodead][help,nodead][@player] Greater Heal
-/cast [@mouseover,help,nodead][help,nodead][@player] Heal]]),
+/cast [@mouseover,help,nodead][help,nodead][@player] Heal
+/cast [@mouseover,help,nodead][help,nodead][@player] Lesser Heal]]),
         M("Fortitude", "Power Word: Fortitude; Shift for the group version",
           "Casts Power Word: Fortitude on the friend under your mouse, else your friendly target, else you; it lasts an hour in Forever. Hold Shift for Prayer of Fortitude on the whole group once you have it (level 48).",
           { "Power Word: Fortitude" }, [[
@@ -263,9 +264,10 @@ ns.SETS.PRIEST = {
 /cast [@mouseover,help,nodead][help,nodead][@player] Abolish Disease
 /cast [@mouseover,help,nodead][help,nodead][@player] Cure Disease]]),
         M("Smite", "Smite on mouseover or target",
-          "Casts Smite, the priest's first damage spell, on the enemy under your mouse, else your target. It also starts your auto-attack.",
+          "Casts Smite, the priest's first damage spell, on the enemy under your mouse, else your target. It also starts your auto-attack. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
           { "Smite" }, [[
 #showtooltip Smite
+/targetenemy [noharm][dead]
 /startattack [harm,nodead]
 /cast [@mouseover,harm,nodead][] Smite]]),
         M("Mind Blast", "Mind Blast on mouseover or target",
@@ -384,6 +386,13 @@ ns.SETS.PRIEST = {
 -- Shaman: trees Elemental, Enhancement, Restoration.
 ns.SETS.SHAMAN = {
     shared = {
+        M("Lightning Bolt", "Lightning Bolt on mouseover or target",
+          "Casts Lightning Bolt, the shaman's first attack spell, on the enemy under your mouse, else your target. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Lightning Bolt" }, [[
+#showtooltip Lightning Bolt
+/targetenemy [noharm][dead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Lightning Bolt]]),
         M("Heal", "Healing Wave on a mouseover friend, target or you",
           "Casts Healing Wave on the friend under your mouse, else your friendly target, else you.",
           { "Healing Wave" }, [[
@@ -510,6 +519,13 @@ ns.SETS.SHAMAN = {
 -- Druid: trees Balance, Feral Combat, Restoration.
 ns.SETS.DRUID = {
     shared = {
+        M("Wrath", "Wrath on mouseover or target",
+          "Casts Wrath, the druid's first attack spell, on the enemy under your mouse, else your target. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Wrath" }, [[
+#showtooltip Wrath
+/targetenemy [noharm][dead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Wrath]]),
         M("Heal", "Healing Touch on a mouseover friend, target or you",
           "Casts Healing Touch on the friend under your mouse, else your friendly target, else you.",
           { "Healing Touch" }, [[
@@ -899,6 +915,14 @@ ns.SETS.ROGUE = {
 -- Hunter: trees Beast Mastery, Marksmanship, Survival.
 ns.SETS.HUNTER = {
     shared = {
+        M("Shoot", "Auto Shot and your pet on your target",
+          "Starts Auto Shot on your target and sends your pet in. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller)."
+          .. " Your other shots keep Auto Shot going too.",
+          { "Auto Shot" }, [=[
+#showtooltip Auto Shot
+/targetenemy [noharm][dead]
+/petattack [harm,nodead]
+/startattack [harm,nodead]]=]),
         M("Mark", "Hunter's Mark on mouseover or target",
           "Puts Hunter's Mark on the enemy under your mouse, else your target.",
           { "Hunter's Mark" }, [[
@@ -1026,6 +1050,27 @@ ns.SETS.HUNTER = {
 -- Mage: trees Arcane, Fire, Frost.
 ns.SETS.MAGE = {
     shared = {
+        M("Fireball", "Fireball on mouseover or target",
+          "Casts Fireball, the mage's first attack spell, on the enemy under your mouse, else your target. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Fireball" }, [[
+#showtooltip Fireball
+/targetenemy [noharm][dead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Fireball]]),
+        M("Frostbolt", "Frostbolt on mouseover or target",
+          "Casts Frostbolt (level 4) on the enemy under your mouse, else your target, slowing them. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Frostbolt" }, [[
+#showtooltip Frostbolt
+/targetenemy [noharm][dead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Frostbolt]]),
+        M("Missiles", "Arcane Missiles on mouseover or target",
+          "Channels Arcane Missiles (level 8) at the enemy under your mouse, else your target. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Arcane Missiles" }, [[
+#showtooltip Arcane Missiles
+/targetenemy [noharm][dead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Arcane Missiles]]),
         M("Sheep", "Polymorph on mouseover or target; Shift for focus",
           "Polymorphs the enemy under your mouse, else your target. Hold Shift to polymorph your focus target instead, so you can keep them asleep while fighting something else.",
           { "Polymorph" }, [[
@@ -1142,6 +1187,14 @@ ns.SETS.MAGE = {
 -- Warlock: trees Affliction, Demonology, Destruction.
 ns.SETS.WARLOCK = {
     shared = {
+        M("Shadow Bolt", "Shadow Bolt on mouseover or target; sends your demon",
+          "Casts Shadow Bolt, the warlock's first attack spell, on the enemy under your mouse, else your target, and sends your demon in. If you have no enemy targeted, it targets the nearest one first, so one button starts a fight (handy on a controller).",
+          { "Shadow Bolt" }, [[
+#showtooltip Shadow Bolt
+/targetenemy [noharm][dead]
+/petattack [harm,nodead]
+/startattack [harm,nodead]
+/cast [@mouseover,harm,nodead][] Shadow Bolt]]),
         M("Corruption", "Corruption on mouseover or target",
           "Casts Corruption on the enemy under your mouse, else your target, so you can spread it without changing target.",
           { "Corruption" }, [[

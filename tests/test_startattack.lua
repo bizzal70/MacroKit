@@ -44,7 +44,7 @@ for class, set in pairs(ns.SETS) do
     Each(set.shared)
     for _, list in pairs(set.specs or {}) do Each(list) end
 end
-check(count == 74, "74 attack macros start auto-attack (" .. count .. ")")
+check(count == 81, "81 attack macros start auto-attack (" .. count .. ")")
 check(Find("PRIEST", "Mind Blast") and Has(Find("PRIEST", "Mind Blast").body, "/startattack [harm,nodead]"), "every priest has Mind Blast, starting auto-attack")
 for _, id in ipairs({ 256, 257 }) do
     local found
@@ -129,3 +129,15 @@ check(BodyOf("Seal") == seal.body and ns.char.written.Seal == seal.body, "a macr
 check(BodyOf("Heal") == "#showtooltip\n/cast Holy Light\n/say healing!", "one the player edited since is left alone")
 -- Adding a macro remembers its text.
 ns.char.written.Exorcism = nil
+
+
+-- 0.13.0: every class has a macro for its first attack from level 1, which
+-- targets the nearest enemy when there is none.
+for _, starter in ipairs({ { "SHAMAN", "Lightning Bolt" }, { "MAGE", "Fireball" }, { "MAGE", "Frostbolt" }, { "MAGE", "Missiles" },
+        { "WARLOCK", "Shadow Bolt" }, { "DRUID", "Wrath" }, { "PRIEST", "Smite" }, { "HUNTER", "Shoot" } }) do
+    local macro = Find(starter[1], starter[2])
+    check(macro and Has(macro.body, "/targetenemy [noharm][dead]") and Has(macro.body, "/startattack [harm,nodead]"),
+        starter[1] .. " " .. starter[2] .. ": picks the nearest enemy if there is none, and starts attacking")
+end
+check(Has(Find("WARLOCK", "Shadow Bolt").body, "/petattack") and Has(Find("HUNTER", "Shoot").body, "/petattack"), "warlocks and hunters send their pet in")
+check(Find("PRIEST", "Big Heal").spells[1] == "Lesser Heal" and Has(Find("PRIEST", "Big Heal").body, "] Lesser Heal"), "a level 1 priest's heal macro uses Lesser Heal")
