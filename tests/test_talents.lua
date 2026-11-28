@@ -19,6 +19,7 @@ local function Unlearn(...) for _, name in ipairs({ ... }) do KNOWN[SPELL_IDS[na
 SPEC = nil
 Learn("Holy Strike", "Holy Light", "Seal of Righteousness", "Seal of the Crusader", "Judgement",
     "Seal of Fury", "Righteous Fury")
+MacroKitDB = MacroKitDB or {}   -- an account that used MacroKit before 0.14.0: adding by itself starts on
 Fire("ADDON_LOADED", "MacroKit")
 Fire("PLAYER_ENTERING_WORLD")
 RunAfters()

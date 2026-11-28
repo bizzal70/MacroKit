@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="MACROKIT_WINDOW" header="MACROKIT" category="ADDONS">
+		MacroKit_ToggleWindow()
+	</Binding>
+</Bindings>

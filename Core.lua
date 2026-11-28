@@ -9,6 +9,11 @@ local addonName, ns = ...
 
 local ICON = 134400      -- the question mark: with #showtooltip, the macro shows the spell it will cast
 local MAX_NAME, MAX_BODY = 16, 255
+-- Character macro slots that adding by itself always leaves free, for the
+-- player's own macros and other addons' (GamepadMacros' Heal Me, Heal
+-- Nearest and Buff Nearest are character macros). Add from the window to
+-- use them anyway.
+local RESERVE = 3
 
 -- Shared by all characters: where the minimap button sits.
 local accountDefaults = {
@@ -16,10 +21,18 @@ local accountDefaults = {
     minimapAngle = 5.4,
     actionTooltips = true,   -- explain MacroKit's macros in action button tooltips
     buffReminder = true,     -- the row of missing self-buffs (Buffs.lua)
+    -- Whether a character MacroKit hasn't seen yet starts with adding by
+    -- itself on. Set when MacroKit first loads: off for a new install (the
+    -- player picks what goes in their macro list), on for an account that
+    -- already used MacroKit before 0.14.0. Follows the last choice made.
+    autoDefault = nil,
+    windowPoint = nil,       -- where the window was last dragged to
+    welcomed = false,        -- the one-time welcome line has been shown
 }
 
 local defaults = {
-    auto = true,   -- add macros by itself as their spells are learned
+    auto = nil,    -- add macros by itself as their spells are learned (starts as ns.db.autoDefault)
+    heldForRoom = nil, -- the macros last held back to keep slots free, so it's said once
     view = nil,    -- the spec picked in the window's menu, before talents show it
     lastSpec = nil, -- the spec last worked out, so a change resets the view
     seen = {},     -- macro name -> true once announced as newly ready
@@ -284,6 +297,7 @@ function ns.Wanted()
     Add(set.shared)
     local specs = set.specs or {}
     if spec and specs[spec] then Add(specs[spec]) end
+    Add({ ns.BUFF_MACRO })
     return list, class, spec
 end
 
@@ -337,6 +351,7 @@ function ns.WindowList(view)
     end
     Add(set.shared)
     if view ~= "shared" then Add(specs[view]) end
+    Add({ ns.BUFF_MACRO })
     return list, class, view
 end
 
@@ -382,6 +397,38 @@ local function FreeSlots()
     if not ok or type(perCharacter) ~= "number" then return max end
     return max - perCharacter
 end
+ns.FreeSlots = FreeSlots
+ns.RESERVE = RESERVE
+
+-- "Missing Buff": one macro that casts whatever the missing-buffs row
+-- (Buffs.lua) would cast first, rewritten out of combat as buffs come and
+-- go, so one controller button does all the buffing. It needs no spell of
+-- its own, so it is only added when asked, never by adding by itself.
+local BUFF_MACRO = "Missing Buff"
+ns.BUFF_MACRO = {
+    name = BUFF_MACRO,
+    desc = "Casts the first buff or tracking you are missing",
+    how = "Casts whatever the missing-buffs row would cast first: press it again for the next one. "
+        .. "MacroKit rewrites it out of combat as your buffs come and go. Needs the missing-buffs row switched on.",
+    spells = {},
+    manual = true,
+    body = '/run print("MacroKit: no buffs missing")',
+}
+function ns.BuffMacroBody()
+    local body
+    if ns.db and ns.db.buffReminder == false then
+        body = '/run print("MacroKit: Missing Buff needs the missing-buffs row on (/macrokit buffs)")'
+    else
+        local first = (ns.MissingBuffs and ns.MissingBuffs() or {})[1]
+        if first and first.spell then
+            body = "#showtooltip\n/cast [@player] " .. first.spell
+        else
+            body = '/run print("MacroKit: no buffs missing")'
+        end
+    end
+    ns.BUFF_MACRO.body = body
+    return body
+end
 
 -- The first spell a macro needs that this character does not know.
 local function MissingSpell(macro)
@@ -411,11 +458,12 @@ function ns.AddOne(macro)
         ns.Print("Your character macros are full, so " .. macro.name .. " was not added.")
         return false
     end
-    local ok, index = pcall(CreateMacro, macro.name, ICON, macro.body, true)
+    local body = macro == ns.BUFF_MACRO and ns.BuffMacroBody() or macro.body
+    local ok, index = pcall(CreateMacro, macro.name, ICON, body, true)
     if ok and index then
         ns.char.made[macro.name] = true
-        ns.char.written[macro.name] = macro.body
-        ns.Print("Added " .. macro.name .. ". Drag it from this window or /macro to your bars.")
+        ns.char.written[macro.name] = body
+        ns.Print("Added " .. macro.name .. ". Click To bar to put it on your action bar, or drag it there.")
         ns.RefreshWindow()
         return true
     end
@@ -424,8 +472,9 @@ function ns.AddOne(macro)
 end
 
 -- Adds the macros this character is missing. With quiet, says nothing
--- unless something was added.
-function ns.Install(quiet)
+-- unless something was added. With auto (adding by itself), it keeps
+-- RESERVE character slots free and leaves Missing Buff for the window.
+function ns.Install(quiet, auto)
     if InCombatLockdown() then
         ns.pending = true
         ns.Print("Your macros will be added when combat ends.")
@@ -438,20 +487,24 @@ function ns.Install(quiet)
     end
     local added, kept, unknown, noRoom, failed = {}, {}, {}, {}, {}
     local free = FreeSlots()
+    if auto then free = free - RESERVE end
     for _, macro in ipairs(list) do
         local missing = MissingSpell(macro)
-        if Exists(macro.name) then
+        if auto and macro.manual then
+            -- Only added when asked.
+        elseif Exists(macro.name) then
             kept[#kept + 1] = macro.name
         elseif missing then
             unknown[#unknown + 1] = macro.name .. " (" .. missing .. ")"
         elseif free <= 0 then
             noRoom[#noRoom + 1] = macro.name
         else
-            local ok, index = pcall(CreateMacro, macro.name, ICON, macro.body, true)
+            local body = macro == ns.BUFF_MACRO and ns.BuffMacroBody() or macro.body
+            local ok, index = pcall(CreateMacro, macro.name, ICON, body, true)
             if ok and index then
                 added[#added + 1] = macro.name
                 ns.char.made[macro.name] = true
-                ns.char.written[macro.name] = macro.body
+                ns.char.written[macro.name] = body
                 free = free - 1
             else
                 failed[#failed + 1] = macro.name
@@ -459,9 +512,23 @@ function ns.Install(quiet)
         end
     end
 
+    -- Held back to keep slots free: said once for each new set of names.
+    if auto then
+        if #noRoom > 0 then
+            local key = table.concat(noRoom, ",")
+            if ns.char.heldForRoom ~= key then
+                ns.char.heldForRoom = key
+                ns.Print(("Stopped adding macros by itself, to keep %d character macro slots free for your own. "
+                    .. "Add these from /macrokit if you want them: %s."):format(RESERVE, table.concat(noRoom, ", ")))
+            end
+            noRoom = {}
+        else
+            ns.char.heldForRoom = nil
+        end
+    end
     if #added > 0 then
         ns.RefreshWindow()
-        ns.Print("Added " .. #added .. " macros: " .. table.concat(added, ", ") .. ". Drag them from /macrokit or /macro to your bars.")
+        ns.Print("Added " .. #added .. " macros: " .. table.concat(added, ", ") .. ". Put them on your bars with To bar in /macrokit, or drag them.")
     elseif not quiet then
         ns.Print("No new macros to add.")
     end
@@ -553,6 +620,19 @@ function ns.UpgradeMacros()
     return updated
 end
 
+-- Keeps Missing Buff casting the first missing buff. Out of combat only
+-- (the game does not allow macro changes in a fight), and only while it is
+-- the macro MacroKit added.
+function ns.UpdateBuffMacro()
+    if InCombatLockdown() or not ns.char or not ns.char.made[BUFF_MACRO] or type(EditMacro) ~= "function" then return end
+    local okIndex, index = pcall(GetMacroIndexByName, BUFF_MACRO)
+    if not okIndex or type(index) ~= "number" or index == 0 then return end
+    local body = ns.BuffMacroBody()
+    local okInfo, _, _, current = pcall(GetMacroInfo, index)
+    if okInfo and type(current) == "string" and Clean(current) == Clean(body) then return end
+    if pcall(EditMacro, index, nil, nil, body) then ns.char.written[BUFF_MACRO] = body end
+end
+
 -- Deletes the macros MacroKit added. Any you made yourself stay.
 function ns.Remove()
     if InCombatLockdown() then
@@ -588,6 +668,7 @@ function ns.List()
         local missing = MissingSpell(macro)
         local status
         if Exists(macro.name) then status = "|cff40ff40in your macros|r"
+        elseif macro.manual then status = "|cffffd100add it from /macrokit if you want it|r"
         elseif missing then status = "|cff999999needs " .. missing .. "|r"
         else status = "|cffffd100will be added|r" end
         ns.Print("  " .. macro.name .. " - " .. status)
@@ -617,7 +698,8 @@ end
 function ns.ReadyNames()
     local names = {}
     for _, macro in ipairs(ns.Wanted() or {}) do
-        if ns.Status(macro) == "ready" then names[#names + 1] = macro.name end
+        -- Missing Buff is always ready; it isn't counted or added by itself.
+        if not macro.manual and ns.Status(macro) == "ready" then names[#names + 1] = macro.name end
     end
     return names
 end
@@ -650,7 +732,7 @@ function ns.CheckSpells(quietStart)
     local ready = ns.ReadyNames()
     if #ready > 0 and not InCombatLockdown() then
         if ns.char.auto then
-            for _, name in ipairs(ns.Install(true) or {}) do
+            for _, name in ipairs(ns.Install(true, true) or {}) do
                 ns.char.fresh[name] = true
             end
         else
@@ -735,11 +817,22 @@ SlashCmdList.MACROKIT = function(msg)
         ns.ListSpells()
     elseif command == "remove" then
         ns.Remove()
+    elseif command == "debug" then
+        local version = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(addonName, "Version") or "?"
+        local class, spec, how = ns.ClassAndSpec()
+        local made = 0
+        for name in pairs(ns.char.made) do if Exists(name) then made = made + 1 end end
+        ns.Print(("version %s; %s, spec %s%s; character macros %d of %d used, %d by MacroKit; adding by itself %s; missing-buffs row %s.")
+            :format(tostring(version), tostring(class), tostring(spec or "none"), how and (" (from " .. how .. ")") or "",
+                (MAX_CHARACTER_MACROS or 18) - FreeSlots(), MAX_CHARACTER_MACROS or 18, made,
+                ns.char.auto and "on" or "off", ns.db.buffReminder ~= false and "on" or "off"))
     elseif command == "auto" then
         if rest == "on" then ns.char.auto = true
         elseif rest == "off" then ns.char.auto = false
         else ns.char.auto = not ns.char.auto end
-        ns.Print(ns.char.auto and "Will add new macros by itself as you learn their spells."
+        -- A character MacroKit hasn't seen yet starts the same way.
+        ns.db.autoDefault = ns.char.auto
+        ns.Print(ns.char.auto and ("Will add new macros by itself as you learn their spells, keeping " .. RESERVE .. " character macro slots free.")
             or "Will tell you about new macros, and add them only when you ask.")
         ns.RefreshWindow()
         if ns.char.auto then ns.ScheduleCheck() end
@@ -756,8 +849,14 @@ SlashCmdList.MACROKIT = function(msg)
         ns.Print("/macrokit spells - list your spec and spellbook, to report spell names")
         ns.Print("/macrokit talents - what the game reports about your talents")
         ns.Print("/macrokit clear - delete the macros MacroKit added for a spec you are no longer")
+        ns.Print("/macrokit debug - version and the key facts, for a bug report (github.com/bizzal70/MacroKit/issues)")
     end
 end
+
+-- Key bindings (Bindings.xml), under Options > Keybindings > AddOns.
+BINDING_HEADER_MACROKIT = "MacroKit"
+BINDING_NAME_MACROKIT_WINDOW = "Open the MacroKit window"
+function MacroKit_ToggleWindow() ns.ToggleWindow() end
 
 -- Entry in the minimap's addon list.
 function MacroKit_OnAddonCompartmentClick()
@@ -772,18 +871,21 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, arg)
     if event == "ADDON_LOADED" then
         if arg ~= addonName then return end
+        local newInstall = MacroKitDB == nil
+        MacroKitDB = MacroKitDB or {}
+        for key, value in pairs(accountDefaults) do
+            if MacroKitDB[key] == nil then MacroKitDB[key] = value end
+        end
+        if MacroKitDB.autoDefault == nil then MacroKitDB.autoDefault = not newInstall end
+        ns.db = MacroKitDB
         MacroKitCharDB = MacroKitCharDB or {}
         for key, value in pairs(defaults) do
             if MacroKitCharDB[key] == nil then
                 MacroKitCharDB[key] = type(value) == "table" and {} or value
             end
         end
+        if MacroKitCharDB.auto == nil then MacroKitCharDB.auto = MacroKitDB.autoDefault and true or false end
         ns.char = MacroKitCharDB
-        MacroKitDB = MacroKitDB or {}
-        for key, value in pairs(accountDefaults) do
-            if MacroKitDB[key] == nil then MacroKitDB[key] = value end
-        end
-        ns.db = MacroKitDB
         ns.UpdateMinimapButton()
         self:UnregisterEvent("ADDON_LOADED")
         -- Registering an event this client does not have throws, hence pcall.
@@ -799,6 +901,16 @@ frame:SetScript("OnEvent", function(self, event, arg)
     elseif event == "PLAYER_ENTERING_WORLD" then
         -- Spells can still be loading on arrival, so it waits a moment.
         ns.RefreshWindow()
+        if not ns.db.welcomed then
+            ns.db.welcomed = true
+            if ns.char.auto then
+                ns.Print("Adds ready-made macros for your class as you learn their spells, keeping " .. RESERVE
+                    .. " character macro slots free for your own. /macrokit or the minimap button opens the window.")
+            else
+                ns.Print("Has ready-made macros for your class. Open /macrokit (or the minimap button) to add the ones you want, "
+                    .. "or tick \"Add new macros by themselves\" there.")
+            end
+        end
         C_Timer.After(3, function() ns.CheckSpells(true) end)
     elseif event == "PLAYER_REGEN_ENABLED" then
         if ns.pending then

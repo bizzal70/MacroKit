@@ -6,6 +6,9 @@ Adds ready-made macros for your class and talent spec to your macro list, and ke
 
 MacroKit adds macros to your character's own macro list (`/macro`, the character tab) as soon as your character knows the spells they use.
 
+- **It leaves room for your own macros.** Adding by itself always keeps 3 of your 18 character macro slots free, for macros you make and other addons' (such as GamepadMacros' heal macros), and says once which macros it held back. Add those from the window if you want them.
+- **One button for all your buffs:** the **Missing Buff** macro casts whatever the missing-buffs row would cast first; press it again for the next. Offered in every class's list, added only when you ask.
+
 - **It keeps up as you level.** When you level up, train at a trainer or learn a talent, it looks again straight away: macros you can now use are added (or, with automatic adding off, announced once in chat), the window updates, and a red badge on the minimap button counts what is new since you last opened the window. New macros are marked New in the window.
 - **It knows your spec from your talents.** Forever has talent trees rather than a specialization choice, so MacroKit reads how many points you have in each tree (the same way the game's own talent window does) and takes the tree with the most. Before your first talent point, pick your spec in the window's menu; MacroKit remembers it for that character.
 - **It follows a respec, a reset and a dual-spec switch.** It switches to the new spec's macros and says so in chat. The macros it added for your old spec are not deleted by themselves: the window offers a **Clear them** button (or type `/macrokit clear`).
@@ -22,20 +25,20 @@ MacroKit adds macros to your character's own macro list (`/macro`, the character
 Click the MacroKit button on the minimap, or type `/macrokit`.
 
 - **Top:** your class, in its colour, and a **Spec** menu: Every spec (the macros all specs share), Holy, Protection or Retribution. It follows your talents; before you have any, pick your spec there. You can also pick another spec to look at its macros.
-- **Ready to use** tab: macros whose spells you know. Those **in your macros** can be dragged straight onto your action bars (or clicked to pick up); those **ready to add** have an **Add** button.
+- **Ready to use** tab: macros whose spells you know. Those **in your macros** have a **To bar** button that puts them on the first empty button of your action bars (or drag them there); those **ready to add** have an **Add** button. Rows say *On your bars* once they're there.
 - **Not learned yet** tab: macros waiting on a spell, each saying which. Learn the spell and the macro moves to Ready to use by itself, even with the window open.
-- Hover over a macro to see how it works, in the **How it works** panel under the list and in its tooltip, along with the macro's text. At the bottom: **Add all missing**, **Remove MacroKit's macros**, and the switch for adding new macros by themselves. The buttons are greyed out in combat, when the game does not allow changing macros.
+- Hover over a macro to see how it works, in the **How it works** panel under the list and in its tooltip, along with the macro's text. At the bottom: **Add all missing**, **Remove MacroKit's macros** (press it twice), and the switch for adding new macros by themselves. The buttons are greyed out in combat, when the game does not allow changing macros.
 
-Classes without macros yet are told so. Drag the minimap button round the edge of the minimap to move it.
+Classes without macros yet are told so. The window remembers where you drag it and shrinks to fit a small screen. Drag the minimap button round the edge of the minimap to move it. MacroKit is also in Esc > Options > AddOns, and has a key binding to open the window (Options > Keybindings > AddOns).
 
 ## Getting a macro onto your action bar
 
 1. Click the MacroKit button on the minimap (or type `/macrokit`).
 2. On the **Ready to use** tab, find the macro. If it says *Ready to add*, click **Add**: it goes into your macro list and then says *In your macros*.
-3. Drag that line from the MacroKit window onto any action bar slot. You can also click it once to pick it up, then click the slot.
+3. Click **To bar**: it goes on the first empty button of your action bars. Or drag the line from the MacroKit window onto any action bar slot (or click it once to pick it up, then click the slot).
 4. You can also open the game's own macro window with `/macro`: MacroKit's macros are on the **character** tab, and you drag them from there the same way.
 
-With "Add new macros by themselves" on (the default), step 2 is already done for you; just drag.
+With "Add new macros by themselves" ticked, step 2 is done for you. It starts off for a new install, so nothing goes in your macro list until you choose; tick it in the window to have MacroKit add macros as you learn their spells.
 
 The window shows these steps too, in its panel under the list, until you hover over a macro.
 
@@ -125,7 +128,8 @@ Each class has macros for every spec, plus a few for each talent tree. Hover a m
 | See what the game reports about your talents | `/macrokit talents` |
 | Delete the macros MacroKit added for a spec you are no longer | `/macrokit clear` |
 | Delete the macros MacroKit added | `/macrokit remove` (macros you made yourself stay) |
-| Stop adding new macros by themselves (they are announced instead) | `/macrokit auto off` |
+| Add new macros by themselves, or stop (they are announced instead) | `/macrokit auto on`, `/macrokit auto off` |
+| Version and key facts, for a bug report | `/macrokit debug`, then paste it in an [issue](https://github.com/bizzal70/MacroKit/issues) |
 
 ## Good to know
 

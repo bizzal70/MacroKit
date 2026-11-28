@@ -69,14 +69,14 @@ check(AllTexts():find("Your spec shows once you learn a talent spell. Until then
 
 -- The tabs. Known: Holy Strike, Seal, Heal (the player's own), Might.
 local readyTab, laterTab = Button("^Ready to use"), Button("^Not learned yet")
-check(readyTab.label.__text == "Ready to use (4)" and laterTab.label.__text == "Not learned yet (9)",
+check(readyTab.label.__text == "Ready to use (5)" and laterTab.label.__text == "Not learned yet (9)",
     "the tabs count the macros whose spells are known and those still waiting: "
     .. readyTab.label.__text .. ", " .. laterTab.label.__text)
 check(readyTab.underline.__shown and not laterTab.underline.__shown, "Ready to use is the tab shown first")
-check(#Rows() == 4 and RowFor("Holy Strike") and RowFor("Seal") and not RowFor("Quick Heal"), "it lists the ready macros only")
+check(#Rows() == 5 and RowFor("Missing Buff") and RowFor("Holy Strike") and RowFor("Seal") and not RowFor("Quick Heal"), "it lists the ready macros only")
 local strike, heal = RowFor("Holy Strike"), RowFor("Heal")
 check(strike.status.__text:find("Ready to add", 1, true) and strike.add.__shown, "a macro that can be added has an Add button")
-check(heal.status.__text:find("In your macros", 1, true) and not heal.add.__shown, "one already in the macro list says so")
+check(heal.status.__text:find("In your macros", 1, true) and heal.add.__shown and heal.add.label.__text == "To bar", "one already in the macro list says so, with a To bar button")
 check(strike.icon.__texture == "icon-Holy Strike" and strike.desc.__text == "Starts attacking and uses Holy Strike",
     "each row shows the spell's icon and what the macro does")
 
@@ -91,17 +91,17 @@ Click(readyTab)
 Click(RowFor("Holy Strike").add)
 check(Has("Holy Strike") and ns.char.made["Holy Strike"], "Add puts that macro in the character's list")
 strike = RowFor("Holy Strike")
-check(strike.status.__text:find("In your macros", 1, true) and not strike.add.__shown, "and the row updates at once")
+check(strike.status.__text:find("In your macros", 1, true) and strike.add.label.__text == "To bar", "and the row updates at once")
 check(Badge() == "", "while the window is open the badge stays hidden: " .. tostring(Badge()))
 PICKED = nil
 strike.__scripts.OnDragStart(strike)
 check(PICKED == "Holy Strike", "dragging a row picks the macro up, ready for the action bars")
-check(AllTexts():find("Putting a macro on your bar", 1, true) and AllTexts():find("Click Add. Then drag the macro's line onto an action bar slot", 1, true)
+check(AllTexts():find("Putting a macro on your bar", 1, true) and AllTexts():find("Click Add. Then click To bar", 1, true)
     and AllTexts():find("Hover over a macro to see how it works.", 1, true),
     "under the list, the panel explains how to put a macro on your bar, and invites you to hover one")
 strike.__scripts.OnEnter(strike)
 local tip = table.concat(TOOLTIP, " | ")
-check(tip:find("/startattack | /cast Holy Strike", 1, true) and tip:find("Drag onto your action bars", 1, true),
+check(tip:find("/startattack | /cast Holy Strike", 1, true) and tip:find("Click To bar, or drag it onto an action button", 1, true),
     "hovering a row shows the macro's text and what to do: " .. tip)
 check(tip:find("Turns on your auto-attack and uses Holy Strike in the same press", 1, true), "the tooltip explains how it works")
 check(AllTexts():find("How Holy Strike works", 1, true) and AllTexts():find("one button starts a fight and keeps you swinging", 1, true),
@@ -117,7 +117,7 @@ Learn("Flash of Light")
 local before = #PRINTED
 Fire("TRAINER_CLOSED")
 RunAfters()
-check(readyTab.label.__text == "Ready to use (5)" and RowFor("Quick Heal"), "a newly learned spell moves its macro to Ready to use while the window is open")
+check(readyTab.label.__text == "Ready to use (6)" and RowFor("Quick Heal"), "a newly learned spell moves its macro to Ready to use while the window is open")
 check(table.concat(PRINTED, " | ", before + 1):find("New macro ready: Quick Heal", 1, true), "and it is announced in chat")
 check(Badge() == "" and RowFor("Quick Heal").status.__text:find("New", 1, true), "it is marked New in the open window, and the badge stays hidden")
 
@@ -138,7 +138,7 @@ check(not AllTexts():find("Your spec shows once", 1, true), "and the line about 
 
 -- Add all missing, combat, and Remove.
 local addAll, remove = Button("^Add all missing"), Button("^Remove MacroKit")
-check(addAll.label.__text == "Add all missing (5)", "Add all counts the macros it can add: " .. addAll.label.__text)
+check(addAll.label.__text == "Add all missing (6)", "Add all counts the macros it can add: " .. addAll.label.__text)
 IN_COMBAT = true
 Fire("PLAYER_REGEN_DISABLED")
 check(addAll.active == false and RowFor("Quick Heal").add.active == false, "in combat the buttons are greyed out")
@@ -151,7 +151,12 @@ Click(addAll)
 check(Has("Seal") and Has("Quick Heal") and Has("Tank Up") and Has("Taunt") and not Has("Exorcism"), "Add all adds every ready macro and only those")
 check(addAll.label.__text == "Add all missing" and addAll.active == false and Badge() == "", "and then has nothing left to add, and the count clears")
 Click(remove)
-check(Has("Heal") and not Has("Seal") and not Has("Tank Up"), "Remove deletes only what MacroKit added")
+check(Has("Seal") and remove.label.__text == "Press again to remove them", "Remove asks for a second press first")
+RunAfters()
+check(remove.label.__text == "Remove MacroKit's macros" and Has("Seal"), "and forgets it after a few seconds")
+Click(remove)
+Click(remove)
+check(Has("Heal") and not Has("Seal") and not Has("Tank Up") and not Has("Missing Buff"), "pressed twice, Remove deletes only what MacroKit added")
 
 -- The automatic-adding switch.
 local auto
@@ -185,8 +190,8 @@ for i = #MACROS, 1, -1 do DeleteMacro(i) end
 ns.char.view = "shared"
 Fire("SPELLS_CHANGED")
 RunAfters()
-check(#Rows() == 0 and AllTexts():find("Nothing ready yet", 1, true) and AllTexts():find("See Not learned yet (13)", 1, true),
-    "with nothing ready, it says so and points to the other tab")
+check(#Rows() == 1 and RowFor("Missing Buff") and laterTab.label.__text == "Not learned yet (13)",
+    "with no spells known, only Missing Buff (which needs none) is ready")
 Click(laterTab)
 check(#Rows() == 13, "where all 13 shared macros are listed")
 Click(readyTab)

@@ -1,5 +1,16 @@
 # MacroKit
 
+## 0.14.0
+
+- **Keeps room for your own macros:** adding macros by itself now always leaves 3 of your 18 character macro slots free, for macros you make and other addons' (GamepadMacros' Heal Me, Heal Nearest and Buff Nearest). It says once which macros it held back; add them from the window if you want them.
+- **To bar:** a macro in your list but not on your bars has a To bar button that puts it on the first empty action button on screen. No dragging, which is the hard part with a controller. Rows say "On your bars" once it's there.
+- **New macro, Missing Buff:** casts whatever the missing-buffs row would cast first; press it again for the next. Put it on one controller button and buffing is one button. It's offered in every class's list and only added when you ask.
+- **New installs start with adding by itself off,** so nothing lands in a new player's macro list unasked; existing players keep their setting. A one-time welcome line says what MacroKit does.
+- **Remove asks you to press it twice,** so a slip can't delete your macros.
+- The window remembers where you put it, and shrinks to fit a small screen.
+- MacroKit is listed in Options > AddOns, and has a key binding to open its window.
+- `/macrokit debug` prints the version and key facts for a bug report.
+
 ## 0.13.0
 
 - **Starting attacks for every class:** new macros for the first attack each class learns: **Lightning Bolt** (shaman), **Fireball**, **Frostbolt** and **Missiles** (mage), **Shadow Bolt** (warlock, also sends your demon in), **Wrath** (druid) and **Shoot** (hunter: Auto Shot plus your pet). Like the others, they cast on the enemy under your mouse, else your target, and start your auto-attack. If you have no enemy targeted, they target the nearest one first, so one button starts a fight; handy on a controller. Warriors, rogues and paladins already had theirs (Strike, Opener, Holy Strike).

@@ -7,6 +7,7 @@ local function Tip() return table.concat(TOOLTIP, " | ") end
 SPEC = nil
 Learn("Holy Light", "Holy Strike")
 CreateMacro("Mine", 1, "/say mine", true)
+MacroKitDB = MacroKitDB or {}   -- an account that used MacroKit before 0.14.0: adding by itself starts on
 Fire("ADDON_LOADED", "MacroKit")
 Fire("PLAYER_ENTERING_WORLD")
 RunAfters()

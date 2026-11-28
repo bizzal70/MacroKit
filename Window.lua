@@ -20,8 +20,8 @@ local FOOTER_HEIGHT = 96
 local HOW_HEIGHT = 84                    -- the How it works panel under the list
 -- Shown in the How it works panel while no macro is hovered: how to get
 -- a macro onto an action bar, then how to read about one.
-local HOW_HINT = "Ready to add? Click Add. Then drag the macro's line onto an action bar slot "
-    .. "(or click it once to pick it up, then click a slot). Hover over a macro to see how it works."
+local HOW_HINT = "Ready to add? Click Add. Then click To bar to put it on the first empty button of your "
+    .. "action bars (or drag the macro's line onto a button). Hover over a macro to see how it works."
 local MENU_ROW = 22
 local QUESTION_MARK = 134400
 
@@ -37,6 +37,12 @@ local menuRows = {}
 -- ns.char.view when a spec has been picked in the menu (kept per
 -- character). tab: "ready" or "later".
 local tab = "ready"
+-- Remove asks for a second press within a few seconds.
+local removeArmed = false
+local function SavePoint()
+    local point, _, relativePoint, x, y = window:GetPoint()
+    if point then ns.db.windowPoint = { point, relativePoint, x, y } end
+end
 
 local function Fill(frame, r, g, b, a)
     local texture = frame:CreateTexture(nil, "BACKGROUND")
@@ -139,7 +145,7 @@ local function ShowTooltip(row)
     GameTooltip:AddLine(" ")
     local status, missing = ns.Status(macro)
     if status == "have" then
-        GameTooltip:AddLine("Drag onto your action bars, or click to pick it up.", 0.25, 1, 0.25, true)
+        GameTooltip:AddLine("Click To bar, or drag it onto an action button.", 0.25, 1, 0.25, true)
     elseif status == "ready" then
         GameTooltip:AddLine("Click Add to put it in your macros.", 1, 0.82, 0, true)
     else
@@ -172,7 +178,10 @@ local function CreateRow(index)
     row.status = Label(row, "GameFontHighlightSmall", "RIGHT")
     row.status:SetPoint("TOPRIGHT", -70, -4)
     row.name:SetPoint("RIGHT", row.status, "LEFT", -8, 0)
-    row.add = TextButton(row, 56, "Add", function() ns.AddOne(row.macro) end)
+    -- Add (not in the macro list yet) or To bar (in it, not on a bar yet).
+    row.add = TextButton(row, 56, "Add", function()
+        if row.toBar then ns.ToBar(row.macro.name) else ns.AddOne(row.macro) end
+    end)
     row.add:SetPoint("RIGHT", -4, 0)
 
     row:RegisterForDrag("LeftButton")
@@ -276,6 +285,7 @@ local function Refresh()
     for _, button in pairs(tabs) do button:SetShown(list ~= nil) end
 
     local inCombat = InCombatLockdown()
+    local onBars = ns.MacrosOnBars and ns.MacrosOnBars() or {}
     local shownList = tab == "ready" and ready or later
     local count, addable = 0, 0
     for index, macro in ipairs(shownList) do
@@ -287,13 +297,23 @@ local function Refresh()
         row.desc:SetText(macro.desc or "")
         local status, missing = ns.Status(macro)
         local isNew = ns.char.fresh[macro.name] and "|cffff4040New|r  " or ""
+        row.toBar = false
         if status == "have" then
-            row.status:SetText(isNew .. "|cff40ff40In your macros|r")
             row.icon:SetDesaturated(false)
-            row.add:Hide()
+            if onBars[macro.name] then
+                row.status:SetText(isNew .. "|cff40ff40On your bars|r")
+                row.add:Hide()
+            else
+                row.status:SetText(isNew .. "|cff40ff40In your macros|r")
+                row.toBar = true
+                row.add.label:SetText("To bar")
+                row.add:Show()
+                row.add:SetActive(not inCombat)
+            end
         elseif status == "ready" then
             row.status:SetText(isNew .. "|cffffd100Ready to add|r")
             row.icon:SetDesaturated(false)
+            row.add.label:SetText("Add")
             row.add:Show()
             row.add:SetActive(not inCombat)
         else
@@ -358,11 +378,22 @@ local function Refresh()
     else
         staleBar:Hide()
     end
-    window:SetHeight(LIST_TOP + listHeight + howHeight + staleHeight + FOOTER_HEIGHT)
+    local height = LIST_TOP + listHeight + howHeight + staleHeight + FOOTER_HEIGHT
+    window:SetHeight(height)
+    -- Taller or wider than the screen (a handheld, a big interface scale):
+    -- the whole window is scaled down to fit.
+    local okSize, screenWidth, screenHeight = pcall(function() return UIParent:GetWidth(), UIParent:GetHeight() end)
+    local scale = 1
+    if okSize and type(screenWidth) == "number" and screenWidth > 0 and type(screenHeight) == "number" and screenHeight > 0 then
+        scale = math.min(1, screenWidth * 0.95 / WIDTH, screenHeight * 0.92 / height)
+    end
+    window:SetScale(scale)
+    ns.windowScale = scale
 
     addAllButton.label:SetText(addable > 0 and ("Add all missing (" .. addable .. ")") or "Add all missing")
     addAllButton:SetActive(addable > 0 and not inCombat)
     removeButton:SetActive(next(ns.char.made) ~= nil and not inCombat)
+    removeButton.label:SetText(removeArmed and "Press again to remove them" or "Remove MacroKit's macros")
     autoBox.tick:SetShown(ns.char.auto and true or false)
     buffBox.tick:SetShown(ns.db.buffReminder ~= false)
     buffSpotButton.label:SetText("Position: " .. (ns.BuffSpotLabel and ns.BuffSpotLabel() or "?"))
@@ -396,7 +427,13 @@ end
 local function CreateWindow()
     window = CreateFrame("Frame", addonName .. "Window", UIParent)
     window:SetWidth(WIDTH)
-    window:SetPoint("CENTER")
+    -- Where it was last dragged to, or the middle.
+    local saved = ns.db.windowPoint
+    if type(saved) == "table" and saved[1] then
+        window:SetPoint(saved[1], UIParent, saved[2], saved[3], saved[4])
+    else
+        window:SetPoint("CENTER")
+    end
     window:SetFrameStrata("HIGH")
     window:SetToplevel(true)
     window:EnableMouse(true)
@@ -422,7 +459,10 @@ local function CreateWindow()
     header:EnableMouse(true)
     header:RegisterForDrag("LeftButton")
     header:SetScript("OnDragStart", function() window:StartMoving() end)
-    header:SetScript("OnDragStop", function() window:StopMovingOrSizing() end)
+    header:SetScript("OnDragStop", function()
+        window:StopMovingOrSizing()
+        SavePoint()
+    end)
     Fill(header, 0.16, 0.12, 0.08, 1)
     local title = Label(header, "GameFontNormalLarge")
     title:SetPoint("LEFT", PADDING, 0)
@@ -505,7 +545,22 @@ local function CreateWindow()
 
     addAllButton = TextButton(window, 170, "Add all missing", function() ns.Install(false) end)
     addAllButton:SetPoint("BOTTOMLEFT", PADDING, 62)
-    removeButton = TextButton(window, 200, "Remove MacroKit's macros", function() ns.Remove() end)
+    -- Deleting asks for a second press, within 4 seconds.
+    removeButton = TextButton(window, 200, "Remove MacroKit's macros", function()
+        if removeArmed then
+            removeArmed = false
+            ns.Remove()
+            return
+        end
+        removeArmed = true
+        Refresh()
+        C_Timer.After(4, function()
+            if removeArmed then
+                removeArmed = false
+                ns.RefreshWindow()
+            end
+        end)
+    end)
     removeButton:SetPoint("BOTTOMRIGHT", -PADDING, 62)
 
     -- A tick box row: label, where, and what a click does.
@@ -558,6 +613,37 @@ end
 function ns.WindowShown()
     return window ~= nil and window:IsShown()
 end
+
+-- Listed in the game's own Options > AddOns, with a button that opens the
+-- window: that's where many players look first.
+local function RegisterSettings()
+    if not (Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory) then return end
+    local panel = CreateFrame("Frame")
+    local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", 16, -16)
+    title:SetText("MacroKit")
+    local text = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    text:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
+    text:SetWidth(520)
+    text:SetJustifyH("LEFT")
+    text:SetText("Ready-made macros for your class and talents, with a row of your missing buffs. Everything is set in MacroKit's window.")
+    local open = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    open:SetSize(220, 26)
+    open:SetPoint("TOPLEFT", text, "BOTTOMLEFT", 0, -12)
+    open:SetText("Open MacroKit")
+    open:SetScript("OnClick", function()
+        if SettingsPanel and SettingsPanel.IsShown and SettingsPanel:IsShown() and HideUIPanel then pcall(HideUIPanel, SettingsPanel) end
+        if not ns.WindowShown() then ns.ToggleWindow() end
+    end)
+    local category = Settings.RegisterCanvasLayoutCategory(panel, "MacroKit")
+    Settings.RegisterAddOnCategory(category)
+end
+pcall(RegisterSettings)
+
+-- The action bars changing: the To bar buttons follow.
+local barWatcher = CreateFrame("Frame")
+pcall(barWatcher.RegisterEvent, barWatcher, "ACTIONBAR_SLOT_CHANGED")
+barWatcher:SetScript("OnEvent", function() ns.RefreshWindow() end)
 
 -- Called whenever macros, spells, spec or combat change.
 function ns.RefreshWindow()

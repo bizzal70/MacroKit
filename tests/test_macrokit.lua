@@ -39,6 +39,7 @@ Learn("Seal of Righteousness", "Seal of the Crusader", "Judgement", "Holy Strike
 SPELL_IDS["Flash of Light"] = 5      -- the client knows it; this character has not learned it
 CreateMacro("Stun", 1, "/say my own", true)
 
+MacroKitDB = MacroKitDB or {}   -- an account that used MacroKit before 0.14.0: adding by itself starts on
 Fire("ADDON_LOADED", "MacroKit")
 check(ns.char.auto == true, "adds macros by itself by default")
 check(#MACROS == 1, "nothing is added before the character arrives in the world")

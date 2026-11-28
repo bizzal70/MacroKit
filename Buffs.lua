@@ -373,6 +373,7 @@ function ns.RefreshBuffs()
     if previewing then bar:SetWidth(ICON_SIZE * 5) end
     bar:SetShown(#wanted > 0 or previewing)
     if ns.UpdateGlobalCooldown then ns.UpdateGlobalCooldown() end
+    if ns.UpdateBuffMacro then ns.UpdateBuffMacro() end
 end
 
 function ns.BuffBar() return bar, icons end
